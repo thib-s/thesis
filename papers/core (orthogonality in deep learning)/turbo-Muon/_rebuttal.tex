@@ -1,0 +1,108 @@
+\input{0_macros}
+\rebuttal
+
+\showcommentstrue % Comment this line to disable comments
+
+% \documentclass[10pt,twocolumn,letterpaper]{article}
+% \input{cvpr_header}
+\myexternaldocument{main}
+\begin{document}
+%% TITLE
+\title{\paperTitle}
+\maketitle
+\thispagestyle{empty}
+\appendix
+%%
+\myexternaldocument{_supplementary}
+%% 13B experiment: 
+% muon 9261ms/s
+% muon+ 6665ms/s
+% turbo muon 4092ms/s
+%\subsection*{Common answer}
+
+\paragraph{Common answer:} We thank the reviewers for their diligent study of our work. The consensus among Reviewers Z3kZ, 5s6w, and aMAF characterizes Turbo-Muon as a ``simple and well-motivated'' approach that addresses a ``meaningful efficiency bottleneck'' in orthogonality-based optimization. We appreciate that the reviewers highlight our ``thorough analysis'' and ``promising empirical results'' , which demonstrate meaningful constant-factor speedups in end-to-end training. 
+To address specific concerns, we provide the following clarifications.
+
+\paragraph{On the magnitude of the speedups and experimental scale.}
+We acknowledge that end-to-end gains of 5–10\% may appear modest. However, these improvements are consistent in realistic training regimes and in particular against highly optimized baselines. Larger speedups can be obtained in extreme settings: on a 13B model and a batch size of 1, we observe a 2.28$\times$ speedup (9,261s/step on Muon and 4,092s/step for turbo muon); however, 
+we thought that such configurations were
+%such configurations are 
+not representative of large-scale training. Therefore, our goal was not to maximize  headline numbers, but to report reproducible gains under practical conditions. In this context, CIFAR-10 and NanoGPT are not “easy” benchmarks: they are widely used speedrun setups where optimizers are already pushed to their limits, making further improvements particularly challenging. Work such as \cite{rebb_nanochat} shows that nano-GPT speedups transfers to larger models ($>2$B).We also highlight that \textbf{AOL's positive impact on the polar error gets more significant with scale} (\cref{fig:polar_error_NS}). So Turbo-Muon is expected to perform even better at larger scales.
+
+\paragraph{About Imagenet-1k (major w. 5s6w):} 
+During rebuttal, we ran a
+%A 
+naive drop-in replacement of turbo muon on an ImageNet-1k baseline yielded a modest runtime improvement of 3.5\% on a ViT-B 16 with a similar final performance (76.53\% against 76.74\% for standard muon), albeit without further hyperparameter tuning.
+%, given the relatively short time frame. \thib{voir si on garde.}
+
+\vspace{-4mm}
+\paragraph{About the ablation study (3/ major w. 5s6w, ii/ aMAF):} While values needed for such an ablation were already present throughout the paper, we agree that centralizing these in a single table will help clarity. \cref{tabl:ablation} will be added in the main manuscript.
+
+    \begin{table}[h]
+        \small
+        \centering
+        \label{tab:ablation_4096}
+        \begin{tabular}{l l l}
+            \toprule
+            Variant & Polar error & Runtime \\
+            \midrule
+            baseline  (Muon 5it) & 0.25 (\cref{fig:polar_error_NS}) & 130 ms (Fig.~9) \\
+            + Dynamic coefs  & 0.17 (\cref{fig:polar_error_NS}) & unchanged \\
+            + Triton kernel (Muon+ 5it) & unchanged & 77 ms (Fig.~9) \\
+            + AOL  & 0.06 (\cref{fig:polar_error_NS}) & unchanged\\ %$^\ast$ \\
+            + 3rd Triton kernel (ours 5it) & unchanged & 59 ms (Fig.~9) \\
+            -- 1 iter (ours 4it) & 0.12 (\cref{fig:polar_error_NS}) & 46 ms (Fig.~9) \\
+            \bottomrule
+        \end{tabular}
+        \caption{Ablation summary (matrix size = 4096).}%$^\ast$Overhead of AOL is negligible for large matrices: matrix--vector multiplication is 4096x cheaper than matrix--matrix multiplication.}
+        \label{tabl:ablation}
+    \end{table}
+
+\vspace{-4mm}
+\paragraph{About Frobenius normalization (2/ minor w. 5s6w):} 
+$\| X_0\|_2 = \sigma_{max}\leq \|X_0 \|_F=\sqrt{\sum\sigma_i^2}$  justifies line 220
+%Statement in L220  is a result  of
+%l220 follows from
+%$\sigma_{max} = \| X_0\|_2 \leq \|X_0 \|_F=\sqrt{\sum\sigma_i^2}$
+%$\| X_0\|_2 \leq \|X_0 \|_F$ 
+% (see \href{https://en.wikipedia.org/wiki/Matrix_norm#Spectral_norm}{\texttt{https://en.wikipedia.org/wiki/Matrix\_norm}})
+. Also, \cite{rebb_prach2022almost} shows that $\|\frac{X_0}{\|X_0\|_F}\|_2 \leq \|\text{AOL}(X_0)\|_2 \leq 1$ while bringing $X_0$ closer to orthonormality.
+
+%\subsection*{Answer to Z3kZ}
+% We believed we addressed 
+% Major weaknesses are addressed in the common answer section.
+
+\vspace{-4mm}
+\paragraph{About training dynamics (minor w. Z3kZ):} Turbo-Muon exhibits the same training dynamics are Muon (with the number of iterations shifting toward faster or slower optimization). This can be added in the appendices upon acceptance.
+
+%\subsection*{Answer to 5s6w}
+\vspace{-4mm}
+\paragraph{About polar error and convergence improvement
+%optimization speed 
+(2/ major w. 5s6w, Q1/ aMAF):} Some contemporary works study the elements indicated by the reviewer, as \cite{rebb_shulgin2025beyond} demonstrates the correlation between polar error and final performance. Besides, a fair comparison between Muon and Adam can be found in \cite{rebb_wen_fantastic_2025}. Although we already cite this relevant prior work, we will recall this key takeaway in the Appendix. %For completeness, we will include this prior knowledge in the Appendix.
+
+\vspace{-4mm}
+\paragraph{Gradient matrix analysis position (5/ major w. 5s6w):} While the figures are Appendix B, the main conclusions are in the main paper (l315-323). Moreover,  
+We favored \cref{tab:nanoGPT_accuracy} and \cref{tab:speedrun-cifar} over \cref{ap:real_gradients} since final performances on vision and language benchmarks are a better proof that an improved polar error translates into better optimization.
+
+\vspace{-4mm}
+\paragraph{About memory consumption (4/ major w. 5s6w):} $A_0$ must be kept in memory even without AOL normalization. The only extra memory consumption is induced by $s$, in the setting of \cref{tab:nanoGPT_accuracy}, training with AOL consumes 29Gb while Muon consumes 28,89Gb. $X_k$, $A_k$, and $B_k$ buffers are reused across iterations to save memory.
+
+%\subsection*{Answer to aMAF}
+\vspace{-4mm}
+\paragraph{About polar error and AOL (Q2/ aMAF):} We measure the polar error as the distance with respect to the polar factor of the input matrix \textit{before normalization}, so the bias induced by AOL is accounted for in the metrics. This means that in spite of introducing a bias, the algorithm ends up with a matrix closer to the true polar factor. \cref{sec:bias_analysis} shows that this bias becomes visible with more iterations ($\geq 9$).
+
+\vspace{-4mm}
+\paragraph{About other approaches (Q3/ aMAF):} The regime of approximate convergence is difficult to study, especially in the low iteration regime. We observed that existing methods usually focus on the polynomial's coefficients, and are especially hard to tune in this regime. Our approach is different enough to consistently improve results across matrix shapes and distributions. 
+
+% \paragraph{About limited novelty:} 
+% To our knowledge, we provide the first approach to provide preconditioning to Muon-like optimizers, thus prioritizing speed over exact convergence. Also, we provide novel insights in .. and provide empirical validation of the 
+
+% the work done in \cite{rebb_prach2022almost} was intended for constructing Lipschitz networks. To the best of our knowledge, these two communities are little aware of each other, and bridging the two is not as trivial as it may appear. \thib{voir si on garde ça}
+
+{\small
+\bibliographystyle{ieeenat_fullname}
+\bibliography{9_references}
+}
+
+\end{document}
