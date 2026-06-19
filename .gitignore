@@ -1,0 +1,54 @@
+notes/*
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.brf
+*.fdb_latexmk
+*.fls
+*.glg
+*.glo
+*.gls
+*.glsdefs
+*.idx
+*.ilg
+*.ind
+*.ist
+*.lof
+*.log
+*.lot
+*.nav
+*.out
+*.pdfsync
+*.run.xml
+*.snm
+*.synctex.gz
+*.toc
+*.vrb
+*.xdv
+
+# Generated documents
+*.dvi
+*.ps
+*.synctex
+
+# latexmk
+*.pdf
+*.pdfsync
+*.synctex(busy)
+
+# Editors and operating systems
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary directories
+_minted-*/
+auto/
+build/
+tmp/
