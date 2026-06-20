@@ -18,9 +18,20 @@
 % The Current Maintainer of this work is T. GREGOIRE
 %
 
-\documentclass{book}
+\newcommand{\AddToHookWithArguments}[2]{}
+\gdef\fmtversion{2023/06/01}
+\documentclass[11pt,a4paper,oneside]{memoir}
 
 \input{preamble.tex}
+\chapterstyle{veelo}
+
+% Smaller margins and adjust header height
+\setlrmarginsandblock{3cm}{3cm}{*}
+\setulmarginsandblock{3cm}{3cm}{*}
+\setheadfoot{28pt}{\footskip}
+\checkandfixthelayout
+
+
 
 % Loading the tlsflyleaf.sty package requires the establishment name, the
 % doctoral school and the PhD speciality.
@@ -64,8 +75,9 @@
 %     <status>   Is (s)he a "charg\'e de recher" ou un "professeur d'universit\'e"...
 %     <other>    What ever string you want to add (laboratory, jury member place...).
 %% Boss
-\nboss{1}
+\nboss{2}
 \makesomeone{boss}{1}{Mathieu SERRURIER}{}{}
+\makesomeone{boss}{2}{Franck MAMALET}{}{}
 %% Referee
 \nreferee{2}
 \makesomeone{referee}{1}{REVIEWER NAME 1}{REVIEWER TITLE 1}{REVIEWER AFFILIATION 1}
@@ -101,10 +113,11 @@
     \input{chapters/07_conclusion}
     
     \appendix
+    \input{chapters/aoc_parts/appendix}
     \input{appendices/a_proofs}
     \input{appendices/b_experimental_details}
     \input{appendices/c_french_summary}
     
     \backmatter
-    % \printbibliography
+    \printbibliography
 \end{document}
