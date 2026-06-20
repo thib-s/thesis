@@ -1,0 +1,107 @@
+\input{chapters/aoc_parts/cifar10_robust}
+\input{chapters/aoc_parts/resnet50_overhead}
+
+
+In this section, we evaluate the expressiveness and scalability of AOC convolutions. To assess expressiveness, we require a benchmark that also accounts for the orthogonality property. 
+%We choose to conduct this evaluation in the context of certifiable robustness using 1-Lipschitz constrained networks, where enforcing orthogonality allows for a tighter Lipschitz estimation, ultimately leading to improved robustness.
+We evaluate this within the framework of 
+%We evaluate this in 
+certifiable robustness using 1-Lipschitz constrained networks, where enforcing orthogonality tightens Lipschitz estimation, improving robustness.
+\iffalse
+\textbf{Indeed, if $f$ is a 1-Lipschitz classification function and $l$ is the label index, a lower bound on robustness radius $ \epsilon$ in $L_2$ norm at $x$ is:}
+
+\vspace{-3mm}
+\[
+    \epsilon \geq \frac{f(x)_l - \max_{i \neq l}f(x)_i}{\sqrt{2}}
+    \vspace{-2mm}
+\]
+\textbf{This certificate is independent of adversarial attacks, ensuring that it remains valid even if new type of attacks arise. It is also computationally cheap and optimizable in a loss function \cite{singla_improved_2022, hu_recipe_2023}.}
+
+\textbf{The tightness of the Lipschitz constant estimation for a classifier directly impacts the robustness certificates. The overall Lipschitz constant of a sequence of layers is typically estimated as the product of the individual layer constants; however, this bound is often loose, and computing the exact constant is NP-hard \cite{virmaux2018lipschitz}. \cite{anil_sorting_2019} shows that combining MaxMin activation with orthogonal layers makes the aforementioned bound tight, aligning with the objectives of AOC layers.
+}
+\fi
+% AOC is strictly constrained to represent 1-Lipschitz functions, which is particularly relevant for building Lipschitz-constrained neural networks. 
+AOC strictly represents 1-Lipschitz functions, crucial for Lipschitz-constrained networks.
+The overall Lipschitz constant of a sequence of layers is typically estimated as the product of the individual layer constants; however, this bound is often loose, and computing the exact constant is NP-hard \cite{virmaux2018lipschitz}. \cite{anil_sorting_2019} 
+shows that combining MaxMin activation with orthogonal layers makes the aforementioned bound tight. \cite{bartlett2017spectrally} showed that if $f$ is a 1-Lipschitz classification function and $l$ is the label index, a lower bound on robustness radius $ \epsilon$ in $L_2$ norm at $x$ is:
+\vspace{-1.5mm}
+\[
+    \epsilon \geq \frac{f(x)_l - \max_{i \neq l}f(x)_i}{\sqrt{2}}
+    \vspace{-2mm}
+\]
+%has demonstrated that combining the MaxMin activation with orthogonal layers enables tightly bounded Lipschitz constants, contributing to enhanced robustness. This work also showed that if $f$ is a 1-Lipschitz classification function and $l$ is the label index,  it is possible to compute a lower bound of the robustness radius $ \epsilon$ in $L_2$ norm at a given $x$:
+% This certificate does not involve empirical adversarial attacks, so the certifiable robustness of a network will not change if new adversarial attacks are developed. Also, this certificate is cheap to compute and can be optimized in a loss function \cite{singla_improved_2022, hu_recipe_2023}.
+This certificate is independent of adversarial attacks, ensuring robustness remains unchanged even if new attacks arise. It is also computationally cheap and optimizable in a loss function \cite{singla_improved_2022, hu_recipe_2023}.
+
+% To illustrate the expressiveness and scalability of AOC, we conduct experiments on two image classification benchmarks: CIFAR-10 \cite{krizhevsky2009learning}, a widely used dataset for certifiable robustness evaluation, and ImageNet \cite{deng2009imagenet}, which serves as a large-scale benchmark to assess scalability. For both tasks, we train two networks under different configurations: one prioritizing accuracy and another emphasizing robustness, allowing us to comprehensively analyze the capabilities of AOC convolutions.
+To showcase AOC's expressiveness and scalability, we conduct experiments on CIFAR-10, a widely used benchmark for certifiable robustness, and ImageNet, a large-scale dataset. 
+We train two networks per task: one prioritizing accuracy-noted \textit{"AOC accurate"} in~\cref{tab:robust_cifar10}- and the other robustness-denoted \textit{"AOC robust"}-enabling a thorough evaluation. Finally, the training recipe of \cite{hu_recipe_2023} was used with original convolutions replaced by AOC, showcasing its expressiveness with extra data. This last recipe is denoted \textit{"AOC robust*"}.
+\iffalse
+\textbf{To highlight AOC's expressiveness and scalability, we conduct experiments on CIFAR-10, a widely used benchmark for certifiable robustness, and ImageNet, a large-scale dataset. We showcase their capability to explore the trade-off between robustness and accuracy by training two networks per task -one optimized for accuracy and the other for robustness—allowing for a thorough evaluation.}
+\fi
+% Finally, to evaluate the scalability of AOC, we compare the computational overhead induced by AOC convolutions on a standard architecture, providing insights into the practical feasibility of AOC in large-scale applications.
+For scalability, we compare AOC's computational overhead on a standard architecture, assessing its feasibility in large-scale applications.
+% Reparametrization offers a property that cannot be enforced by regularization methods: the layer is constrained to represent 1-Lipschitz functions. Since most networks are built as a sequence of layers, it is possible to construct a neural whose Lipschitz constant is bounded: this constant is computed as the product of the lipschitz constant of each layer. This bound is usually loose and its exact computation is NP-hard \cite{virmaux2018lipschitz}. Work of \cite{anil_sorting_2019} showed that the MaxMin activation, coupled with orthogonal layers allows the construction of networks whose Lipschitz constant is tightly bounded. Hence our evaluation focuses only on Lipschitz constrained networks. Those networks find many uses: they are tightly related with WGAN, and optimal transport \cite{arjovsky2017wasserstein, bethune2024deep} but can also unlock scalable differential privacy \cite{bethunedp}, avoid singularities in diffusion models \cite{yang2023lipschitz} and enjoy proof of existence and uniqueness of their solution in classification \cite{bethune_pay_2022} and flow matching networks \cite{perko2013differential, coddington1956theory}. Finally those networks can be used to compute robustness certificates.
+
+% In this section, we show that AOC convolutions allow the training of expressive, robust, and larger neural networks with minimal training and inference overhead.
+
+% \noindent\textbf{Choice of the benchmark: } \todo{In order to evaluate the expressivity and scalability of AOC layers, we decided to focus on certifiable robustness with Lipschitz constrained networks.
+% Pourquoi on choisit les Lips constaint}
+% Reparametrization ensures a property that regularization methods cannot: the layer is strictly constrained to represent 1-Lipschitz functions. Since most neural networks are composed of sequential layers, this enables the construction of models with a bounded Lipschitz constant, typically estimated as the product of the Lipschitz constants of individual layers. However, this bound is often loose, and computing the exact constant is NP-hard \cite{virmaux2018lipschitz}. The work of \citet{anil_sorting_2019} demonstrated that combining the MaxMin activation with orthogonal layers allows for tightly bounded Lipschitz constants. AOC will be evaluated in this context.
+% \todo{On mesure Accuracy, certifiable robustness, et cout en calcul: 
+% accuracy strightforward pour expressivité en particulier sous contrainte 1Lip (plus dur d'etre accurate)
+% certifiable mesure la robustesse sans attaque + tight bound}
+
+
+%Lipschitz-constrained networks have diverse applications: they are closely linked to WGANs and optimal transport \cite{arjovsky2017wasserstein, bethune2024deep}, enable scalable differential privacy \cite{bethunedp}, and prevent singularities in diffusion models \cite{yang2023lipschitz}. Additionally, they guarantee the existence and uniqueness of solutions in classification \cite{bethune_pay_2022} and flow-matching networks \cite{perko2013differential, coddington1956theory}. 
+% Importantly, these networks also facilitate the computation of robustness certificates, further solidifying their role in reliable and interpretable machine learning.
+
+\subsection{Certifiable robustness with 1-Lipschitz Networks.}\label{subsec:certif_rob}
+%  \citet{anil_sorting_2019} showed that if $f$ is a 1-Lipschitz classification function and $l$ is the label index we can compute a lower bound of the robustness radius $ \epsilon$ in $L_2$ norm at a given $x$:
+% \vspace{-2mm}
+% \[
+%     \epsilon \geq \frac{f(x)_l - \max_{i \neq l}f(x)_i}{\sqrt{2}}
+%     \vspace{-2mm}
+% \]
+% This certificate does not involve empirical adversarial attacks, so the certifiable robustness of a network will not change if new adversarial attacks are developed. Also, this certificate is cheap to compute and can be optimized in a loss function \cite{singla_improved_2022, hu_recipe_2023}.
+%We illustrate the expressiveness and scalability of AOC on two image classification tasks: CIFAR-10 \cite{krizhevsky2009learning} as an established benchmark on certifiable robustness and ImageNet \cite{deng2009imagenet} to illustrate the scalability of our approach. For both tasks we train two networks in two different settings: one emphasizing accuracy and one emphasizing robustness. 
+Detailed architectures and training parameters are detailed in \cref{sec:ap_training_details}. We report in \cref{tab:robust_cifar10} both the standard and provable accuracy\footnote{proportion of samples with a certificate greater than $\epsilon$}  and compare with previous methods. %\thib{todo explicit AOC accurate and AOC robust and AOC robust*} 
+We will highlight the interest of AOC through the 3 following observations.
+
+\noindent\textbf{Observation 1: AOC allows construction of expressive 1-Lipschitz networks.}
+While AOC does not improve the expressiveness of its original building blocks (namely BCOP)\footnote{see \cref{ap:repoducing_bcop} for the reproduction of their results}, its flexibility unlocks the construction of complex blocks as depicted in \cref{fig:imagenet_block}. Such a block permits the training of 1-Lipschitz networks that achieve competitive performance with similar sizes and similar training cost as their unconstrained counterparts; 
+The \textit{"AOC accurate"} training configuration (in \cref{tab:robust_cifar10}) achieves more than  90\% clean accuracy on  CIFAR-10 using less than 3M parameters, showing that AOC is expressive.
+This comes at the cost of 0\% provable accuracy (certificates smaller than the radius $\epsilon = 36/255$): regardless of its resilience to empirical adversarial attacks.
+Conversely, the \textit{AOC robust} provides a high certifiable accuracy (64.3\%), but lower clean accuracy (74\% instead of 91.5\%), illustrating the well-known accuracy-robustness trade-off \cite{bethune_pay_2022}. Finally, networks trained with AOC do not use normalization techniques such as batch normalization~\cite{ioffe2015batch} or layer normalization~\cite {ba2016layer}. 
+
+%The training of a 1-Lipschitz network with more than 90\% accuracy on  CIFAR-10 using less than 3M parameters shows that AOC is expressive.
+\noindent\textbf{Observation 2: Old methods become competitive with scale.} Scaling the original BCOP network of \cite{li_preventing_2019} from 2.6M to 41.3M parameters makes this method competitive with more recent approaches ($+6\%$ on provable accuracy). This is especially notable as our experiments did not use techniques such as last layer normalization\cite{singla_improved_2022}, certificate regularization \cite{singla_skew_2021}, or DDPM augmentation \cite{hu_recipe_2023}.
+%to obtain our results. 
+This was possible only due to the fast implementation of AOC, which enables larger batch sizes and faster training.
+% This was possible only thanks to the fast implementation of AOC, which unlocks larger batch sizes and quicker training. % for the same computational budget.
+
+\noindent\textbf{Observation 3: State of the art aligns with computational budget.} Our experiments align with the work of \cite{prach2024intriguing, bubeck2021universal}, who noted that robust training does not have the same scaling laws as standard training: in order to obtain robustness, alongside accuracy and generalization, more data and larger architectures are required by an order of magnitude greater than was is currently being done. This explains why \cite{hu_recipe_2023} used 4.5 million of images for their results on CIFAR-10, highlighting the need for scalable implementations that can handle this trend. 
+
+% However, authors of \cite{prach_1-lipschitz_2023} observed that improvement of the state of the art in certifiable adversarial robustness comes along with larger architectures and longer training times. Therefore, given the same computational budget, we can expect that our efficient implementation unlocks larger networks and more training steps, which in turn should improve final performance.
+
+
+
+    % \thib{
+    % \begin{itemize}
+    %     \item why constraint and not regul ? => lipschitz arch
+    %     \item why ortho and not lipschitz ? => tight lipschitz bound / rank efficient (GAN)
+    %     \item talk about robustness: a. Sota correlated with compute. b. scaling laws are differents (need for fast implem). c. archs are differents.
+    % \end{itemize}
+    % }
+
+\subsection{Scalability of AOC}
+% \todo{Soft constraints (regularization) methods for orthogonal convolution are only briefly mentioned in the paper as early works and Riemannian gradient descent methods are not reviewed, hurting the completeness and systematicness of the review.}
+    As observed by \cite{prach_1-lipschitz_2023}, a slow implementation leads to increased training time and, consequently, lower performances in practical contexts. In this section, we demonstrate that AOC offers a key advantage: its computational cost does not depend on the input size or shape, making it well-suited for large-scale datasets, where handling large images is crucial. Although other methods may perform better on smaller datasets, they struggle to scale to widely used architectures like ResNet-34 \cite{he_deep_2015}, as shown in \cref{tab:comparison_overhead}. On the other end, our method’s low memory cost enables larger batch sizes, and since our parameterization is batch-size independent, the overhead decreases as batch size increases. Ultimately, this results in a training time only 13\% slower than its unconstrained counterpart. The detailed protocol is detailed in \cref{ap:scale_xp}.
+    % As observed by \cite{prach_1-lipschitz_2023}, a method's implementation is a key factor for its success: a slow implementation leads to increased training time and, consequently, lower performances in practical contexts like robust training. In this section, we demonstrate that AOC offers a key advantage: its computational cost does not depend on the input size or shape, making it well-suited for large-scale datasets like ImageNet \cite{deng2009imagenet}, where handling large images is crucial. Although other methods may perform better on smaller datasets such as CIFAR \cite{krizhevsky2009learning} or Tiny ImageNet \cite{wu2017tiny}, they struggle to scale to widely used architectures like ResNet-34 \cite{he_deep_2015}, as shown in \cref{tab:comparison_overhead}. On the other end, our method’s low memory cost enables larger batch sizes, and since our parameterization is batch-size independent, the overhead decreases as batch size increases. Ultimately, this results in a training time only 13\% slower than its unconstrained counterpart.
+    % Among others components, our method is build on top of BCOP that were known for being slow. This resulted in slower training time and ultimately, lower performance in robust training \cite{prach_1-lipschitz_2023}. In this section we show that, despite its slow implementation, such method enjoy a desirable property: its cost is not dependent of the input size and shape, making it suitable for practical training on datasets like imagenet which require handling large images. Despite their relative performance on smaller dataset like cifar or tiny imagenet, most methods don't scale well to usual architectures like resnet-34 as shown in \cref{tab:comparison_overhead}. We can also notice that the low memory overhead of our method unlock larger batch sizes. Coupled with the fact that our parametrization is independent to the batch size, it result in lower overheads as the batch size increases. Ultimately, this results in a training time that is only 13\% slower than its unconstrained counterpart on a Resnet34 (modified : replaced transition blocks with strided convs)
+    
+
+% \vspace{-2mm}
+
+
+

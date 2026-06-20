@@ -1,0 +1,65 @@
+\begin{table}[h]
+    \centering
+    \small
+    \renewcommand{\arraystretch}{1.2}
+    \begin{tabular}{lcccc}
+        \hline
+        \textbf{Hyperparameter} 
+        & \textbf{CIFAR-10 Acc.} 
+        & \textbf{CIFAR-10 Rob.} 
+        & \textbf{ImageNet Acc.} 
+        & \textbf{ImageNet Rob.} 
+        \\
+        \hline
+        \textbf{Loss function} 
+        & Cosine similarity 
+        & \makecell{\cite{prach_almost-orthogonal_2022} \\ ($m= 1.5\sqrt{2}$, $\tau=0.125$)} 
+        & Cosine similarity 
+        & \makecell{\cite{prach_almost-orthogonal_2022} \\ ($m= 1.5\sqrt{2}$, $\tau=0.125$)} 
+        \\
+        \textbf{Optimizer} 
+        & \multicolumn{4}{c}{ScheduleFree \cite{defazio2024roadscheduled}} 
+        \\
+        \textbf{Learning rate} 
+        & $5 \times 10^{-3}$ 
+        & $1 \times 10^{-4}$ 
+        & $1 \times 10^{-2}$ 
+        & $1 \times 10^{-3}$ 
+        \\
+        \textbf{Batch size} 
+        & 1024 
+        & 1024 
+        & 512 
+        & 512
+        \\
+        \textbf{Epochs}
+        & 150 
+        & 3000 
+        & 90
+        & 300
+        \\
+        \textbf{Randaugment params} 
+        & m=6, n=2
+        & m=6, n=1
+        & m=7, n=2  
+        & None
+        \\
+        \textbf{Random crop params} 
+        & scale = 0.25
+        & scale = 0.5
+        & scale = 0.5
+        & scale = 0.08
+        \\
+        \textbf{hardware} 
+        & RTX 3080 x 1
+        & RTX 4090 x 1
+        & RTX 4090 x 2
+        & RTX 4090 x 2
+        \\
+        \hline
+    \end{tabular}
+    \caption{\textbf{Training Hyperparameters for the Four 1-Lipschitz Networks.} 
+    ``Acc.'' refers to the high-accuracy setting, and 
+    ``Rob.'' refers to the robust setting.}
+    \label{tab:hyperparams}
+\end{table}

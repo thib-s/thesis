@@ -1,7 +1,33 @@
 \chapter{Adaptive Orthogonal Convolutions for Efficient and Flexible CNN Architectures}
 \label{ch:aoc}
 
-\section{Introduction}
-\section{Method}
-\section{Experiments}
-\section{Conclusion}
+\section{Introduction and Related Works}
+
+\input{chapters/aoc_parts/01_intro_related_works}
+    
+\section{An Adaptive scheme to build Orthogonal Convolution (AOC)}\label{sec:AOC}
+
+We will first recall the definition and properties of the \Bconv{} in \cref{sec:fusing_kernel}. 
+This tool is used in \cref{sec:construction} to construct orthogonal kernels explicitly, with the support of modern convolution features. 
+Finally, \cref{sec:implem} provides implementation details that allow the method to scale. 
+
+\subsection{Core tool: \Bconv}\label{sec:fusing_kernel}
+
+\input{chapters/aoc_parts/02_block_conv}
+
+\subsection{Construction of Strided, Transposed, Grouped, Dilated, Orthogonal Convolutions with AOC}\label{sec:construction}
+\input{chapters/aoc_parts/bigfigs/bigfig_method}
+
+\input{chapters/aoc_parts/03_method}
+
+\subsection{Efficient implementation of AOC}
+
+\input{chapters/aoc_parts/04_implem}
+
+\section{Evaluation and applications}
+
+\input{chapters/aoc_parts/05_eval}\label{sec:eval}
+
+\section{Conclusion and Broader Impact}
+
+\input{chapters/aoc_parts/06_conclusions}\label{sec:conclusions}

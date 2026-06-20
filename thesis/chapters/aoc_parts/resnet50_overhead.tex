@@ -1,0 +1,202 @@
+% \begin{table}[h!]
+%     \centering
+%     \begin{tabular}{|c|c|c|c|c|c|}
+%         \hline
+%         \textbf{Metric} & \textbf{BCOP} & \textbf{AOC (ours)} & \textbf{Conv2D} & \textbf{BCOP Overhead (\%)} & \textbf{AOC (ours) Overhead (\%)} \\
+%         \hline
+%         Max Train Memory (GB) & 8.208 & 5.195 & 4.667 & 75\% & 11\% \\
+%         \hline
+%         Max Test Memory (GB) & 1.473 & 1.421 & 1.391 & 5\% & 2\% \\
+%         \hline
+%         Train Mean (s) & 0.368 (0.012) & 0.222 (0.016) & 0.134 (0.003) & 174\% & 65\% \\
+%         \hline
+%     \end{tabular}
+%     \caption{Comparison of BCOP, AOC (ours), and Conv2D with Overhead Calculations}
+%     \label{tab:comparison_overhead}
+% \end{table}
+
+% \begin{table}[h!]
+%     \centering
+%     \begin{tabular}{c|ccccc}
+%         \textbf{Metric} & \textbf{BCOP} & \textbf{AOC (ours)} & \textbf{Conv2D} & \textbf{BCOP Overhead (\%)} & \textbf{AOC (ours) Overhead (\%)} \\
+%         \hline
+%             Max Train Memory (GB) & 13.891GB & 9.759GB & 9.082GB & 52\% & 7\% \\ 
+%         Max Test Memory (GB) & 2.785GB & 2.731GB & 2.699GB & 3\% & 1\% \\ 
+%         Train Mean (ms) & 0.624ms & 0.354ms & 0.284ms & 119\% & 24\% \\ 
+%         Test Mean (ms) & 0.135ms & 0.097ms & 0.091ms & 48\% & 6\% \\ 
+%     \end{tabular}
+%     \caption{Comparison of BCOP, AOC (ours), and Conv2D}
+%     \label{tab:comparison_overhead}
+% \end{table}
+% \begin{@twocolumnfalse}
+% \begin{figure}
+% \begin{table*}[ht]
+%     \centering
+%     \begin{tabular}{ccccc}
+%         \textbf{Name} & \textbf{Train Time (ms)} & \textbf{Train Memory (GB)} & \textbf{Test Time (ms)} & \textbf{Test Memory (GB)} \\
+%         \hline
+%             AOC (ours) & 239.43 $\pm$ 22.333 (75\%) & 5.347 $\pm$ 0 (14\%) & 53.04 $\pm$ 10.013 (5\%) & 1.421 $\pm$ 0 (2\%) \\ 
+%             BCOP & 388.897 $\pm$ 16.677 (184\%) & 8.601 $\pm$ 0 (84\%) & 62.454 $\pm$ 3.034 (24\%) & 1.47 $\pm$ 0 (5\%) \\
+%             SOC & 664.422 $\pm$ 1.534 (386\%) & 12.754 $\pm$ 0 (173\%) & 428.588 $\pm$ 1.541 (755\%) & 1.806 $\pm$ 0 (30\%) \\
+%             Cayley & 583.609 $\pm$ 22.73 (327\%) & 18.999 $\pm$ 0 (307\%) & 247.297 $\pm$ 4.535 (393\%) & 2.016 $\pm$ 0 (45\%) \\
+%             Conv2D & 136.602 $\pm$ 2.363  & 4.668 $\pm$ 0  & 50.101 $\pm$ 7.936  & 1.388 $\pm$ 0  \\
+%         \hline
+%             AOC (ours) & 354.019 $\pm$ 15.234 (24\%) & 9.759 $\pm$ 0 (7\%) & 96.896 $\pm$ 18.774 (6\%) & 2.731 $\pm$ 0 (1\%) \\ 
+%             BCOP & 624.391 $\pm$ 9.206 (119\%) & 13.891 $\pm$ 0 (52\%) & 135.08 $\pm$ 8.559 (47\%) & 2.785 $\pm$ 0 (3\%) \\ 
+%             Conv2D & 284.021 $\pm$ 9.403  & 9.082 $\pm$ 0  & 91.337 $\pm$ 8.234  & 2.699 $\pm$ 0  \\ 
+%         \hline
+%             AOC (ours) & 622.232 $\pm$ 21.486 (13\%) & 18.57 $\pm$ 0 (3\%) & 175.995 $\pm$ 43.804 (2\%) & 5.35 $\pm$ 0  \\ 
+%             BCOP & 1116.203 $\pm$ 48.184 (103\%) & 24.612 $\pm$ 0 (37\%) & 255.735 $\pm$ 24.586 (48\%) & 5.401 $\pm$ 0 (1\%) \\ 
+%             Conv2D & 549.864 $\pm$ 7.059  & 17.893 $\pm$ 0  & 172.412 $\pm$ 28.683  & 5.318 $\pm$ 0  \\ 
+%     \end{tabular}
+%     % \caption{Comparison of Convolution Types}
+%     % \label{tab:comparison_overhead}
+% % \end{table}
+%     \caption{Comparison of Convolution Types}
+%     \label{tab:comparison_overhead}
+% % \end{figure}
+% \end{table*}
+
+% \end{@twocolumnfalse}
+
+
+% \begin{table*}[ht]
+%     \centering
+%     \begin{tabular}{cccc}
+%         \textbf{Name} & \textbf{Max batch size} & \textbf{Time Overhead (train/test)} & \textbf{Memory overhead (train/test)} \\
+%         \hline
+%             SOC & 128 & 386\% / 755\% & 173\% / 30\% \\
+%         % \hline
+%             Cayley & 128 & 327\% / 393\% & 307\% / 45\% \\
+%             BCOP & 512 & 103\% / 48\% & 37\% / 1\%\\ 
+%             FlashLipschitz (ours) & \textbf{512} &\textbf{ 13\% / 2\%} & \textbf{3\% / 0\%} \\ 
+%     \end{tabular}
+%     % \caption{Comparison of Convolution Types}
+%     % \label{tab:comparison_overhead}
+% % \end{table}
+%     \caption{Comparison of Convolution Types}
+%     \label{tab:comparison_overhead}
+% % \end{figure}
+% \end{table*}
+
+% \begin{table*}[ht]
+%     \centering
+%     \begin{tabular}{cccc}
+%         \textbf{Name} & \textbf{Max batch size} & \textbf{Time (train/test)} & \textbf{Memory (train/test)} \\
+%         \hline
+%             Conv2D & 512 & 1x / 1x & 1x / 1x \\
+%         % \hline
+%             SOC & 128 & 4,86x / 8,55x & 2,73x / 1,3x \\
+%             Cayley & 128 & 4,27x / 4,93x & 4,07x / 1,45x \\
+%             BCOP & 512 & 2,03x / 1,48x & 1,37x / 1,01x\\ 
+%             FlashLipschitz (ours) & 512 & 1,13x / 1,02x & 1,03x / 1,006x \\ 
+%     \end{tabular}
+%     % \caption{Comparison of Convolution Types}
+%     % \label{tab:comparison_overhead}
+% % \end{table}
+%     \caption{Comparison of Convolution Types}
+%     \label{tab:comparison_overhead}
+% % \end{figure}
+% \end{table*}
+
+% \begin{table*}[ht]
+%     \centering
+%     \begin{tabular}{cccc}
+%         \textbf{Name} & \textbf{Max batch size} & \textbf{Train Time} & \textbf{Train Memory } \\
+%         \hline
+%             Conv2D & 512 & 1x & 1x \\
+%             SOC & 128 & 4,86x & 2,73x \\
+%             Cayley & 128 & 4,27x & 4,07x \\
+%             BCOP & 512 & 2,03x & 1,37x \\ 
+%             FlashLipschitz (ours) & \textbf{512} & \textbf{1,13x} & \textbf{1,03x} \\ 
+%     \end{tabular}
+%     % \caption{Comparison of Convolution Types}
+%     % \label{tab:comparison_overhead}
+% % \end{table}
+%     \caption{Comparison of Convolution Types}
+%     \label{tab:comparison_overhead}
+% % \end{figure}
+% \end{table*}
+
+% \begin{table*}[ht]
+%     \centering
+%     \begin{tabular}{lccccc}
+%         \textbf{Name} & \textbf{Batch Size} & \textbf{Train Time (ms)} & \textbf{Train Memory (GB)} & \textbf{Test Time (ms)} & \textbf{Test Memory (GB)} \\
+%         \hline        
+%             Conv2D & 128 & 136.602  & 4.668  & 50.101  & 1.388  \\
+%             FlashLipschitz (ours) &  & \textbf{239.43 (+75\%)} & \textbf{5.347 (+14\%)} & \textbf{53.04 (+5\%)} & \textbf{1.421 (+2\%)} \\ 
+%             BCOP &  & 388.897 (+184\%) & 8.601 (+84\%) & 62.454  (+24\%) & 1.47 (+5\%) \\
+%             SOC &  & 664.422 (+386\%) & 12.754 (+173\%) & 428.588 (+755\%) & 1.806 (+30\%) \\
+%             Cayley &  & 583.609 (+327\%) & 18.999 (+307\%) & 247.297 (+393\%) & 2.016 (+45\%) \\
+%         \hline
+%             Conv2D & 256 & 284.021  & 9.082  & 91.337  & 2.699  \\ 
+%             FlashLipschitz (ours) &  & \textbf{354.019 (+24\%)} & \textbf{9.759 (+7\%)} & \textbf{96.896 (+6\%)} & \textbf{2.731 (+1\%)} \\ 
+%             BCOP &  & 624.391 (+119\%) & 13.891 (+52\%) & 135.08 (+47\%) & 2.785 (+3\%) \\
+%         \hline
+%             Conv2D & 512 & 549.864  & 17.893  & 172.412  & 5.318  \\
+%             FlashLipschitz (ours) &  & \textbf{622.232 (+13\%)} & \textbf{18.57 (+3\%)} & \textbf{175.995 (+2\%)} & \textbf{5.35 (+0\%)} \\ 
+%             BCOP &  & 1116.203 (+103\%) & 24.612 (+37\%) & 255.735 (+48\%) & 5.401 (+1\%) \\
+%     \end{tabular}
+%     % \caption{Comparison of Convolution Types}
+%     % \label{tab:comparison_overhead}
+% % \end{table}
+%     \caption{\textbf{Our implementation benefits from scale}: As demonstrated on a ResNet-34, previous methods impose significant overhead when input images are large (224x224). By contrast, since our method's computational cost is independent of layer input size, its overhead decreases as batch size increases. Furthermore, the low memory overhead enables larger batches at scale.}
+%     \label{tab:comparison_overhead}
+% % \end{figure}
+% \end{table*}
+
+% \begin{table*}[ht]
+%     \centering
+%     \begin{tabular}{llllll}
+%         \textbf{Name} & \textbf{Batch Size} & \textbf{Train Time (ms)} & \textbf{Train Memory (GB)} & \textbf{Test Time (ms)} & \textbf{Test Memory (GB)} \\
+%         \hline        
+%             Conv2D & 128 & 136  & 4.6  & 50  & 1.4  \\
+%             AOC (ours) &  & \textbf{239 (+75\%)} & \textbf{5.347 (+14\%)} & \textbf{53 (+5\%)} & \textbf{1.4 (+2\%)} \\ 
+%             BCOP &  & 388 (+184\%) & 8.6 (+84\%) & 62  (+24\%) & 1.5 (+5\%) \\
+%             Cayley &  & 583 (+327\%) & 18.9 (+307\%) & 247 (+393\%) & 2.0 (+45\%) \\
+%             SOC &  & 664 (+386\%) & 12.7 (+173\%) & 428 (+755\%) & 1.8 (+30\%) \\
+%         \hline
+%             Conv2D & 256 & 284  & 9.0  & 91  & 2.6  \\ 
+%             AOC (ours) &  & \textbf{354 (+24\%)} & \textbf{9.7 (+7\%)} & \textbf{96 (+6\%)} & \textbf{2.7 (+1\%)} \\ 
+%             BCOP &  & 624 (+119\%) & 13.8 (+52\%) & 135 (+47\%) & 2.7 (+3\%) \\
+%         \hline
+%             Conv2D & 512 & 549  & 17.8  & 172  & 5.3  \\
+%             AOC (ours) &  & \textbf{622 (+13\%)} & \textbf{18.5 (+3\%)} & \textbf{175 (+2\%)} & \textbf{5.3 (+0\%)} \\ 
+%             BCOP &  & 1116 (+103\%) & 24.6 (+37\%) & 255 (+48\%) & 5.4 (+1\%) \\
+%     \end{tabular}
+%     % \caption{Comparison of Convolution Types}
+%     % \label{tab:comparison_overhead}
+% % \end{table}
+%     \caption{\textbf{Our implementation benefits from scale}: As demonstrated on a ResNet-34, previous methods impose significant overhead when input images are large (224x224). By contrast, since our method's computational cost is independent of layer input size, its overhead decreases as batch size increases. Furthermore, the low memory overhead enables larger batches at scale.}
+%     \label{tab:comparison_overhead}
+% % \end{figure}
+% \end{table*}
+
+
+\begin{table*}[ht]
+    \centering
+    \small
+    \begin{tabular}{lrrrrr}
+        \textbf{Name} & \textbf{Batch Size} & \textbf{Train Time (ms)} & \textbf{Train Memory (GB)} & \textbf{Test Time (ms)} & \textbf{Test Memory (GB)} \\
+        \hline
+            Conv2D (ref) & 128 & 137 (1.00x) & 4.7 (1.00x) & 50 (1.00x) & 1.4 (1.00x) \\
+            AOC (ours) & 128 & \textbf{239 (1.75x)} & \textbf{5.3 (1.15x)} & \textbf{53 (1.06x)} & \textbf{1.4 (1.02x)} \\ 
+            BCOP & 128 & 389 (2.85x) & 8.6 (1.84x) & 62 (1.25x) & 1.5 (1.06x) \\
+            SOC & 128 & 664 (4.86x) & 12.8 (2.73x) & 429 (8.55x) & 1.8 (1.30x) \\
+            Cayley & 128 & 584 (4.27x) & 19.0 (4.07x) & 247 (4.94x) & 2.0 (1.45x) \\
+        \hline
+            Conv2D (ref) & 256 & 284 (1.00x) & 9.1 (1.00x) & 91 (1.00x) & 2.7 (1.00x) \\ 
+            AOC (ours) & 256 & \textbf{354 (1.25x)} & \textbf{9.8 (1.07x)} & \textbf{97 (1.06x)} & \textbf{2.7 (1.01x)} \\ 
+            BCOP & 256 & 624 (2.20x) & 13.9 (1.53x) & 135 (1.48x) & 2.8 (1.03x) \\
+        \hline
+            Conv2D (ref) & 512 & 550 (1.00x) & 17.9 (1.00x) & 172 (1.00x) & 5.3 (1.00x) \\
+            AOC (ours) & 512 & \textbf{622 (1.13x)} & \textbf{18.6 (1.04x)} & \textbf{176 (1.02x)} & \textbf{5.4 (1.01x)} \\ 
+            BCOP & 512 & 1116 (2.03x) & 24.6 (1.38x) & 256 (1.48x) & 5.4 (1.02x) \\
+    \end{tabular}
+    % \caption{Comparison of Convolution Types}
+    % \label{tab:comparison_overhead}
+% \end{table}
+    \caption{\textbf{AOC benefits from scale.} As demonstrated on a ResNet-34, previous methods impose significant overhead when input images are large ($224 \times 224$). In contrast, since our method's computational cost is independent of layer input size, its overhead decreases as batch size increases. Furthermore, the low memory overhead enables larger batches at scale.\vspace{-4mm}}
+    \label{tab:comparison_overhead}
+% \end{figure}
+\end{table*}

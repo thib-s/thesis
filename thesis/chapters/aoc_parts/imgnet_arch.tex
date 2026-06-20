@@ -1,0 +1,54 @@
+% \begin{table}[h!]
+%     \centering
+%     \begin{tabular}{|c|c|c|}
+%         \hline
+%         \textbf{Metric} & \textbf{BCOP\_new} & \textbf{Conv2D} \\
+%         \hline
+%         Max Train Memory (GB) & 21.566 & 18.340 \\
+%         % \hline
+%         Max Test Memory (GB) & 3.457 & 3.387 \\
+%         % \hline
+%         Train Mean & 1.008 & 0.706 \\
+%         % \hline
+%         Train Std Dev & 0.003 & 0.005 \\
+%         % \hline
+%         Test Cached Mean & 0.148 & 0.140 \\
+%         % \hline
+%         Test Cached Std Dev & 0.007 & 0.009 \\
+%         % \hline
+%         Test Caching Time & 0.084 & -0.078 \\
+%         \hline
+%     \end{tabular}
+%     \caption{Comparison of BCOP\_new and Conv2D}
+%     \label{tab:comparison}
+% \end{table}
+
+% \begin{table}[h!]
+%     \centering
+%     \begin{tabular}{c|cccc}
+%         \hline
+%         \textbf{Model} & \textbf{Train Mem (GB)} & \textbf{Test Mem (GB)} & \textbf{Train time (s)} & \textbf{ Test time (s)} \\
+%         \hline
+%         BCOP\_new & 21.566 & 3.457 & 1.008 (0.003) & 0.148 (0.007) \\
+%         \hline
+%         Conv2D & 18.340 & 3.387 & 0.706 (0.005) & 0.140 (0.009) \\
+%         \hline
+%     \end{tabular}
+%     \caption{Comparison of BCOP\_new and Conv2D}
+%     \label{tab:comparison}
+% \end{table}
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{c|cc}
+        \hline
+         & \textbf{BCOP\_new} & \textbf{Conv2D} \\
+        \hline
+        Train time (s) & 1.008 (0.003) & 0.706 (0.005) \\
+        Train Mem (GB) & 21.566 & 18.340 \\
+        Test time (s) & 0.148 (0.007) & 0.140 (0.009) \\
+        Test Mem (GB) & 3.457 & 3.387 \\
+    \end{tabular}
+    \caption{With only a 1.42x train time overhead and a 1.17x train memory overhead, our implementation achieves competitive results on Imagenet. These numbers are computed on a realistic architecture that reaches 67\% validation accuracy. Experiments were run on an RTX-4090 consumer GPU}
+    \label{tab:comparison}
+\end{table}

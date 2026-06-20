@@ -1,0 +1,50 @@
+Our approach builds upon three foundational papers: \cite{xiao_dynamical_2018}, which generalized orthogonal initialization to convolution to enable training networks with $10~000$ layers, though without addressing constrained training; \cite{su_scaling-up_2021}, which tackled this for separable convolutions; and \cite{li_preventing_2019}, which extended it to general 2D convolutions. These works rely heavily on a tool known as \Bconv. In this section, we review, clarify, and extend this mathematical framework.
+
+\paragraph{Notations:}  
+We consider convolutional layers characterized by $c_o$, the number of output channels; $c_i$, the number of input channels; $k_1 \times k_2$, the kernel size; $s$, the stride parameter;  $g$, the number of groups; $d$ the dilation rate . For simplicity in the notation, we fix the group parameter to  $g=1$ and $d=1$ by default (all proofs hold for other values of $g$ and $d$, see \cref{sec:group}). Also, we assume circular padding in all proofs.
+The kernel tensor of the convolution is denoted $\kernel{K} \in \KbbfS$, while $x \in \RR^{c_i \times h \times w}$ denotes the input tensor. We describe the convolution operation with three equivalent notations:
+\begin{align}
+    y = \kernel{K} \convker{s} x & \quad  \text{(Kernel notation)} \label{def_convker}\\
+    \toepvec{y} = \toepstride{s} \toep{K} \toepvec{x} & \quad  \text{(Toeplitz notation)} \label{def_convtoep} \\
+    y = \convcode{K}{x}{s} &  \quad \text{(Code notation)} \label{def_convcode}
+\end{align}
+
+\Cref{def_convker} defines the convolution operation with kernel $\kernel{K}$ and stride $s$ applied on $x$. \Cref{def_convtoep} highlights that this convolution is equivalent to a linear operation defined by a matrix product between a Toeplitz matrix $\toep{K} \in \KkS$ and a vector $\toepvec{x} \in \RR^{c_i hw}$, which is obtained by flattening $x$. The striding operation is represented by a masking diagonal matrix $\toepstride{s} \in \RR^{c_o \frac{h}{s} \frac{w}{s} \times c_o hw}$ with ones on the selected entries and zeros elsewhere. When $s=1$, we have $\toepstride{1} = \toepid$, the identity matrix (with kernel $\kernelid$). \Cref{def_convcode} shows these notations in pseudo-code form.
+
+\begin{definition}[\Bconv{} $\mathbconv$\footnote{Initially denoted by \cite{li_preventing_2019} as $\square$}]  
+    The \Bconv, denoted as $\kernel{B} \mathbconv \kernel{A}$, computes the equivalent kernel of the composition of two convolutional kernels, $\kernel{A}$ and $\kernel{B}$, enabling their combined effect without performing each convolution separately.
+    \begin{align}
+        (\kernel{B} \mathbconv \kernel{A}) \convker{s} x = \kernel{B} \convker{s} (\kernel{A} \convker{1} x ) \label{def_blocker}\\
+        \toepstride{s} (\toep{B} \toep{A}) \toepvec{x} = (\toepstride{s} \toep{B}) \toep{A} \toepvec{x} \label{def_bloctoep} \\
+        \shortconvcode{B \mathbconv A}{x}{s} = \shortconvcode{B}{\shortconvcode{A}{x}{1}}{s} \label{def_bloccode}
+    \end{align}
+\end{definition}
+\noindent This operator assumes that the number of input channels of the second convolution $\kernel{B}$ matches the number of output channels of the first convolution $\kernel{A}$ (condition denoted as $\compat{A}{B}$). Given $\kernel{A} \in \RR^{c_{int} \times c_i \times k_1^A \times k_2^A}$ and $\kernel{B} \in \RR^{c_o \times c_{int} \times k_1^B \times k_2^B}$, then $\kernel{B} \mathbconv \kernel{A} \in \RR^{c_o \times c_i \times (k_1^A + k_1^B - 1) \times (k_2^A + k_2^B - 1)}$. 
+The computation of \Bconv{} kernel weights is given by:
+\begin{equation}
+\label{eq:blockconv}
+   {(\kernel{B} \mathbconv \kernel{A})}_{m,n,i,j} = \sum_{c = 0}^{c_{int}-1} \sum_{i' = 0}^{k_1^B - 1} \sum_{j' = 0}^{k_2^B - 1} \kernel{B}_{m,c,i',j'} \cdot \kernel{A}_{c,n,i - i',j - j'} 
+\end{equation}
+where $\kernel{A}$ is zero-padded, i.e., $\kernel{A}_{c,n,i,j} = 0$ if $i \notin [0, k_1^A[$ or $j \notin [0, k_2^A[$. While a classic result, for completeness, we provide the proof for 1D convolution kernels in \cref{sec:ap_proofs_mathbconv}. This operator $\mathbconv$, using matrix products between order 4 tensors, should not be confused with standard convolution, which takes a 4-dimensional tensor and a 3-dimensional input tensor. The complexity of these weight computations is $\mathcal{O}(c_o c_i c_{int} \prod\limits_{p=1}^{2} (k_p^A + k_p^B - 1) k_p^B)$, necessitating an efficient implementation, detailed in  \cref{subsec:bconv_implem}.
+
+    \paragraph{\Bconv{} and Orthogonality:} We will recall the definition of an orthogonal convolution, using \cref{def_bloctoep} and the definition of an orthogonal matrix:
+
+    \begin{definition}[Orthogonal Convolution]\label{def:orthogonal}  
+        A convolution defined by \cref{def_convtoep} is row/column orthogonal iff:
+        \begin{align*}
+            (\toepstride{s} \toep{K})(\toepstride{s} \toep{K})^T = \toepid & \quad \text{(row orthogonal)} \\
+            (\toepstride{s} \toep{K})^T(\toepstride{s} \toep{K}) = \toepid & \quad \text{(column orthogonal)}
+        \end{align*}
+    \end{definition}
+        The type of orthogonality (row or column) is determined by the larger dimension of the matrix in the toeplitz notation (\cref{def_convtoep}). When $c_i s^2 > c_o$, $\toepstride{s} \toep{K}$ is column orthogonal \cite{achour2023existencestabilityscalabilityorthogonal}. When $c_i s^2 = c_o$, $\toepstride{s} \toep{K}$ is a square matrix, and the two conditions are equivalent. Unless explicitly stated, we will use the term orthogonal to refer to row (resp. column) orthogonal. Finally, when $s=1$, the condition on the Toeplitz matrices is equivalent to $\kernel{K} \mathbconv \kernel{K}^T = \kernelid$ (resp. $\kernel{K}^T \mathbconv \kernel{K} = \kernelid$). A formal definition of $\kernel{K}^T$ can be found in  \cref{def_transpose}.
+    
+    Through this paper, we leverage the \Bconv{} property to compute implicitly the composition of convolutions. This operation preserves orthogonality when the following requirement is met:
+    
+    \begin{proposition}[Composition of Orthogonal Convolutions]\label{prop:composition_ortho}  
+        The composition of two row orthogonal convolutions is a row orthogonal convolution:
+        \[
+            \toep{A} \toep{A}^T = \toepid \quad \text{and} \quad \toep{B} \toep{B}^T = \toepid \implies \toep{AB}(\toep{AB})^T = \toepid
+        \]
+        The same applies to two column orthogonal convolutions.
+    \end{proposition}
+    The proof is straightforward using the Toeplitz notation and matrix multiplications. Note that, the composition of a row orthogonal with a column orthogonal convolution is, in general, not orthogonal. This will significantly influence the construction of AOC convolutions.

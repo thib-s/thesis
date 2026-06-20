@@ -1,0 +1,21 @@
+% \begin{itemize}
+%     \item we handle all extensions together: ie a strided, dilated, grouped convtranspose
+%     \item  beyond the application to this method: it's a powerfull tool to improve many existing methods cf appendix with improvements of SOC (6x less memory) SLL (unlock stride / channel change), Sandwish layers (order of magnitude on convolutions).
+% \end{itemize}
+%We introduced AOC, a method to build orthogonal convolutions that support features like stride, transposition, groups, and dilation. 
+%
+% \vspace{-2mm}
+In this paper, we introduced AOC, a method that combines two existing approaches in order to build orthogonal convolutions that support essential features such as stride, transposition, groups, and dilation. Our results demonstrate that this layer is both expressive and scalable.
+%
+%We also showed that this layer is expressive and scales well. Beyond this, our framework can enhance other existing layers: in  \cref{sec:ap_improving_existing}, we combine our method with SLL~\cite{araujo_unified_2023} to build a downsampling residual block, propose an improvement to reduce SOC~\cite{singla_fantastic_2021} memory consumption or suggest a way to make Sandwich layers~\cite{wang_direct_2023} scalable for convolutions.
+Beyond its standalone benefits, our framework enhances existing layers: In \cref{sec:ap_improving_existing}, we integrate our method with SLL \cite{araujo_unified_2023} to build an efficient downsampling residual block, propose optimizations to reduce the memory footprint of SOC \cite{singla_fantastic_2021}, and present a strategy to make Sandwich layers \cite{wang_direct_2023} scalable for convolutions.
+%
+%Also, although our experiments used AOC in isolation, we think this layer is intended to be seamlessly combined with other methods, such as SLL, where each approach's strengths can amplify the other's capabilities.
+%We believe this work opens new paths for advancing modern convolutional architectures. 
+Besides, AOC, by unlocking features such as transposition, grouping, or dilation, paves the way for future work leveraging orthogonality in varied architectures and applications, such as upsampling convolutions for U-Nets~\cite{ronneberger2015u}, VAEs~\cite{kingma2013auto},  WGANs and Optimal transport ~\cite{arjovsky2017wasserstein,bethune2024deep}, or reduced complexity ~\cite{li2018csrnet,xie2017aggregated}. 
+In support of further research and development, we open sourced our implementation in the \fulllibname{} library.
+
+
+%
+%We believe that this unlocks future exploration of modern convolutional architectures. As a part of our contributions lie in its implementation, we made it available \libname, fostering future research and improvements.
+%inviting future research and improvements.

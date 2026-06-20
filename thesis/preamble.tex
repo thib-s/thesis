@@ -2,14 +2,167 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{amsmath, amssymb, amsthm}
-\usepackage{graphicx}
-\usepackage{hyperref}
-\usepackage{cleveref}
-
 % Optional: BibLaTeX configuration
-% \usepackage[backend=biber,style=numeric]{biblatex}
-% \addbibresource{references.bib}
+\usepackage[backend=biber,style=numeric]{biblatex}
+\addbibresource{references.bib}
 
 % Custom macros and mathematical notation
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\E}{\mathbb{E}}
+%
+% --- inline annotations
+%
+% \usepackage[dvipsnames]{xcolor}
+% \newcommand{\red}[1]{{\color{red}#1}}
+% \newcommand{\todo}[1]{{\color{red}#1}}
+% \newcommand{\TODO}[1]{\textbf{\color{red}[TODO: #1]}}
+% --- disable by uncommenting  
+% \renewcommand{\TODO}[1]{}
+% \renewcommand{\todo}[1]{#1}
+
+\usepackage{xcolor}
+
+\definecolor{lightindigo}{RGB}{242, 244, 255}
+\definecolor{lightanthracite}{RGB}{252, 252, 255}
+\definecolor{blueanthracite}{RGB}{61,71,94}
+\definecolor{dark}{RGB}{31,31,31}
+\definecolor{indigo}{RGB}{63, 81, 181}
+\definecolor{red}{RGB}{210, 40, 95} 
+\definecolor{pink}{RGB}{236, 64, 122}
+\definecolor{green}{RGB}{46, 182, 125}
+\definecolor{blue}{RGB}{66, 133, 244}
+\definecolor{yellow}{RGB}{236, 178, 46}
+\definecolor{anthracite}{RGB}{10, 4, 6}
+\definecolor{gold}{RGB}{182, 131, 76}
+\definecolor{lightgrey}{RGB}{128, 128, 128}
+\definecolor{primary}{RGB}{40, 53, 147}
+\definecolor{confcolor}{RGB}{63,81,181}
+\definecolor{lightpink}{RGB}{252, 228, 236}
+\definecolor{lightyellow}{RGB}{255, 253, 231}
+\definecolor{teal}{RGB}{56,173,169}
+\definecolor{beige}{RGB}{251,241,216}
+\definecolor{temp}{RGB}{16,11,38}
+\definecolor{teal}{RGB}{10, 126, 140}
+
+
+\usepackage{graphicx}
+% \usepackage{subfigure}
+\usepackage{subcaption}
+\usepackage{booktabs} % for professional tables
+\usepackage{microtype}
+% \usepackage{graphicx}
+% \usepackage{subfigure}
+% \usepackage{booktabs} % for professional tables
+
+
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{wrapfig} % For wrapping figures and tables
+\usepackage{enumitem}
+
+\usepackage{pifont}
+\newcommand{\cmark}{\textcolor{green}{\ding{51}}} % Check mark symbol
+\newcommand{\xmark}{\textcolor{red}{\ding{55}}} % Cross mark symbol
+% \usepackage{stfloats}
+\newcommand{\capprox}{\textcolor{orange}{\approx}}
+
+
+% For theorems and such
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsthm}
+\usepackage{ulem}
+% \usepackage{algorithm}
+% \usepackage{algpseudocode}
+\usepackage{algorithm}
+% \usepackage{algorithmicx}
+\usepackage{algpseudocode}
+
+\usepackage{hyperref}
+%\usepackage[capitalize,noabbrev]{cleveref}
+\usepackage[capitalize]{cleveref}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% THEOREMS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\theoremstyle{definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+
+% Todonotes is useful during development; simply uncomment the next line
+%    and comment out the line below the next line to turn off comments
+\usepackage[disable,textsize=tiny]{todonotes}
+% \usepackage[textsize=tiny]{todonotes}
+
+\newif\ifshowcomments
+% \showcommentstrue % Comment this line to disable comments
+
+% Define the comment commands
+\ifshowcomments
+\newcommand{\thib}[1]{{\color{blue}[thib]: #1}}
+\newcommand{\agus}[1]{{\color{blue}[agus]: #1}}
+\newcommand{\fel}[1]{{\color{pink}[fel]: #1}}
+\newcommand{\franck}[1]{{\color{red}[franck]: #1}}
+\else
+\newcommand{\thib}[1]{}
+\newcommand{\agus}[1]{}
+\newcommand{\fel}[1]{}
+\newcommand{\franck}[1]{}
+\fi
+
+% \newcommand{\libname}{at \href{https://github.com/thib-s/orthogonium}{ \texttt{https://github.com/thib-s/orthogonium}}}
+\newcommand{\libname}{\href{https://github.com/deel-ai/orthogonium}{here}}
+\newcommand{\fulllibname}{\href{https://github.com/deel-ai/orthogonium}{Orthogonium}}
+% \newcommand{\libname}{ \href{https://anonymous.4open.science/r/orthogonium-DE07}{here}}
+
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\noyau}{\mathbf{K}}
+\newcommand{\Kbf}{\noyau}
+\newcommand{\KbfS}{\RR^{c_o\times c_i\times k\times k}}   
+\newcommand{\KbbfS}{\RR^{c_o\times c_i\times k_1\times k_2}}  
+% version 2D
+% \newcommand{\KbfS}{\RR^{c_o\times \frac{c_i}{g}\times k_1\times k_2}}    % version 2D
+\newcommand{\cKbf}{\text{conv}_{\noyau}}
+
+\newcommand{\Kk}{\mathcal{K}}
+%\newcommand{\KkS}{\RR^{c_o\frac{h}{s}\frac{w}{s} \times c_ihw}} 
+\newcommand{\KkS}{\RR^{c_ohw \times c_ihw}} 
+
+\newcommand{\flashlipschitz}{turbo-BCOP}
+
+\DeclareMathOperator{\Vect}{Vect}
+
+\newcommand{\Bconv}{Block-convolution}
+\newcommand{\compat}[2]{#1\Join#2}
+
+% \newcommand{\mathbconv}{\divideontimes} % or \botdot or \circledcirc \circledast \divideontimes
+\newcommand{\mathbconv}{\circledast} % or \botdot or \circledcirc \circledast \divideontimes
+\newcommand{\kernel}[1]{\mathbf{#1}}
+\newcommand{\kernelid}{\kernel{I}}
+\newcommand{\toep}[1]{\mathcal{#1}}
+\newcommand{\toepvec}[1]{\bar{#1}}
+\newcommand{\toepstride}[1]{\toep{S}_{#1}}
+\newcommand{\toepconv}[2]{\toep{S}_{#2}\toep{#1}}
+\newcommand{\toepid}{\toep{I}}
+\newcommand{\convcode}[3]{\mathtt{conv}_{#1}(#2, \mathtt{stride}=#3)}
+\newcommand{\shortconvcode}[3]{\mathtt{conv}_{#1}(#2, #3)}
+\newcommand{\convtrcode}[3]{\mathtt{ConvTranspose}_{#1}(#2, \mathtt{stride}=#3)}
+\newcommand{\convker}[1]{\star_{#1}}
+\newcommand{\RRkernel}[4]{\RR^{#1 \times #2 \times #3 \times #4}}
+
+% \widowpenalty=50     % default is 150, lower it to allow widows
+% \clubpenalty=50      % default is 150, lower it to allow orphans
+% \brokenpenalty=50    % default is 1000, allows breaks at hyphenated lines
+% \displaywidowpenalty=50  % default is 50, allows widows in displayed equations
+% \predisplaypenalty=50    % default is 10000, allows page breaks before displayed equations
+% % \setlength{\parskip}{-1pt}      % remove extra space between paragraphs
+% % \setlength{\parindent}{1em}    % reduce paragraph indentation if necessary
