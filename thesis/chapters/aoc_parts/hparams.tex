@@ -5,17 +5,17 @@
     \begin{tabular}{lcccc}
         \hline
         \textbf{Hyperparameter} 
-        & \textbf{CIFAR-10 Acc.} 
-        & \textbf{CIFAR-10 Rob.} 
-        & \textbf{ImageNet Acc.} 
-        & \textbf{ImageNet Rob.} 
+        & \makecell{\textbf{CIFAR-10}\\\textbf{Acc.}} 
+        & \makecell{\textbf{CIFAR-10}\\\textbf{Rob.}} 
+        & \makecell{\textbf{ImageNet}\\\textbf{Acc.}} 
+        & \makecell{\textbf{ImageNet}\\\textbf{Rob.}} 
         \\
         \hline
         \textbf{Loss function} 
         & Cosine similarity 
-        & \makecell{\cite{prach_almost-orthogonal_2022} \\ ($m= 1.5\sqrt{2}$, $\tau=0.125$)} 
+        & \makecell{\cite{prach_almost-orthogonal_2022} \\ $m= 1.5\sqrt{2}$ \\ $\tau=0.125$} 
         & Cosine similarity 
-        & \makecell{\cite{prach_almost-orthogonal_2022} \\ ($m= 1.5\sqrt{2}$, $\tau=0.125$)} 
+        & \makecell{\cite{prach_almost-orthogonal_2022} \\ $m= 1.5\sqrt{2}$ \\ $\tau=0.125$} 
         \\
         \textbf{Optimizer} 
         & \multicolumn{4}{c}{ScheduleFree \cite{defazio2024roadscheduled}} 
@@ -38,23 +38,23 @@
         & 90
         & 300
         \\
-        \textbf{Randaugment params} 
+        \makecell[l]{\textbf{RandAugment}\\\textbf{parameters}} 
         & m=6, n=2
         & m=6, n=1
         & m=7, n=2  
         & None
         \\
-        \textbf{Random crop params} 
+        \makecell[l]{\textbf{Random crop}\\\textbf{parameters}} 
         & scale = 0.25
         & scale = 0.5
         & scale = 0.5
         & scale = 0.08
         \\
-        \textbf{hardware} 
-        & RTX 3080 x 1
-        & RTX 4090 x 1
-        & RTX 4090 x 2
-        & RTX 4090 x 2
+        \textbf{Hardware} 
+        & RTX 3080 $\times$ 1
+        & RTX 4090 $\times$ 1
+        & RTX 4090 $\times$ 2
+        & RTX 4090 $\times$ 2
         \\
         \hline
     \end{tabular}

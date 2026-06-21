@@ -336,9 +336,8 @@ Orthogonium is available \href{https://github.com/deel-ai/orthogonium/}{here}.
     AOC kernel, removing complex-valued FFTs, making this layer efficient for large input images (e.g, $224 \times 224 $ ); details are given in
     \cref{sec:improving_sandwich}. This layer is still under development and will be available soon.
 
-    \begin{figure*}
+    \begin{table*}[ht]
         \centering
-    % \begin{table}[t]\centering
     \caption{Implemented convolutional layers in \Orthogonium.  All run on
     GPU, accept \texttt{stride}, \texttt{dilation}, \texttt{groups},
     \texttt{padding\_mode}, and have (when possible) parity with \texttt{nn.Conv2d}.}
@@ -348,15 +347,14 @@ Orthogonium is available \href{https://github.com/deel-ai/orthogonium/}{here}.
     \toprule
     Layer & Orthogonality & Key use-case & Internal method\\
     \midrule
-    AOC (\texttt{AdaptiveOrthoConv2d}) & exact & general CNN backbones & lifted BCOP / RKO\\
-    Adaptive-SOC & exact & depthwise / small kernel size & exponential skew filter\\
+    \makecell[l]{AOC\\(\texttt{AdaptiveOrthoConv2d})} & exact & general CNN backbones & lifted BCOP / RKO\\
+    Adaptive-SOC & exact & \makecell[c]{depthwise /\\small kernel size} & exponential skew filter\\
     AOL & $\le1$-Lip.\,($\approx$) & fast training & multi-step projection\\
     SLL / SLL-AOC & $\le1$-Lip.\,(tight) & residual blocks & AOL + SDP constraint\\
-    Sandwich-AOC & $\le1$-Lip.\,(tight) & tight Lipschitz estimation without orthogonality & AOC pair\\
+    Sandwich-AOC & $\le1$-Lip.\,(tight) & \makecell[c]{tight Lipschitz estimation\\without orthogonality} & AOC pair\\
     \bottomrule
     \end{tabular}
-    % \end{table}
-    \end{figure*}
+    \end{table*}
 
 
 \paragraph{Other Modules: Activations, Normalization, and Residual Blocks.}

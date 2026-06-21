@@ -198,7 +198,7 @@ In this section, we  outline the key steps in constructing orthogonal convolutio
     \begin{itemize}
         \item exponential: Although one of the most efficient methods, AOC use mainly rectangular matrices. This case was handled using padding, which made the method much slower and hindered optimization.
         \item Björck and Bowie \& QR: these methods perform similarly both in terms of speed and accuracy.
-        \item cholesky: is significantly faster in this setting but leads to a lower accuracy. The right graph shows that, in fine, advantages and drawbacks of this approach cancel each other out. However, our unit testing scheme has shown that AOC does not pass the unit tests described in  \cref{ap:unit_testing} with expected tolerance, needing a relaxed tolerance of $5\times 10^{-2}$.
+        \item cholesky: is significantly faster in this setting but leads to a lower accuracy. The right graph shows that, in fine, advantages and drawbacks of this approach cancel each other out. However, our unit testing scheme has shown that AOC does not pass the unit tests described in  \cref{sec:unit_testing} with expected tolerance, needing a relaxed tolerance of $5\times 10^{-2}$.
     \end{itemize}
     
     \begin{figure*}[ht]
@@ -209,103 +209,6 @@ In this section, we  outline the key steps in constructing orthogonal convolutio
     \end{figure*}
 
     Given these observations, we sticked to the original choice of Björck and Bowie algorithm, as it is GPU and mixed precision compliant. Thanks to our unit-testing scheme, we observed that once the matrix is constrained to be 1-Lipschitz, we can set $\beta=0.5$ (the maximum value for which convergence can be guaranteed). This allows us to lower the number of iterations to 12 without affecting orthogonality.
-
-\section{Empirical evaluation of the Lipschitz constant of our method} \label{ap:unit_testing}
-
-    \paragraph{Evaluating the Lipschitz constant of a network}
-    Beyond the creation of a constrained layer, the evaluation of the Lipschitz constant of a layer is by itself an active field: early work used fast Fourier transform to evaluate a lower bound of the Lipschitz constant of a convolutional layer with circular padding \cite{sedghi_singular_2019}. This work was later improved with a method that is quicker \cite{senderovich_towards_2022}, supports other types of padding \cite{grishina_tight_2024}, or allows the extraction of a larger part of the spectrum \cite{boroojeny_spectrum_2024}. The work of \cite{delattre2023efficient} \cite{delattre2024spectral} allows us to compute a certifiable upper bound efficiently under different types of padding.
-    It is worth recalling that inferring the global Lipschitz constant of a network given the Lipschitz constant of each layer is an NP-Hard problem\cite{virmaux2018lipschitz}. Then, \cite{pauli_lipschitz_2024,fazlyab_efficient_2019,wang2024scalability} aim to tackle using SDP (Semi-definite programming) tools. Our work can also contribute to this issue as the orthogonal layer allows a tighter product bound (ie. bound using the product of the Lipschitz constant of each layer to evaluate the constant of the whole network).
-
-    \paragraph{The need for an empirical evaluation of the Lipschitz constant of AOC.}
-
-    Despite the theoretical guarantees ensuring orthogonality in our construction, empirical checks are necessary to confirm implementation correctness. Such verification prevents two types of issues:
-    \begin{enumerate}
-        \item \textbf{Checking of numerical instabilities:} Issues arising from floating-point precision, such as those introduced by small epsilon values added to avoid division by zero.
-        \item \textbf{Checking for implementation discrepancies:} Differences between mathematical formalism and its translation to popular frameworks (e.g., SOC proofs assume circular padding, while its implementation uses zero padding).
-    \end{enumerate}
-
-    % Alongside the proofs that ensure that our construction is orthogonal, we must check that our implementation is correct. The two main sources of errors are often: 
-    % \begin{enumerate}
-    %     \item Numerical issues that might exploit floating point precision. A prime example is the computation of an inverse with an epsilon to avoid division by zero.
-    %     \item Discrepancies between the mathematical formalism and its implementation in popular frameworks. For instance, proofs done in the frequency domain assume circular padding, while code implementations in popular frameworks assume zero padding by default.
-    % \end{enumerate}  
-
-% \paragraph{Methods for Evaluation}
-
-% To ensure robustness, we employed two distinct methods:
-% \begin{enumerate}
-%     \item \textbf{Explicit SVD on Toeplitz Matrices:} Using the impulse response approach, we construct the Toeplitz matrix for any padding and stride, allowing direct computation of singular values. This method, though accurate, is computationally expensive for large input images.
-%     \item \textbf{Product Bound for BCOP and RKO Kernels:} The upper bound for the BCOP kernel is computed using standard methods, while the SVD of the reshaped RKO kernel is used for direct evaluation. The smallest singular value is derived via $\sigma_{\text{min}}(K) = \sigma_{\text{max}} - \sigma_{\text{max}}(\sigma_{\text{max}}I - K)$. This approach is exact when $\sigma_{\text{min}} = \sigma_{\text{max}} = 1$ and is suitable for scalable unit testing.
-% \end{enumerate}
-
-% \paragraph{Unit Testing for Implementation Validation}
-
-% We applied both methods in unit tests to verify orthogonality and correctness. The tests targeted the following sources of error:
-% \begin{itemize}
-%     \item Numerical instabilities from floating-point operations.
-%     \item Padding mismatches between theoretical proofs and practical implementations.
-% \end{itemize}
-
-% Additionally, we leveraged the orthogonality property for practical verification. For example:
-% \begin{equation}
-%     (S_s K)(S_s K)^T = I \quad \text{(row orthogonal)}
-% \end{equation}
-% This can be verified by composing a strided orthogonal convolution followed by its transposed counterpart.
-
-% \paragraph{Key Observations}
-
-% \begin{itemize}
-%     \item Tests were conducted for various kernel sizes, strides, dilations, input/output channels, and padding configurations. Each configuration was evaluated using both methods.
-%     \item Small 8x8 images were utilized for explicit Toeplitz construction to identify padding-related issues. A tolerance of $10^{-4}$ was maintained for singular value checks.
-%     \item All branches of our optimization tree (Fig. 2c in the main paper) were tested independently, confirming compatibility across parameter combinations.
-% \end{itemize}
-
-% In total, 1442 test cases were executed, divided as follows:
-% \begin{itemize}
-%     \item Block Convolution: 640 tests
-%     \item Standard Convolution: 418 tests (72 common CNN configurations, 150 for extended strides configurations, 24 for even kernel sizes, 24 for depthwise configurations, 100 for case where stride equals kernel size)
-%     \item Transposed Convolution: 384 tests
-%     \item RKO: 370 tests
-% \end{itemize}
-
-% These tests demonstrate the correctness and scalability of our implementation under diverse configurations, ensuring robust layer construction for practical deployment.
-
-    \paragraph{Checking the orthogonality of a layer under stride, group, transposition, and dilation conditions.}
-    The numerical stability and the convergence of an orthogonal layer is dependent on the training hyper-parameters: mainly the number of iterations used in most methods, but the learning rate and weight decay can also play a significant role. We then need an evaluation method that scales along with the convolution and that can be used at the end of each training. On the other hand, as scalable methods can be imperfect, we also need a method that computes very precise bounds without making any assumptions on the layer parameters (like padding, or stride). In order to overcome this, we tested our layers with two distinct methods:
-    \begin{enumerate}
-        \item  \textbf{Explicit SVD on Toeplitz Matrices:} Using the impulse response approach, we construct the Toeplitz matrix for any padding and stride, allowing direct computation of singular values. This method, though accurate, is computationally expensive for large input images. \todo{Talk about Delattre 2024 and Delattre 2023}
-        \item \textbf{Product Bound for BCOP and RKO Kernels:} The upper bound for the BCOP kernel is computed using standard methods, while the SVD of the reshaped RKO kernel is used for direct evaluation.
-        % \item Separate computation of min/max singular value of both the BCOP and RKO kernel. Usual methods can be applied to compute the upper bound of the BCOP kernel, while the SVD can be directly applied to the reshaped kernel from RKO. The smallest singular value can be computed with the same algorithm as $\sigma_{min}(\kernel{K}) = \sigma_{max} - \sigma_{max}(\sigma_{max} \kernelid - \kernel{K}) $ \thib{todo clean this}. While this approach uses the product bound, this method is exact if $\sigma_{min} = \sigma_{max} = 1$. This makes this approach suitable for unit testing and sanity checking of layers at scale.
-    \end{enumerate}
-
-    \paragraph{Unit testing of the implementation.} We used both of these two approaches in our unit tests. This enables us to ensure that the second method (which is faster and more scalable) is correct to check that our layer is effectively orthogonal. Also, our layer unlocks the use of the transposed convolution, which can be used to compute directly the equation of orthogonal layers:
-    \begin{align*}
-        (\toepstride{s} \toep{K})(\toepstride{s} \toep{K})^T &= \toepid \quad \text{(row orthogonal)} \\
-        \convcode{\kernel{K}}{\convtrcode{\kernel{K}}{x}{s}}{s} &= x
-    \end{align*}
-    Naturally, the other direction can also be verified for column orthogonal layers.
-
-    To follow the optimization depicted in \cref{fig:method_simplify}, we tested each branch independently. For each branch, we tested multiple values for kernel size, stride, dilation, input channels, and output channels. For the kernel size, along with standard configurations of $3 \times 3$ and $5 \times 5$ kernels, we also covered cases for $1 \times 1$ kernels and even-sized kernels. For input/output channels, we covered various values and all the inequalities discussed in this paper (for instance when $c_o > c_is^2$).
-    We ran similar tests for transposed convolution. As the computation of the singular values using the explicit construction of the Toeplitz matrix is quite expensive, we used it on small $8 \times 8$ images, this is also a good way to check for padding issues, as the kernel size is not negligible with respect to the image size. All the checks over the singular values for both methods were done with a tolerance of $1e^{-4}$. 
-
-    Finally, we tested independently the properties of the \Bconv{} and the batched \Bconv{}.
-
-    This amounts to 1442 tests that have the following repartition:
-    \begin{itemize}
-        \item block convolution: 640 tests
-        \item convolution: 418 tests
-        \begin{itemize}
-            \item common configurations in CNN: 72 tests
-            \item extended strided configurations: 150 tests
-            \item even kernel size: 24 tests
-            \item depthwise: 24 tests
-            \item kernel size = stride : 100 tests
-        \end{itemize}
-        \item conv transpose: 384 tests
-        \item RKO: 370 tests
-    \end{itemize}
-
-    This test bank was of precious use to confirm that all parameters can be combined together in practice. The total coverage of the library is 93\%.
 
 
 
@@ -704,7 +607,7 @@ Thus the convolution with dilation is equivalent to the application of the convo
     \begin{figure*}[ht]
         \centering    
         % \begin{subcaption}{\textbf{Architecture used for CIFAR-10 accurate setting.} This architecture makes use of its flexibility to allow performance with a limited parameter count.}[0.45\textwidth]
-        \begin{subfigure}[b]{0.45\textwidth}
+        \begin{subfigure}[b]{0.54\textwidth}
             \begin{tabular}{lrl}
                 \hline
                 \textbf{Layer Type} & \makecell{\textbf{Output}\\\textbf{Shape}} & \textbf{Config} \\ 
@@ -712,12 +615,12 @@ Thus the convolution with dilation is equivalent to the application of the convo
                 \textbf{Input}                             & [3, 32, 32]          &  \\ \hline
                 AOC                     & [256, 16, 16]        & stride=2 \\
                 \hline
-                \textbf{Block (Repeated Residuals)}        &                      &  \\
-                Residual Depthwise Block $\times$ 16       & [256, 16, 16]        & 3x3 kernel \\
+                \makecell[l]{\textbf{Residual Blocks}}        &                      &  \\
+                \makecell[l]{Residual Depthwise\\Block $\times$ 16}       & [256, 16, 16]        & 3x3 kernel \\
                 \hline
                 AvgPool2d                                  & [256]          &  \\
                 MaxMin                                     & [256]                &  \\
-                Fully Connected Layer                    & [10]                 &  \\
+                \makecell[l]{Fully Connected\\Layer}                    & [10]                 &  \\
                 \hline
             \end{tabular}
             % \caption{\textbf{Architecture used for cifar-10 accurate setting.} This architecture makes use of its flexibility to allow performance with a limited parameter count.}
@@ -725,7 +628,7 @@ Thus the convolution with dilation is equivalent to the application of the convo
         \end{subfigure}
         % \end{subcaption}
         \hfill
-        \begin{subfigure}[b]{0.45\textwidth}
+        \begin{subfigure}[b]{0.40\textwidth}
             \includegraphics[width=\linewidth]{figures/ch3_aoc/illustrations/ortho_block2.png}
             \caption{\textbf{We can construct complex blocks.} These blocks can reduce the number of parameters of our models, thanks to the flexibility of AOC. Lipschitz continuity is guaranteed when $\alpha \in [0, 1]$. }%\thib{todo missing alpha in skip connection}
             \label{fig:imagenet_block}
@@ -879,7 +782,7 @@ This explains the drastic difference between standard and robust networks in ter
 
     Experiments were conducted on a minimally modified ResNet-34 architecture, chosen for its compatibility with various orthogonal layers and its status as a standard benchmark for ImageNet training. The transition blocks were replaced by a single, strided convolution to maintain simplicity and ensure compatibility with existing orthogonal layers. For each method, we measured the average training and testing times over 100 batches and recorded peak memory consumption. Starting with a batch size of 128, we doubled the batch size incrementally until encountering an out-of-memory error. Each method’s performance was compared to a standard convolution baseline, with results reported as overhead percentages.
 
-    To ensure a fair comparison, the hyperparameters of SOC and Cayley were set to their default values. We adjusted the number of Björck iterations to the same values for BCOP and AOC. While originally set to 20 iterations, our unit testing scheme (see  \cref{ap:unit_testing}) shows that 12 iterations are sufficient to ensure a stable rank \cite{sanyalstable} of 99.9\% of the full rank. Finally, standard \texttt{Conv2D} is used with circular padding to evaluate the overhead induced by our parametrization rather than the overhead induced by the padding.
+    To ensure a fair comparison, the hyperparameters of SOC and Cayley were set to their default values. We adjusted the number of Björck iterations to the same values for BCOP and AOC. While originally set to 20 iterations, our unit testing scheme (see  \cref{sec:unit_testing}) shows that 12 iterations are sufficient to ensure a stable rank \cite{sanyalstable} of 99.9\% of the full rank. Finally, standard \texttt{Conv2D} is used with circular padding to evaluate the overhead induced by our parametrization rather than the overhead induced by the padding.
 
     We did not include non-orthogonal methods such as AOL, SLL, CPL and RKO \cite{prach_1-lipschitz_2023, araujo_unified_2023, meunier_dynamical_2022, serrurier_achieving_2021} as those are expected to be faster than AOC that add a stronger constraint. The continuum between orthogonal and non-orthogonal methods could be explored by reducing the number of Björck and Bowie iterations. However, the correct way to explore this should be with an experiment that grasp the 3 main aspects of those methods: speed (time per batch), trainability (number of batches to reach certain accuracy) and performance (final accuracy/robustness). This is beyond the scope of this work, and the work of \cite{prach_1-lipschitz_2023} is a relevant track to explore this question. %\thib{Todo: run an experiment with non-orthogonal methods and show that we compete with those}
 

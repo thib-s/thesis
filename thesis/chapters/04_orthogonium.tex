@@ -21,7 +21,7 @@
 
     \begin{figure}[t]
         \centering
-        \includegraphics[width=0.99\linewidth]{figures/ch4_orthogonium/orthogonium_fig_vert.png}
+        \includegraphics[width=0.99\linewidth]{figures/ch4_orthogonium/orthogonium__fig.png}
         \caption{\Orthogonium offers a standardized API to use, and create 1-Lipschitz layers, allowing a user to construct, test, and improve easily such a kind of network}
         \label{fig:bigpic}
     \end{figure}
@@ -106,9 +106,8 @@
     implements a multi-step variant, making use of the proximity between this approach and the Gram 
     iteration described by \cite{delattre2024spectral}. This variant allows a tighter normalization than the original method.
 
-    \begin{figure*}
+    \begin{table*}[ht]
         \centering
-    % \begin{table}[t]\centering
     \caption{Implemented convolutional layers in \Orthogonium.  All run on
     GPU, accept \texttt{stride}, \texttt{dilation}, \texttt{groups},
     \texttt{padding\_mode}, and have (when possible) parity with \texttt{nn.Conv2d}.}
@@ -118,15 +117,14 @@
     \toprule
     Layer & Orthogonality & Key use-case & Internal method\\
     \midrule
-    AOC (\texttt{AdaptiveOrthoConv2d}) & exact & general CNN backbones & lifted BCOP / RKO\\
-    Adaptive-SOC & exact & depthwise / small kernel size & exponential skew filter\\
+    \makecell[l]{AOC\\(\texttt{AdaptiveOrthoConv2d})} & exact & general CNN backbones & lifted BCOP / RKO\\
+    Adaptive-SOC & exact & \makecell[c]{depthwise /\\small kernel size} & exponential skew filter\\
     AOL & $\le1$-Lip.\,($\approx$) & fast training & multi-step projection\\
     SLL / SLL-AOC & $\le1$-Lip.\,(tight) & residual blocks & AOL + SDP constraint\\
-    Sandwich-AOC & $\le1$-Lip.\,(tight) & tight Lipschitz estimation without orthogonality & AOC pair\\
+    Sandwich-AOC & $\le1$-Lip.\,(tight) & \makecell[c]{tight Lipschitz estimation\\without orthogonality} & AOC pair\\
     \bottomrule
     \end{tabular}
-    % \end{table}
-    \end{figure*}
+    \end{table*}
 
     The following subsections detail how the block convolution operator enables concrete improvements to three existing methods.
 
@@ -187,7 +185,7 @@
 
     \begin{figure}[h]
         \centering
-        \includegraphics[width=0.9\linewidth]{figures/ch4_orthogonium/SLL_3.png}
+        \includegraphics[width=0.45\linewidth]{figures/ch4_orthogonium/SLL_3.png}
         \caption{\textbf{The $\mathbconv$ can be used to enable $s\neq 1$ and $c_i \neq c_o$ configurations on SLL.} The flexibility of the $\mathbconv$ allows for operations resulting in a block with a similar structure as the original ResNet block.}
         \label{fig:SLL}
     \end{figure}
@@ -224,7 +222,7 @@
 Beyond convolutions, \textbf{\Orthogonium} centralises the necessary layers needed to build \emph{fully} $1$-Lipschitz networks.
 
 \textbf{Activations.}  
-Five gradient-norm-preserving non-linearities are shipped in \texttt{custom\_activations}: \texttt{Abs}, \texttt{SoftHuber}, \texttt{MaxMin}, \texttt{HouseHolder}, and its second-order variant.  Each is unit-Lipschitz by construction; for the Householder family we patched the missing $1/\!\sqrt{2}$ scale factor, restoring $\sigma_{\max}(J)=1$ to machine precision (see \cref{ap:unit_testing}).  Detailed APIs appear in the online docs.
+Five gradient-norm-preserving non-linearities are shipped in \texttt{custom\_activations}: \texttt{Abs}, \texttt{SoftHuber}, \texttt{MaxMin}, \texttt{HouseHolder}, and its second-order variant.  Each is unit-Lipschitz by construction; for the Householder family we patched the missing $1/\!\sqrt{2}$ scale factor, restoring $\sigma_{\max}(J)=1$ to machine precision (see \cref{sec:unit_testing}).  Detailed APIs appear in the online docs.
 
 \textbf{Normalization.}  
 Instead of BatchNorm—which destroys Lipschitz control—\Orthogonium offers \texttt{BatchCentering} and \texttt{LayerCentering}.  
@@ -256,18 +254,61 @@ Among the various strategies, \textit{ConcatResidual} splits the input along the
 
 \section{Unit testing of constrained layers} \label{sec:unit_testing}
 
-    
-     Despite theoretical guarantees, empirical verification remains crucial to detect (i) numerical instabilities (e.g., floating-point precision errors) and (ii) implementation discrepancies (e.g., padding mismatch, missing factor), ensuring orthogonality in practice. \va{ Parler rapidement de ce qui a été fait en dense ? / Dense pas de problème donc moins de test nécessaire}\thib{Cette phrase englobe dense/conv/non linear il y a quelques centaines de tests en dense aussi :-p} More details about our unit testing scheme are available in \cref{ap:unit_testing}.
+    \paragraph{Evaluating the Lipschitz constant of a Convolutional layer.}
+    Beyond the creation of a constrained layer, the evaluation of the Lipschitz constant of a layer is by itself an active field: early work used fast Fourier transform to evaluate a lower bound of the Lipschitz constant of a convolutional layer with circular padding \cite{sedghi_singular_2019}. This work was later improved with a method that is quicker \cite{senderovich_towards_2022}, supports other types of padding \cite{grishina_tight_2024}, or allows the extraction of a larger part of the spectrum \cite{boroojeny_spectrum_2024}. The work of \cite{delattre2023efficient} \cite{delattre2024spectral} allows us to compute a certifiable upper bound efficiently under different types of padding.
+    It is worth recalling that inferring the global Lipschitz constant of a network given the Lipschitz constant of each layer is an NP-Hard problem\cite{virmaux2018lipschitz}. Then, \cite{pauli_lipschitz_2024,fazlyab_efficient_2019,wang2024scalability} aim to tackle using SDP (Semi-definite programming) tools. Our work can also contribute to this issue as the orthogonal layer allows a tighter product bound (ie. bound using the product of the Lipschitz constant of each layer to evaluate the constant of the whole network).
 
-    \paragraph{Unit testing of convolutional layers.}
-    Orthogonality depends on training hyperparameters and convolution parameters (stride, group, dilation, transposition). We ensure correctness by combining two methods: (i) explicit SVD on Toeplitz matrices for precise validation on small inputs, and (ii) scalable spectral methods (from \texttt{conv.singular\_values}) for practical, large-scale validation (as it uses parametrization-aware optimizations). All tests maintain singular value tolerance ranging from $10^{-4}$ to $5e^{-3}$ (for some methods).
+    \paragraph{The need for an empirical evaluation of the Lipschitz constant of layers.}
+    Despite the theoretical guarantees ensuring orthogonality in our construction, empirical checks are necessary to confirm implementation correctness. Such verification prevents two types of issues:
+    \begin{enumerate}
+        \item \textbf{Checking of numerical Instabilities:} Issues arising from floating-point precision, such as those introduced by small epsilon values added to avoid division by zero.
+        \item \textbf{Checking for implementation discrepancies:} Differences between mathematical formalism and its translation to popular frameworks (e.g., SOC proofs assume circular padding, while its implementation uses zero padding, it is hard to determine how this difference affects the Lipschitz constant of such a layer).
+    \end{enumerate}
+
+    \paragraph{Checking the orthogonality of a layer under stride, group, transposition, and dilation conditions.}
+    Orthogonality is sensitive to convolutional parameters such as stride, groups, dilation, and transposition, as well as training hyperparameters like learning rate, weight decay, and orthogonalization iterations. To robustly validate orthogonality, we combine two complementary approaches: (i) explicit singular-value decomposition (SVD) on convolution-induced Toeplitz matrices, ensuring exactness for small-scale inputs, and (ii) scalable spectral norm estimation via \texttt{conv.singular\_values}, suitable for larger-scale practical validation. We thoroughly test diverse configurations—varying kernel sizes, strides, channel dimensions, and padding—ensuring all singular values remain within a stringent tolerance ranging from $10^{-4}$ to $5e^{-3}$ (for some methods).
+
+    The numerical stability and the convergence of an orthogonal layer is dependent on the training hyper-parameters: mainly the number of iterations used in most methods, but the learning rate and weight decay can also play a significant role. We then need an evaluation method that scales along with the convolution and that can be used at the end of each training. On the other hand, as scalable methods can be imperfect, we also need a method that computes very precise bounds without making any assumptions on the layer parameters (like padding, or stride). In order to overcome this, we tested our layers with two distinct methods:
     
-    We used both of these approaches in our unit tests. This enables us to ensure that the second method (which is faster and more scalable) is correct and effectively checks for layer orthogonality. We also added several unit tests to ensure that impossible theoretical configurations—as described in \cite{achour2022existence}—are rejected.
+    \textbf{Explicit SVD on Toeplitz Matrices:} Using the impulse response approach, we construct the Toeplitz matrix for any padding and stride, allowing direct computation of singular values. This method, though accurate, is computationally expensive for large input images (in spite of full parallelization of the matrix's construction).
+    
+    \textbf{Evaluation from the \texttt{conv.singular\_values} module:} We use the more scalable methods (like \cite{delattre2023efficient, delattre2024spectral, grishina_tight_2024}) from this module to check that the produced bounds from this module are valid.
+
+    \textbf{Product Bound for BCOP and RKO Kernels (AOC-specific):} For AOC layers, a third evaluation method decomposes the analysis into its BCOP and RKO components. The upper bound of the BCOP kernel is computed using standard spectral methods, while the SVD can be directly applied to the reshaped RKO kernel. Since orthogonality implies $\sigma_{\min} = \sigma_{\max} = 1$, this product bound is exact for orthogonal layers, making it suitable for efficient unit testing and sanity checking at scale.
+    
+    We used these approaches in our unit tests. This enables us to ensure that the scalable methods are correct to check that our layers are effectively orthogonal. We also added several unit tests to ensure that impossible theoretical configurations—as described in \cite{achour2022existence}—are rejected. Additionally, the availability of transposed convolutions allows direct verification of the orthogonality equation:
+    \begin{align*}
+        (\toepstride{s} \toep{K})(\toepstride{s} \toep{K})^T &= \toepid \quad \text{(row orthogonal)} \\
+        \convcode{\kernel{K}}{\convtrcode{\kernel{K}}{x}{s}}{s} &= x
+    \end{align*}
+    Naturally, the other direction can also be verified for column orthogonal layers.
+
+    We tested multiple values for kernel size, stride, dilation, input channels, and output channels. For the kernel size, along with standard configurations of $3 \times 3$ and $5 \times 5$ kernels, we also covered cases for $1 \times 1$ kernels and even-sized kernels. For input/output channels, we covered various relevant inequalities (for instance, when $c_o > c_is^2$ as indicated in \cite{achour2022existence}).
+    We ran similar tests for transposed convolution (to the extent of what PyTorch allows: notably, circular padding is not supported for transposed convolutions and could not be tested). Also, as the computation of the singular values using the explicit construction of the Toeplitz matrix is quite expensive, we used it on small $8 \times 8$ images; this is also a good way to check for padding issues, as the kernel size is not negligible with respect to the image size. All the checks over the singular values for both methods were done with a tolerance of $1e^{-4}$.
+
+    For AOC convolutional layers specifically, this amounts to 1442 tests with the following breakdown:
+    \begin{itemize}
+        \item block convolution: 640 tests
+        \item convolution: 418 tests
+        \begin{itemize}
+            \item common configurations in CNN: 72 tests
+            \item extended strided configurations: 150 tests
+            \item even kernel size: 24 tests
+            \item depthwise: 24 tests
+            \item kernel size = stride: 100 tests
+        \end{itemize}
+        \item conv transpose: 384 tests
+        \item RKO: 370 tests
+    \end{itemize}
 
     \paragraph{Unit testing of non-linear layers.}
-    To guarantee that activations and higher-order residual blocks do not silently violate the global $1$-Lipschitz constraint, we complement the linear checks described above with a non-linear test suite based on the empirical Jacobian (computed with automatic differentiation) computed on randomly sampled and optimized tensors. This verified that the optimizer updates kept the block weights within the desired constraints.
+    To guarantee that activations and higher-order residual blocks do not silently violate the global $1$-Lipschitz constraint, we complement the linear checks described above with a non-linear test-suite.  
+    For every candidate activation we sample small random tensors, build the full Jacobian with, and compute its spectral norm; checking $\max\sigma(J)\le1+10^{-4}$ and—when applicable— $\min\sigma(J)\ge1-10^{-4}$, certifying both $1$-Lipschitzness and orthogonality.  
+    A similar strategy is applied to parametrized layers such as SLL, CPL or AOL \cite{araujo_unified_2023, xiao_dynamical_2018, prach_almost-orthogonal_2022} with the difference that before and after ten optimization steps we re-measure their Jacobian's spectral norm and assert it never exceeds~$1$, ensuring that optimizer updates cannot drift the block outside the desired constraint.  
+    
+    Because the Jacobian scales quadratically with the number of activations, inputs are restricted to $8 \times 8$ images or $64$-d vectors—small enough for tractable SVD yet large enough to expose implementation bugs. Empirically, this design provokes failures in under three seconds on a laptop GPU and offers a pragmatic alternative to more expensive SDP-based constants.
 
-    \paragraph{Issues uncovered using unit-testing}
+    \paragraph{Issues uncovered using unit-testing.}
     Crucially, these tests uncovered a flaw in the original \emph{HouseHolder} activation \cite{singla_improved_2022}: the reflection missed a $1/\sqrt{2}$ normalization and was therefore $\sqrt{2}$-Lipschitz. Re-scaling the kernel collapses all singular values to $1\pm10^{-5}$, after which the layer satisfies our criteria.  
     
     Overall, this test bank was of precious use to confirm that all parameters can be combined in practice (i.e., A strided-grouped-transposed convolution with a dilation factor is still orthogonal). The library achieves 94\% test coverage overall.
@@ -279,5 +320,5 @@ Among the various strategies, \textit{ConcatResidual} splits the input along the
 
 \Orthogonium unifies a decade of advances in orthogonal and Lipschitz-constrained layers into a single, efficient, and comprehensive PyTorch library. By providing native support for strided, dilated, grouped, and transposed convolutions—alongside rigorous validation and optimized code—it significantly reduces implementation overhead, fosters reliable experimentation, and promotes adoption in critical applications such as certified robustness, generative modeling, and stable recurrent architectures. Furthermore, open-sourcing \Orthogonium facilitates rigorous testing and validation by the broader community, uncovering subtle implementation errors and enabling ongoing verification and improvements. \Orthogonium thus serves as a foundational resource, bridging theory and practice to enable scalable, robust, and provably stable deep learning architectures.
 
-\section*{Acknowledgements}
-This work was carried out within the DEEL project,\footnote{\url{https://www.deel.ai/}} which is part of IRT Saint Exupéry and the ANITI AI cluster. The authors acknowledge the financial support from DEEL's Industrial and Academic Members and the France 2030 program – Grant agreements n°ANR-10-AIRT-01 and n°ANR-23-IACL-0002.
+% \section*{Acknowledgements}
+% This work was carried out within the DEEL project,\footnote{\url{https://www.deel.ai/}} which is part of IRT Saint Exupéry and the ANITI AI cluster. The authors acknowledge the financial support from DEEL's Industrial and Academic Members and the France 2030 program – Grant agreements n°ANR-10-AIRT-01 and n°ANR-23-IACL-0002.

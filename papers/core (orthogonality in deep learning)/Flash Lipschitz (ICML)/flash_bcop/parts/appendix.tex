@@ -788,7 +788,7 @@ Thus the convolution with dilation is equivalent to the application of the convo
     \begin{figure*}[ht]
         \centering    
         % \begin{subcaption}{\textbf{Architecture used for CIFAR-10 accurate setting.} This architecture makes use of its flexibility to allow performance with a limited parameter count.}[0.45\textwidth]
-        \begin{subfigure}[b]{0.45\textwidth}
+        \begin{subfigure}[b]{0.54\textwidth}
             \begin{tabular}{lrl}
                 \hline
                 \textbf{Layer Type} & \makecell{\textbf{Output}\\\textbf{Shape}} & \textbf{Config} \\ 
@@ -796,12 +796,12 @@ Thus the convolution with dilation is equivalent to the application of the convo
                 \textbf{Input}                             & [3, 32, 32]          &  \\ \hline
                 AOC                     & [256, 16, 16]        & stride=2 \\
                 \hline
-                \textbf{Block (Repeated Residuals)}        &                      &  \\
-                Residual Depthwise Block $\times$ 16       & [256, 16, 16]        & 3x3 kernel \\
+                \makecell[l]{\textbf{Block}\\\textbf{(Repeated Residuals)}}        &                      &  \\
+                \makecell[l]{Residual Depthwise\\Block $\times$ 16}       & [256, 16, 16]        & 3x3 kernel \\
                 \hline
                 AvgPool2d                                  & [256]          &  \\
                 MaxMin                                     & [256]                &  \\
-                Fully Connected Layer                    & [10]                 &  \\
+                \makecell[l]{Fully Connected\\Layer}                    & [10]                 &  \\
                 \hline
             \end{tabular}
             % \caption{\textbf{Architecture used for cifar-10 accurate setting.} This architecture makes use of its flexibility to allow performance with a limited parameter count.}
@@ -809,7 +809,7 @@ Thus the convolution with dilation is equivalent to the application of the convo
         \end{subfigure}
         % \end{subcaption}
         \hfill
-        \begin{subfigure}[b]{0.45\textwidth}
+        \begin{subfigure}[b]{0.40\textwidth}
             \includegraphics[width=\linewidth]{flash_bcop/figs/illustrations/ortho_block2.png}
             \caption{\textbf{We can construct complex blocks.} These blocks can reduce the number of parameters of our models, thanks to the flexibility of AOC. Lipschitz continuity is guaranteed when $\alpha \in [0, 1]$. }%\thib{todo missing alpha in skip connection}
             \label{fig:imagenet_block}
