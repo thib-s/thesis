@@ -308,91 +308,7 @@ In this section, we  outline the key steps in constructing orthogonal convolutio
     This test bank was of precious use to confirm that all parameters can be combined together in practice. The total coverage of the library is 93\%.
 
 
-\section{Using the content of this paper to improve SLL, SOC, and Sandwich}\label{sec:ap_improving_existing}
 
-    In this section, we will explore how the content of this paper can be used to improve existing layers from the state of the art. %For SOC, we used the properties of the bloc convolution to improve the
-    
-    \subsection{Improving skew orthogonal convolution (SOC)} This method, introduced by \cite{singla_improved_2022} uses the fact that an exponential of a skew-symmetric matrix is orthogonal. The initial implementation builds a skew-symmetric kernel and computes the exponential convolution. However, without proper tools to compute the exponential of a convolution kernel, this exponential was computed implicitly for each input by using the Taylor expansion of the exponential (see \cref{eq:soc_implicit}).
-
-        \begin{theorem}[Explicit conv exponential]
-
-            We can use \cref{def_blocker} to compute explicitly the exponential of a kernel $\kernel{K}$:
-
-            \begin{align}
-                & x + \frac{\kernel{K}*x}{1!} + \frac{\kernel{K}*\kernel{K}*x}{2!} + \dots \label{eq:soc_implicit} \\
-                = & \left(Id + \kernel{K} + \frac{\kernel{K} \mathbconv \kernel{K}}{2!} + \frac{\kernel{K} \mathbconv \kernel{K} \mathbconv \kernel{K} }{3!} + \dots \right) * x \label{eq:soc_explicit}            
-            \end{align}
-        \end{theorem}
-
-         \Cref{eq:soc_explicit} shows that we can compute the exponential of a convolution kernel a single time, while the formulation in \cref{eq:soc_implicit} needs to be done for each input $x$. In other words, we can apply one conv instead of $n_{iter}$ convs. Note that the resulting kernel is then larger than the original one (as stated in  \cref{tab:big_picture}). In theory, this could unlock large speedups, but the gain is limited in practice as the implementation of convolution layers is optimized for small kernels and large images \cite{ding_scaling_2022}. However, the original implementation requires the storage of $n_{iter}$ maps, whereas our implementation only one. This, in practice, unlocks larger networks and batch sizes.
-
-        Also, it is possible to handle a change in the number of channels and striding using a similar approach as AOC layers.
-
-    \subsection{Improving SDP-based Lipschitz Layers (SLL)}
-        % \begin{wrapfigure}{r}{0.65\textwidth}
-    \begin{figure}[h]
-        \centering
-        \includegraphics[width=0.45\linewidth]{figures/ch3_aoc/illustrations/SLL_3.png}
-        \caption{\textbf{The $\mathbconv$ can be used to enable $s\neq 1$ and $c_i \neq c_o$ configurations on SLL.} The flexibility of the $\mathbconv$ allows for operations resulting in a block with a similar structure as the original ResNet block.}
-        \label{fig:SLL}
-    \end{figure}
-
-    SLL layer for convolutions, proposed in \cite{araujo_unified_2023}, is a 1-Lipschitz layer defined as:
-    \[
-        y = x - 2\kernel{K}^T \convker{} ( \sigma ( \kernel{K} \convker{} x + b ))
-    \]
-    Note that in the original paper, the equation is noted with product of two matrices $WT^{-\frac{1}{2}}$, for convolutions it represents toeplitz matrix, i.e. $WT^{-\frac{1}{2}} =  \toep{K}$.
-    
-    SLL layer does not natively support neither strides nor changes in the channel size.
-    We propose to use the $\mathbconv$ to derive a block, based on SLL, that supports stride and $c_i \neq c_o$, and can replace the strided convolutions of the residual branch in architectures like ResNet.  
-    
-    A natural first step is to append a strided convolution after a SLL block. This layer, $conv_{K_{post}}\circ SLL$, can then be fused in the SLL block thanks to  \cref{prop:bilinear}:
-    \begin{align*}
-        y =& \kernel{K}_{post} \convker{s} (x - 2\kernel{K}^T \convker{} ( \sigma ( \kernel{K} \convker{} x + b ))) \\
-        =&  \kernel{K}_{post} \convker{s} x - 2(\kernel{K}_{post} \mathbconv \kernel{K}^T) \convker{s} ( \sigma ( \kernel{K} \convker{} x + b ))) \\
-    \end{align*}
-    This allows to build a block based on SLL and that supports stride and channel changes. However, this creates an asymmetry between the convolution before the activation and the one after the activation (that has a larger kernel size). 
-    
-    We propose also to add a second convolution before the SLL block, $conv_{K_{post}}\circ SLL\circ conv_{K_{pre}}$allowing better control over the kernel size of each convolution:
-    \begin{align*}
-        y = &\kernel{K}_{post} \convker{s} \kernel{K}_{pre} \convker{} x \\
-        & - 2(\kernel{K}_{post} \mathbconv \kernel{K}^T) \convker{s} ( \sigma ( \kernel{K} \convker{} \kernel{K}_{pre} \convker{} x + b ))) \\
-        = &(\kernel{K}_{post} \mathbconv \kernel{K}_{pre}) \convker{s} x \\
-        & - 2(\kernel{K}_{post} \mathbconv \kernel{K}^T) \convker{s} ( \sigma ( (\kernel{K} \mathbconv \kernel{K}_{pre}) \convker{} x + b ))) \\
-    \end{align*}
-    
-    The proposed block is still a 1-Lipschitz layer (as a composition of 1-Lipschitz and orthogonal layers), and support efficiently strides and changes of kernel sizes.
-    A visual description is provided in \cref{fig:SLL}. This approach is more efficient than the explicit construction that uses 3 distinct convolutions, as kernels are merged once per batch, and intermediate activations of extra convolutions do not need to be stored backward. Typically, when $\kernel{K}$, $\kernel{K}_{pre}$ and $\kernel{K}_{post}$ are $2 \times 2$ convolutions, this results in a residual block with two $3 \times 3$ convolutions in one branch and a single $4 \times 4$ convolution (with stride 2) in the second. This is very similar to transition blocks found in typical residual networks.
-
-    % \paragraph{Improving Cayley\cite{trockman_orthogonalizing_2021}:} Cayley is a method that performs its orthgonalisation in the frequency domain using FFT. Hence our approach cannot be directly used to handle stride or changes in number of channels. However, by using \cref{def:orthogonal}, a change in the number of channel can be handle a-priori by dropping a part of the orthgonal weight matrix. Also the optimizations described in \cref{sec:implem} can be applied to handle striding (striding must be performed directly in Fourier domain in order to be efficient).
-
-    % \paragraph{Improving sandwich layers.} This approach aims to construct a 1-Lipschitz network globally rather than constraining each layer independently. In practice, this can be done either by I) adding constraints between layers or ii) creating layers that contain a non-linearity inside (a.k.a sandwich layers). However, sandwich layers requires an orthogonal matrix at its core. For convolutional layers, this is done by performing the orthogonalization of the layer in the Fourier domain (method from \cite{trockman_orthogonalizing_2021}) as shown in their algorithm 1:
-    \subsection{Improving Sandwich Layers}
-    Introduced by \cite{wang_direct_2023}, this approach aims to construct a 1-Lipschitz network globally rather than constraining each layer independently. In practice, this can be done either by (i) adding constraints between layers or (ii) creating layers that incorporate a non-linearity internally (a.k.a. sandwich layers). However, sandwich layers require an orthogonal matrix at their core. For convolutional layers, this is achieved by performing the orthogonalization of the layer in the Fourier domain, as described in the method from \cite{trockman_orthogonalizing_2021} and shown in their Algorithm 1.
-    \begin{algorithm}
-        \caption{Sandwich convolutional layer (from \cite{wang_direct_2023})}
-        \begin{algorithmic}[1]
-            \Require $h_\text{in} \in \mathbb{R}^{p \times s \times s}$, $P \in \mathbb{R}^{(p+q) \times q \times s \times s}$, $d \in \mathbb{R}^q$
-            \State $\hat{h}_\text{in} \gets \text{FFT}(h_\text{in})$
-            \State $\Psi \gets \text{diag}(e^d), \, \begin{bmatrix} \tilde{A} & \tilde{B} \end{bmatrix}^* \gets \text{Cayley}(\text{FFT}(P))$
-            \State $\hat{h}[:, i, j] \gets \sqrt{2} \tilde{B}[:, :, i, j] \hat{h}_\text{in}[:, i, j]$
-            \State $\hat{h} \gets \text{FFT}(\sigma(\text{FFT}^{-1}(\hat{h}) + b))$
-            \State $\hat{h}_\text{out}[:, i, j] \gets \sqrt{2} \tilde{A}[:, :, i, j] \Psi \hat{h}[:, i, j]$
-            \State $h_\text{out} \gets \text{FFT}^{-1}(\hat{h}_\text{out})$
-        \end{algorithmic}
-    \end{algorithm}
-
-    We can leverage AOC to construct the kernel of an orthogonal convolution, replacing the expensive operation performed in the Fourier domain. Thus, we can construct two kernels, $\kernel{A}$ and $\kernel{B}$, with appropriate constraints between the two and apply the rescaling and non-linearity directly in pixel space:
-    % We can leverage AOC to construct the kernel of an orthogonal convolution, replacing the expensive operation done in the Fourier domain. We can hence construct two kernels $\kernel{A}$ and $\kernel{B}$ with appropriate constraints and apply the rescaling and non-linearity directly in pixel space:
-    \[
-    h_\text{out} = \sqrt{2} \kernel{A}^\top \convker{} \Psi \sigma \left( \sqrt{2} \Psi^{-1} \kernel{B} \convker{} h_\text{in} + b \right)
-    \]
-    The use of the Fourier transform is costly for two reasons: first, it necessitates computation with complex values; and second, the cost of the operation depends on the input size, which can be prohibitive in large-scale settings with $224 \times 224$ images. Consequently, our approach can make such a layer more scalable.
-    % The use of the Fourier transform is costly for two reasons: first, it forces computation with complex values, and second, the cost of the operation depends on the input size which can be prohibitive in large-scale settings with $224\times 224$ images. Hence our approach can make such a layer more scalable.
-
-    % \paragraph{Improving other methods} beyond the aforementioned methods that can benefit non-trivial improvements, we can leverage our approach to improve many other orthogonal convolutional layers. We can notice that the BCOP component can be replaced by a given orthogonal layer, resulting in native striding on those layers. Similarly we can allow for groups, trnasposed convolution and dilation.
-
-    \subsection{Extending Applicability to other methods.} Beyond the previously discussed approaches that show meaningful opportunities for improvement, our method can enhance a wide range of orthogonal convolutional layers. Specifically, we can incorporate our framework into any alternative orthogonal layers, enabling native support for strides in those layers. Furthermore, our approach can unlock features such as grouped convolutions, transposed convolutions, and dilations, broadening its utility and adaptability.
 
 % \section{Convolutional arithmetic, a tutorial} \label{sec:ap_math}
 
@@ -866,7 +782,7 @@ This explains the drastic difference between standard and robust networks in ter
         \label{tab:cifar10_architecture_robust}
      \end{table}
 
-    All the architectures used in this paper aims to illustrate that despite its under-parametrization, AOC allows the construction of expressive architectures. All architectures only use AOC convolutions and standard blocks to ensure that performance can be attributed to the method. As underline in \cite{anil_sorting_2019} it is the combination of orthogonal layer and MaxMin activations that permits the construction of networks with a tight estimation of their Lipschitz constant. We then use MaxMin activation in all of our architectures. The reader interested in building 1-Lipschitz networks that use ReLU activations can refer to the work of \cite{araujo_unified_2023} and \cite{wang_direct_2023}. We describe interactions between AOC and these constructions in \cref{sec:ap_improving_existing}.
+    All the architectures used in this paper aims to illustrate that despite its under-parametrization, AOC allows the construction of expressive architectures. All architectures only use AOC convolutions and standard blocks to ensure that performance can be attributed to the method. As underline in \cite{anil_sorting_2019} it is the combination of orthogonal layer and MaxMin activations that permits the construction of networks with a tight estimation of their Lipschitz constant. We then use MaxMin activation in all of our architectures. The reader interested in building 1-Lipschitz networks that use ReLU activations can refer to the work of \cite{araujo_unified_2023} and \cite{wang_direct_2023}. We describe interactions between AOC and these constructions in \cref{sec:conv}.
 
     Some of our architectures use skip connections, since those do not construct 1-Lipschitz blocks, we add a learnable factor to correctly ensure the 1-Lipschitzness of the whole network. Given $f_1$ a $l_1$ Lipschitz function and $f_2$ a $l_2$ Lipschitz function, then $f = f_1 + f_2$ is $l_1 + l_2$ Lipschitz. Then the function:
     \[

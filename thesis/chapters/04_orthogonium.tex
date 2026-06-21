@@ -1,7 +1,283 @@
 \chapter{Orthogonium: A Unified Library for 1-Lipschitz Building Blocks}
 \label{ch:orthogonium}
 
+% ------------------------------------------------------------------
 \section{Introduction}
-\section{Library Architecture}
-\section{Components}
+\label{sec:intro}
+
+    % \paragraph{On the interest of 1-Lipschitz Networks.}
+    1-Lipschitz neural networks constrain transformations to preserve input norms, providing tight, certifiable robustness against adversarial attacks~\cite{szegedy_intriguing_2013, anil_sorting_2019}. Orthogonal layers reinforce the 1-Lipschitz constraint by requiring an exact unity constant in almost all directions, providing tighter global certification guarantees. Besides robustness, these layers benefit normalizing flows~\cite{kingma2018glow,behrmann2019invertible}, Wasserstein GANs~\cite{arjovsky2017wasserstein,gulrajani2017improved}, stable recurrent architectures~\cite{kiani_projunn_2022,qi_deep_isometric_2020,bansal2018gainorthogonalityregularizationstraining}, and physics-informed models. \va{Cite for Lipschitz PINN? Demander à Paul?}
+    %% condensed version
+    % Robustness against adversarial attacks remains a significant challenge in deep learning, closely linked to the Lipschitz constant of neural networks \cite{szegedy_intriguing_2013}. Networks constrained to be 1-Lipschitz—where transformations strictly preserve input vector norms—enable certified robustness bounds, enhancing resilience against adversarial perturbations \cite{anil_sorting_2019}. Orthogonal layers further enhance this by offering tighter certification bounds: while the overall Lipschitz constant of a sequence of layers is typically estimated as the product of individual layer constants—a bound often loose and whose exact computation is NP-hard \cite{virmaux2018lipschitz}—orthogonality ensures each layer's constant equals exactly one, significantly tightening global guarantees. Beyond adversarial robustness, orthogonal and 1-Lipschitz layers have proven beneficial in other domains, such as normalizing flows, simplifying likelihood computations \cite{kingma2018glow,behrmann2019invertible}, Wasserstein GANs by satisfying discriminator Lipschitz continuity constraints efficiently \cite{arjovsky2017wasserstein,gulrajani2017improved}, stabilizing deep and recurrent networks to mitigate gradient vanishing and explosion issues \cite{kiani_projunn_2022,qi_deep_isometric_2020,bansal2018gainorthogonalityregularizationstraining}, and supporting physics-informed neural networks requiring stability and conservation properties.
+    %% expanded version
+    % \paragraph{Provable Robustness and 1-Lipschitz Networks.}
+    % Robustness against adversarial attacks remains a critical challenge in deep learning. Early research demonstrated a strong link between adversarial robustness and a network's Lipschitz constant \cite{szegedy_intriguing_2013}, motivating the development of \emph{1-Lipschitz} networks—networks with Lipschitz constants rigorously constrained to one. Orthogonal layers naturally satisfy this constraint, allowing for precise calculation of certified robustness bounds \cite{anil_sorting_2019}. Beyond adversarial robustness, Lipschitz-constrained models have shown promise in diverse applications, such as Wasserstein GANs \cite{arjovsky2017wasserstein}, scalable differential privacy \cite{bethunedp}, adversarial conformal prediction \cite{massena2025efficient}, and guaranteeing solution uniqueness in classification tasks \cite{bethune_pay_2022}.
+    
+    % \paragraph{Improving Stability in Normalizing Flows and GANs.}
+    % Normalizing flows leverage invertible transformations to efficiently model complex data distributions. Orthogonal convolutions ensure these transformations maintain a computable, often constant, Jacobian determinant, simplifying likelihood computations and enhancing training efficiency \cite{kingma2018glow,behrmann2019invertible}. Similarly, in Wasserstein GANs (WGANs), orthogonality supports the critical Lipschitz continuity constraint of discriminator networks, eliminating the need for computationally expensive regularization strategies like weight clipping or gradient penalties \cite{arjovsky2017wasserstein,gulrajani2017improved}. Consequently, orthogonality significantly stabilizes training and improves generative quality \cite{brock2018large,muller2019orthogonal}.
+    
+    % \paragraph{Training Stability for Deep and Recurrent Networks.}
+    % Orthogonal matrices inherently preserve gradient norms during backpropagation, mitigating common training issues such as vanishing or exploding gradients, particularly prevalent in recurrent neural networks (RNNs) \cite{kiani_projunn_2022}. This stability allows models to effectively capture long-range dependencies in sequential data, directly benefiting tasks such as language modeling and speech recognition \cite{qi_deep_isometric_2020,bansal2018gainorthogonalityregularizationstraining}.
+
+    \begin{figure}[t]
+        \centering
+        \includegraphics[width=0.99\linewidth]{figures/ch4_orthogonium/orthogonium_fig_vert.png}
+        \caption{\Orthogonium offers a standardized API to use, and create 1-Lipschitz layers, allowing a user to construct, test, and improve easily such a kind of network}
+        \label{fig:bigpic}
+    \end{figure}
+    
+    \paragraph{Motivations.}
+    Over the last decade, the certifiable‑robustness community has produced an impressive toolbox of 1‑Lipschitz building blocks—orthogonal and norm‑controlled layers, specialized activations, residual schemes, and normalization layers. Unfortunately, these ingredients remain scattered across dozens of papers and repositories. For practitioners who simply "need a 1‑Lipschitz backbone''—be they working on Wasserstein GANs, stable RNNs, privacy‑preserving analytics, or safety‑critical perception—the landscape is opaque: Which methods are still maintained? Which supports modern CNN staples such as stride, dilation, grouping, or transposed convolutions? Which combinations scale to ImageNet?
+    
+    Constructing a truly 1‑Lipschitz network exacerbates the problem. Every layer in every branch must respect the global constraint, yet many recent proposals cover only the vanilla $3\times3$ convolution and ignore grouped, dilated, or strided variants that dominate contemporary architectures \cite{liu2022convnet, tan2019efficientnet, sandler2018mobilenetv2, ronneberger2015u}. In practice, researchers resort to copy‑pasting the original authors' code—sometimes years out of date—because re‑implementing and validating the underlying mathematics (let alone optimizing kernels) is prohibitively time‑consuming. Convolutional layers are a prime example: half a dozen orthogonalization schemes exist, but none has achieved field‑wide consensus, and their relative merits are hard to benchmark because no common interface or test‑bed exists.
+    
+    Training itself is also expensive. Certifiable objectives typically require longer schedules to converge, and per‑batch cost grows as soon as weights are iteratively projected or parameter matrices inflated for numerical stability. Here, implementation details matter: an efficient CUDA kernel or memory‑lean fusion can translate directly into larger batches, deeper models, or simply more optimization steps on the same hardware budget.
+    
+    These main points motivate \textbf{\Orthogonium}. By \textit{centralizing} published methods behind a unified PyTorch API, \textit{standardizing} their signatures and test coverage, and prioritizing \textit{efficient, scalable} kernels, the library (i) turns method comparisons into one‑liner swaps, (ii) lowers the entry-barriers for neighboring fields to adopt 1‑Lipschitz layers, and (iii) makes large‑scale experiments—ImageNet‑1K or semantic segmentation tasks—practically feasible.
+    
+    \paragraph{Our Contributions.}
+    To address these challenges, we introduce \textbf{\Orthogonium}, a unified, efficient library that combines theoretical rigor and practical implementation. Our main contributions are:
+    \begin{itemize}
+    \item \textbf{Unified, Explicit API:} A comprehensive, PyTorch-friendly implementation covering dense, convolutional, and hybrid orthogonal layers, explicitly constructed in the spatial domain for straightforward integration.
+    \item \textbf{Full Feature Parity:} Native support for essential convolutional operations—striding, dilation, transposition, and grouping—allowing seamless integration into modern network architectures.
+    \item \textbf{Efficient and Scalable Implementation:} Optimized kernels provide high performance, with minimal overhead (approximately 10\% slowdown) compared to unconstrained convolutions on large-scale benchmarks like ImageNet \cite{deng2009imagenet}.
+    \item \textbf{Cross-Fertilization and Flexibility:} \Orthogonium provides modularity to swiftly explore hybrid approaches, enhancing existing methods such as SOC, SLL, and Sandwich layers, promoting broader adoption.
+    \item \textbf{Extensive Validation and Testing:} Our rigorous unit testing identified and corrected subtle implementation errors in published repositories, improving reliability and correctness across all supported methods.
+    \end{itemize}
+    
+    By unifying orthogonality, flexibility, and computational efficiency, \Orthogonium represents a significant advancement, enabling researchers and practitioners to integrate orthogonal layers seamlessly into a wide variety of deep learning applications. The remainder of the paper is structured as follows: \cref{sec:dense} introduces our dense layer implementations, \cref{sec:conv} covers orthogonal convolutions, and \cref{sec:unit_testing} covers the approach we used to unit test all our layers. The issues identified in certain approaches underscore the importance of open source tools for safety-critical applications.
+    
+% ------------------------------------------------------------------
+\section{Dense Orthogonal Layers}
+\label{sec:dense}
+
+    \Orthogonium provides an efficient and flexible implementation of orthogonal dense layers with a straightforward, drop-in PyTorch interface, \verb|OrthoLinear|, supporting several orthogonalization methods. This approach simplifies integration into existing workflows and allows users to choose methods suited to their computational constraints and stability requirements. Below, we outline the supported methods and their characteristics:
+    
+    \paragraph{Unified API with \texttt{OrthoLinear}.}
+    The provided \verb|OrthoLinear| class extends \verb|torch.nn.Linear|, ensuring seamless integration into standard PyTorch models. It enforces orthogonality constraints through parameterizations registered via the customizable \verb|OrthoParams| object, which encapsulates both spectral normalization and orthogonalization methods.
+    
+    \paragraph{Supported Orthogonalization Methods.}
+    \Orthogonium supports five distinct orthogonalization algorithms, each appropriate for different scenarios: Björck–Bowie Iterative Projection, Exponential Map method, Modified Gram–Schmidt (QR Decomposition), Cayley Transform, Cholesky Decomposition. These parametrizations are fully compatible with the PyTorch \texttt{parametrize} API.
+    % \begin{itemize}
+    %     \item \textbf{Björck–Bowie Iterative Projection}: Iteratively projects matrices towards orthogonality, balancing efficiency and precision through adjustable iterations and convergence parameters. Ideal for scenarios requiring high precision with moderate computational cost.
+        
+        
+    %     \item \textbf{Exponential Map}: Constructs orthogonal matrices via the exponential of skew-symmetric matrices. This method allows smooth transitions between orthogonal states and provides a numerically stable way to maintain orthogonality.
+        
+    %     \item \textbf{Modified Gram–Schmidt (QR Decomposition)}: Employs a numerically stable QR decomposition to orthogonalize matrices explicitly. Suitable for scenarios requiring high numerical stability.
+        
+    %     \item \textbf{Cayley Transform}: Transforms skew-symmetric matrices into orthogonal matrices through the Cayley transform, which provides explicit orthogonal parameterizations and is computationally efficient when inversion caching is employed.
+        
+    %     \item \textbf{Cholesky Decomposition}: Leverages Cholesky factorization to orthogonalize matrices efficiently, particularly effective for matrices with favorable computational profiles. This method can be optimized further by ensuring numerical stability through additional diagonal adjustments.
+    % \end{itemize}
+    
+    \paragraph{Spectral Normalization.}
+    To ensure numerical stability and enforce Lipschitz constraints, spectral normalization via batched power iteration is applied optionally before orthogonalization. This preconditioning enhances the stability and convergence of the orthogonalization processes. Spectral normalization can also be used in a standalone way, leading to 1-Lipschitz layers.
+    
+    \paragraph{Flexibility and Extensibility.}
+    Users can easily customize orthogonalization and normalization methods through the \verb|OrthoParams| object. \Orthogonium provides several predefined configurations depending on the desired method.
+    
+    \paragraph{Implementation Efficiency.}
+    Implementation and efficiency are crucial factors in the selection of a layer. This is why \Orthogonium provides layers with some non-trivial modifications in order to be more scalable. 
+    
+    By providing a unified API and efficient implementations, \Orthogonium's dense orthogonal layers enable easy integration, rigorous validation, and high-performance execution in diverse deep learning applications.
+
+
+% ------------------------------------------------------------------
+\section{Orthogonal Convolutions}
+\label{sec:conv}
+    
+    \Orthogonium implements multiple classes of 1-Lipschitz and orthogonality-preserving
+    convolutions—allowing for a user to choose between exactness,
+    speed, and architectural flexibility— plus two 1-Lipschitz extensions
+    that embed the convolutions inside higher-order residual blocks.
+    Several of these layers directly build upon the block convolution operator $\mathbconv$ and the AOC framework introduced in \cref{ch:aoc}. This cross-fertilization—improving existing methods by incorporating tools from AOC—was a key motivation for developing a unified library.
+    Table~\ref{tab:conv_summary} summarizes their properties. As the exposed layers can differ significantly from their original implementations, original layers are available in the \texttt{legacy} module.
+
+    \paragraph{Adaptive Orthogonal Convolution (AOC).}
+    
+    \textbf{AOC} is the default constructor, \verb|AdaptiveOrthoConv2d|/\verb|ConvTranspose2d|, and generalizes BCOP kernels~\cite{li_preventing_2019} to \emph{any} kernel size, stride, dilation, groups natively (i.e, without resorting to     reshaping tricks or FFTs). Transposed convolutions are also supported natively. It is based on the method described in \cite{boissin2025adaptive}.  The layer materializes an explicit weight tensor whose forward path is a single call to \verb|torch.nn.Conv2d| This approach yields a \(\le1.13\times\) wall-time over plain \verb|Conv2d| on ImageNet-1k at batch size~256.
+     
+    \paragraph{Almost-Orthogonal Layers (AOL).}
+    When strict orthogonality is unnecessary, \verb|AOLConv2d| implements the almost-orthogonal method of Prach \& Lampert \cite{prach_almost-orthogonal_2022}.  The
+    re-parametriser is registered through PyTorch's
+    \verb|parametrize| API and guarantees a layer Lipschitz constant
+    \(\le1\), while remaining fast. \Orthogonium 
+    implements a multi-step variant, making use of the proximity between this approach and the Gram 
+    iteration described by \cite{delattre2024spectral}. This variant allows a tighter normalization than the original method.
+
+    \begin{figure*}
+        \centering
+    % \begin{table}[t]\centering
+    \caption{Implemented convolutional layers in \Orthogonium.  All run on
+    GPU, accept \texttt{stride}, \texttt{dilation}, \texttt{groups},
+    \texttt{padding\_mode}, and have (when possible) parity with \texttt{nn.Conv2d}.}
+    \label{tab:conv_summary}
+    \small
+    \begin{tabular}{lccc}
+    \toprule
+    Layer & Orthogonality & Key use-case & Internal method\\
+    \midrule
+    AOC (\texttt{AdaptiveOrthoConv2d}) & exact & general CNN backbones & lifted BCOP / RKO\\
+    Adaptive-SOC & exact & depthwise / small kernel size & exponential skew filter\\
+    AOL & $\le1$-Lip.\,($\approx$) & fast training & multi-step projection\\
+    SLL / SLL-AOC & $\le1$-Lip.\,(tight) & residual blocks & AOL + SDP constraint\\
+    Sandwich-AOC & $\le1$-Lip.\,(tight) & tight Lipschitz estimation without orthogonality & AOC pair\\
+    \bottomrule
+    \end{tabular}
+    % \end{table}
+    \end{figure*}
+
+    The following subsections detail how the block convolution operator enables concrete improvements to three existing methods.
+
+    \subsection{Adaptive-SOC: Improving Skew Orthogonal Convolution}
+    \label{sec:improving_soc}
+
+    Skew Orthogonal Convolution (SOC), introduced by \cite{singla_improved_2022}, exploits the fact that the exponential of a skew-symmetric matrix is orthogonal. The initial implementation builds a skew-symmetric kernel and computes the exponential convolution. However, without proper tools to compute the exponential of a convolution kernel, this exponential was computed implicitly for each input by using the Taylor expansion of the exponential (see \cref{eq:soc_implicit}).
+
+        \begin{theorem}[Explicit conv exponential]
+
+            We can use the block convolution operator \footnote{Block convolution operator allows to fuse the kernels of two convolutions to construct the kernel of a convolution equivalent to the composition of the two convolutions. It is defined in \cite{li_preventing_2019}, and an efficient implementation is available in \cite{boissin2025adaptive}} to compute explicitly the exponential of a kernel $\kernel{K}$:
+
+            \begin{align}
+                & x + \frac{\kernel{K}*x}{1!} + \frac{\kernel{K}*\kernel{K}*x}{2!} + \dots \label{eq:soc_implicit} \\
+                = & \left(Id + \kernel{K} + \frac{\kernel{K} \mathbconv \kernel{K}}{2!} + \frac{\kernel{K} \mathbconv \kernel{K} \mathbconv \kernel{K} }{3!} + \dots \right) * x \label{eq:soc_explicit}            
+            \end{align}
+        \end{theorem}
+
+         \Cref{eq:soc_explicit} shows that we can compute the exponential of a convolution kernel a single time, while the formulation in \cref{eq:soc_implicit} needs to be done for each input $x$. In other words, we can apply one conv instead of $n_{iter}$ convs. Note that the resulting kernel is then larger than the original one. In theory, this could unlock large speedups, but the gain is limited in practice as the implementation of convolution layers is optimized for small kernels and large images \cite{ding_scaling_2022}. However, the original implementation requires the storage of $n_{iter}$ maps, whereas our implementation only one. This, in practice, unlocks larger networks and batch sizes.
+
+        Also, it is possible to handle a change in the number of channels and striding using a similar approach as AOC layers.
+    
+    \Orthogonium's \verb|AdaptiveSOCConv2d|/\verb|ConvTranspose2d| implements this explicit formulation, stores the resulting kernel once per update (making its cost independent of the batch size), and supports grouped, dilated or transposed variants out-of-the-box. This method also relies on a normalization step. We used ``AOL'' instead of the original ``fantastic four''\cite{singla_fantastic_2021} approach, making the convergence quicker than the original method (3-4 iterations instead of the original 6).
+
+    \subsection{SDP-based Lipschitz Layers (SLL / SLL-AOC)}
+    \label{sec:improving_sll}
+
+    \cite{araujo_unified_2023} defined 1-Lipschitz residual blocks that bundle a
+    \(\sigma(\cdot)\)-non-linearity inside the convolution, while offering a tight Lipschitz normalization. We extended the original
+    \verb|SDPBasedLipschitzConv| to support groups and dilation.
+
+    The SLL convolutional layer is defined as:
+    \[
+        y = x - 2\kernel{K}^T \convker{} ( \sigma ( \kernel{K} \convker{} x + b ))
+    \]
+    Note that in the original paper, the equation is noted with product of two matrices $WT^{-\frac{1}{2}}$, for convolutions it represents toeplitz matrix, i.e. $WT^{-\frac{1}{2}} =  \toep{K}$.
+    
+    SLL layer does not natively support neither strides nor changes in the channel size.
+    We propose to use the $\mathbconv$ to derive a block, based on SLL, that supports stride and $c_i \neq c_o$, and can replace the strided convolutions of the residual branch in architectures like ResNet.  
+    
+    A natural first step is to append a strided convolution after a SLL block. This layer, $conv_{K_{post}}\circ SLL$, can then be fused in the SLL block thanks to block convolution operator \footnote{as defined in \cite{li_preventing_2019, boissin2025adaptive}}:
+    \begin{align*}
+        y =& \kernel{K}_{post} \convker{s} (x - 2\kernel{K}^T \convker{} ( \sigma ( \kernel{K} \convker{} x + b ))) \\
+        =&  \kernel{K}_{post} \convker{s} x - 2(\kernel{K}_{post} \mathbconv \kernel{K}^T) \convker{s} ( \sigma ( \kernel{K} \convker{} x + b ))) \\
+    \end{align*}
+    This allows to build a block based on SLL and that supports stride and channel changes. However, this creates an asymmetry between the convolution before the activation and the one after the activation (that has a larger kernel size). 
+    
+    We propose also to add a second convolution before the SLL block, $conv_{K_{post}}\circ SLL\circ conv_{K_{pre}}$ allowing better control over the kernel size of each convolution:
+    \begin{align*}
+        y = &\kernel{K}_{post} \convker{s} \kernel{K}_{pre} \convker{} x \\
+        & - 2(\kernel{K}_{post} \mathbconv \kernel{K}^T) \convker{s} ( \sigma ( \kernel{K} \convker{} \kernel{K}_{pre} \convker{} x + b ))) \\
+        = &(\kernel{K}_{post} \mathbconv \kernel{K}_{pre}) \convker{s} x \\
+        & - 2(\kernel{K}_{post} \mathbconv \kernel{K}^T) \convker{s} ( \sigma ( (\kernel{K} \mathbconv \kernel{K}_{pre}) \convker{} x + b ))) \\
+    \end{align*}
+    
+    The proposed block is still a 1-Lipschitz layer (as a composition of 1-Lipschitz and orthogonal layers), and support efficiently strides and changes of kernel sizes.
+    A visual description is provided in \cref{fig:SLL}. This approach is more efficient than the explicit construction that uses 3 distinct convolutions, as kernels are merged once per batch, and intermediate activations of extra convolutions do not need to be stored backward. Typically, when $\kernel{K}$, $\kernel{K}_{pre}$ and $\kernel{K}_{post}$ are $2 \times 2$ convolutions, this results in a residual block with two $3 \times 3$ convolutions in one branch and a single $4 \times 4$ convolution (with stride 2) in the second. This is very similar to transition blocks found in typical residual networks. The resulting \verb|SLLxAOCLipschitzResBlock| enables strides and channel changes similarly to ResNet downsampling blocks.
+
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=0.9\linewidth]{figures/ch4_orthogonium/SLL_3.png}
+        \caption{\textbf{The $\mathbconv$ can be used to enable $s\neq 1$ and $c_i \neq c_o$ configurations on SLL.} The flexibility of the $\mathbconv$ allows for operations resulting in a block with a similar structure as the original ResNet block.}
+        \label{fig:SLL}
+    \end{figure}
+
+    \subsection{Sandwich-AOC: Replacing Fourier-domain Orthogonalization}
+    \label{sec:improving_sandwich}
+
+    Introduced by \cite{wang_direct_2023}, this approach aims to construct a 1-Lipschitz network globally rather than constraining each layer independently. In practice, this can be done either by (i) adding constraints between layers or (ii) creating layers that incorporate a non-linearity internally (a.k.a. sandwich layers). However, sandwich layers require an orthogonal matrix at their core. For convolutional layers, this is achieved by performing the orthogonalization of the layer in the Fourier domain, as described in the method from \cite{trockman_orthogonalizing_2021} and shown in their Algorithm 1.
+    \begin{algorithm}
+        \caption{Sandwich convolutional layer (from \cite{wang_direct_2023})}
+        \begin{algorithmic}[1]
+            \Require $h_\text{in} \in \mathbb{R}^{p \times s \times s}$, $P \in \mathbb{R}^{(p+q) \times q \times s \times s}$, $d \in \mathbb{R}^q$
+            \State $\hat{h}_\text{in} \gets \text{FFT}(h_\text{in})$
+            \State $\Psi \gets \text{diag}(e^d), \, \begin{bmatrix} \tilde{A} & \tilde{B} \end{bmatrix}^* \gets \text{Cayley}(\text{FFT}(P))$
+            \State $\hat{h}[:, i, j] \gets \sqrt{2} \tilde{B}[:, :, i, j] \hat{h}_\text{in}[:, i, j]$
+            \State $\hat{h} \gets \text{FFT}(\sigma(\text{FFT}^{-1}(\hat{h}) + b))$
+            \State $\hat{h}_\text{out}[:, i, j] \gets \sqrt{2} \tilde{A}[:, :, i, j] \Psi \hat{h}[:, i, j]$
+            \State $h_\text{out} \gets \text{FFT}^{-1}(\hat{h}_\text{out})$
+        \end{algorithmic}
+    \end{algorithm}
+
+    We can leverage AOC to construct the kernel of an orthogonal convolution, replacing the expensive operation performed in the Fourier domain. Thus, we can construct two kernels, $\kernel{A}$ and $\kernel{B}$, with appropriate constraints between the two and apply the rescaling and non-linearity directly in pixel space:
+    \[
+    h_\text{out} = \sqrt{2} \kernel{A}^\top \convker{} \Psi \sigma \left( \sqrt{2} \Psi^{-1} \kernel{B} \convker{} h_\text{in} + b \right)
+    \]
+
+    In practice this is done by constructing an orthogonal kernel with twice the number of channels that is split into two kernels, namely $\kernel{A}$ and $\kernel{
+    B}$. This is expected to be more efficient since the use of the Fourier transform is costly for two reasons: first, it necessitates computation with complex values; and second, the cost of the operation depends on the input size, which can be prohibitive in large-scale settings with $224 \times 224$ images. Consequently, our approach can make such a layer more scalable. This layer is still under development and will be available soon.
+
+    \paragraph{Extending applicability to other methods.} Beyond the previously discussed approaches that show meaningful opportunities for improvement, the block convolution operator can enhance a wide range of orthogonal convolutional layers. Specifically, it can be incorporated into any alternative orthogonal layer, enabling native support for strides. Furthermore, it can unlock features such as grouped convolutions, transposed convolutions, and dilations, broadening its utility and adaptability.
+
+
+\paragraph{Other Modules: Activations, Normalization, and Residual Blocks.}
+Beyond convolutions, \textbf{\Orthogonium} centralises the necessary layers needed to build \emph{fully} $1$-Lipschitz networks.
+
+\textbf{Activations.}  
+Five gradient-norm-preserving non-linearities are shipped in \texttt{custom\_activations}: \texttt{Abs}, \texttt{SoftHuber}, \texttt{MaxMin}, \texttt{HouseHolder}, and its second-order variant.  Each is unit-Lipschitz by construction; for the Householder family we patched the missing $1/\!\sqrt{2}$ scale factor, restoring $\sigma_{\max}(J)=1$ to machine precision (see \cref{ap:unit_testing}).  Detailed APIs appear in the online docs.
+
+\textbf{Normalization.}  
+Instead of BatchNorm—which destroys Lipschitz control—\Orthogonium offers \texttt{BatchCentering} and \texttt{LayerCentering}.  
+Both subtract running means but leave variances untouched, so they preserve feature-map norms at inference; their implementation lives in \texttt{normalization.py}.
+
+% \Orthogonium offers different ways to build 1-Lipschitz residual blocks, i.e. merge $x$ and $f(x)$ while preserving the 1-Lispchitz property.}
+% \paragraph{Residual blocks.}
+% \Orthogonium ships a small zoo of \emph{1-Lipschitz} residual wrappers that can transform \emph{any} internal function $\mathrm{fn}$ (typically an orthogonal or SLL convolutional sub-network) into a globally constrained block without forfeiting the advantages of skip connections.  All wrappers are implemented as lightweight \texttt{torch.nn.Module}s and add \textless{}10 lines of overhead to a model definition:
+
+Since the usual residual connection is not 1-Lipschitz, \Orthogonium provides several lightweight residual wrappers designed to combine an arbitrary internal function $\mathrm{fn}$—typically an orthogonal convolution followed by non-linear activation—with a skip connection, ensuring that the resulting residual blocks remain exactly $1$-Lipschitz. These wrappers, implemented as minimal `torch.nn.Module` classes, preserve the benefits of skip connections while strictly enforcing global Lipschitz constraints.
+
+
+% \textbf{ConcatResidual} splits the input feature map in half along the channel axis, forwards the second half through $\mathrm{fn}$, and re-concatenates the untouched half.  Because concatenation composes norms by $\max(|\cdot|)$, the resulting block remains $1$-Lipschitz whenever $\mathrm{fn}$ is.
+
+% \textbf{L2NormResidual} outputs $\sqrt{\tfrac12 x^{2}+\tfrac12\mathrm{fn}(x)^{2}+\varepsilon}$ (with a small $\varepsilon$ for numerical stability), i.e.\ an $\ell_{2}$ averaging of the identity and the residual branch.  This construction is exactly $1$-Lipschitz, preserves sign information\franck{je comprends pas ce preserve le signe? ca preserve la norme pas le signe?}, and avoids the rank-doubling of channel concatenation.
+
+% \textbf{AdditiveResidual} forms a convex combination $\alpha x+\bigl(1-\alpha\bigr)\mathrm{fn}(x)$, where the scalar gate $\alpha$ is learned and squashed through a sigmoid. The sigmoid guarantees $\alpha \in [0,1]$ and therefore maintains a Lipschitz constant of 1 while letting the network interpolate continuously between a plain skip connection and its transformed counterpart. Similarly, PrescaledAdditiveResidual pre-multiplies the residual input by the same learnable gate $\alpha$ and then renormalises both branches by $1+\lvert\alpha\rvert$, yielding $ \frac{x+\mathrm{fn}(\alpha x)}{1+\lvert\alpha\rvert}. $ \franck{si $\alpha$ est tjrs sigmoide la valeur absolue est inutile,non?}\thib{ici alpha peut être libre}This variant retains the expressive gating of \texttt{AdditiveResidual} but allows a finer control of the gradient inside  $\mathrm{fn}$.
+
+Among the various strategies, \textit{ConcatResidual} splits the input along the channel dimension, applies a function $\mathrm{fn}$ to one half, and concatenates it back with the untouched half, ensuring the resulting block remains $1$-Lipschitz if $\mathrm{fn}$ is. \textit{L2NormResidual} combines the identity and residual branches using an $\ell_{2}$ average, specifically outputting $\sqrt{\tfrac12 x^{2}+\tfrac12\mathrm{fn}(x)^{2}+\varepsilon}$ (with small $\varepsilon$ for numerical stability), ensuring exact $1$-Lipschitz continuity. \textit{AdditiveResidual} and its variation, \textit{PrescaledAdditiveResidual}, form convex combinations of the identity and transformed branches using a learnable scalar gate $\alpha$: the former via interpolation $\alpha x + (1-\alpha)\mathrm{fn}(x)$ (with $\alpha$ constrained by a sigmoid), and the latter by premultiplying the input as $ \frac{x+\mathrm{fn}(\alpha x)}{1+\lvert\alpha\rvert}$, where $\alpha$ unconstrained.
+
+% \end{itemize}
+
+
+% % ------------------------------------------------------------------
+% \section{Performance Benchmarks}
+% \label{sec:perf}
+
+% ------------------------------------------------------------------
+
+\section{Unit testing of constrained layers} \label{sec:unit_testing}
+
+    
+     Despite theoretical guarantees, empirical verification remains crucial to detect (i) numerical instabilities (e.g., floating-point precision errors) and (ii) implementation discrepancies (e.g., padding mismatch, missing factor), ensuring orthogonality in practice. \va{ Parler rapidement de ce qui a été fait en dense ? / Dense pas de problème donc moins de test nécessaire}\thib{Cette phrase englobe dense/conv/non linear il y a quelques centaines de tests en dense aussi :-p} More details about our unit testing scheme are available in \cref{ap:unit_testing}.
+
+    \paragraph{Unit testing of convolutional layers.}
+    Orthogonality depends on training hyperparameters and convolution parameters (stride, group, dilation, transposition). We ensure correctness by combining two methods: (i) explicit SVD on Toeplitz matrices for precise validation on small inputs, and (ii) scalable spectral methods (from \texttt{conv.singular\_values}) for practical, large-scale validation (as it uses parametrization-aware optimizations). All tests maintain singular value tolerance ranging from $10^{-4}$ to $5e^{-3}$ (for some methods).
+    
+    We used both of these approaches in our unit tests. This enables us to ensure that the second method (which is faster and more scalable) is correct and effectively checks for layer orthogonality. We also added several unit tests to ensure that impossible theoretical configurations—as described in \cite{achour2022existence}—are rejected.
+
+    \paragraph{Unit testing of non-linear layers.}
+    To guarantee that activations and higher-order residual blocks do not silently violate the global $1$-Lipschitz constraint, we complement the linear checks described above with a non-linear test suite based on the empirical Jacobian (computed with automatic differentiation) computed on randomly sampled and optimized tensors. This verified that the optimizer updates kept the block weights within the desired constraints.
+
+    \paragraph{Issues uncovered using unit-testing}
+    Crucially, these tests uncovered a flaw in the original \emph{HouseHolder} activation \cite{singla_improved_2022}: the reflection missed a $1/\sqrt{2}$ normalization and was therefore $\sqrt{2}$-Lipschitz. Re-scaling the kernel collapses all singular values to $1\pm10^{-5}$, after which the layer satisfies our criteria.  
+    
+    Overall, this test bank was of precious use to confirm that all parameters can be combined in practice (i.e., A strided-grouped-transposed convolution with a dilation factor is still orthogonal). The library achieves 94\% test coverage overall.
+
+% ------------------------------------------------------------------
+
+
 \section{Conclusion}
+
+\Orthogonium unifies a decade of advances in orthogonal and Lipschitz-constrained layers into a single, efficient, and comprehensive PyTorch library. By providing native support for strided, dilated, grouped, and transposed convolutions—alongside rigorous validation and optimized code—it significantly reduces implementation overhead, fosters reliable experimentation, and promotes adoption in critical applications such as certified robustness, generative modeling, and stable recurrent architectures. Furthermore, open-sourcing \Orthogonium facilitates rigorous testing and validation by the broader community, uncovering subtle implementation errors and enabling ongoing verification and improvements. \Orthogonium thus serves as a foundational resource, bridging theory and practice to enable scalable, robust, and provably stable deep learning architectures.
+
+\section*{Acknowledgements}
+This work was carried out within the DEEL project,\footnote{\url{https://www.deel.ai/}} which is part of IRT Saint Exupéry and the ANITI AI cluster. The authors acknowledge the financial support from DEEL's Industrial and Academic Members and the France 2030 program – Grant agreements n°ANR-10-AIRT-01 and n°ANR-23-IACL-0002.

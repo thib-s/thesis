@@ -1,0 +1,145 @@
+\chapter{Orthogonium: Technical Details}
+\label{app:orthogonium}
+
+\section{Orthogonalization methods available for 2D weights matrices}
+\label{ap:matrix_orth_methods}
+\subsection{QR Factorization via Modified Gram–Schmidt}
+
+We implement the Modified Gram–Schmidt (MGS) algorithm \cite{LaPlace1820} for numerically stable QR factorization.  Starting from \(W=[w_i]_{i=0}^{C-1}\in\mathbb{R}^{C\times C}\), we orthogonalize one column at a time, correcting rounding errors at each step:
+
+% \begin{algorithm}[H]
+% \begin{algorithmic}[1]
+% \Require \(W = [w_i]_{i\in[0,C-1]}  \in \mathbb{R}^{C\times C}\)
+% \Ensure \(W = QR\), where \(Q\in\mathbb{O}(C)\) and \(R\) is upper triangular
+% \Procedure{Modified Gram–Schmidt}{\(W\)}
+%     \State \(w^c_i \gets w_i\) \Comment{Copy input columns}
+%     \For{\(j=0,\dots,C-1\)}
+%         \State \(r_{j,j} \gets \|w^c_j\|_2\)
+%         \State \(q_j \gets w^c_j / r_{j,j}\)
+%         \For{\(k=j+1,\dots,C-1\)}
+%             \State \(r_{j,k} \gets q_j^\top w^c_k\)
+%             \State \(w^c_k \gets w^c_k - r_{j,k}\,q_j\)
+%         \EndFor
+%     \EndFor
+%     \State \Return \((Q=[q_j], R)\)
+% \EndProcedure
+% \end{algorithmic}
+% \caption{QR via Modified Gram–Schmidt}
+% \label{alg:MGS}
+% \end{algorithm}
+
+To enforce a unique factorization and improve stability, we post-multiply \(Q\) by \(\operatorname{sign}(\operatorname{diag}(R))\) so that all diagonal entries of \(R\) are positive.
+
+\subsection{Cayley Transform}
+
+The Cayley transform \cite{Cayley_1846} maps any skew-symmetric \(A\) (\(A^T=-A\)) to an orthogonal \(Q\) via:
+\begin{align*}
+    Q = (I - A)(I + A)^{-1}
+\end{align*}
+For rectangular \(W\in\mathbb{R}^{M\times C}\,(M\ge C)\), we follow the partitioning and ``augmented'' Cayley of \cite{pauli2023lipschitz}:
+
+\begin{algorithm}[H]
+\begin{algorithmic}[1]
+\Require \(W\in\mathbb{R}^{M\times C}\)
+\Ensure \(\hat W\in\mathbb{R}^{M\times C}\), orthogonal columns
+\Procedure{Cayley Transform}{ W }
+    \State Partition \(W = \begin{bmatrix}U\\V\end{bmatrix}\), \(U\in\mathbb{R}^{C\times C}\)
+    \State \(A \gets U - U^T + V^T V\) \Comment{not strictly skew but yields correct block}
+    \State \(B \gets (I + A)^{-1}\)
+    \State \(\hat W_1 \gets B\,(I - A)\), \(\hat W_2 \gets -2\,V\,B\)
+    \State \(\hat W \gets [\,\hat W_1;\,\hat W_2\,]\)
+    \State \Return \(\hat W\)
+\EndProcedure
+\end{algorithmic}
+\caption{Augmented Cayley Transform}
+\label{alg:cayley}
+\end{algorithm}
+
+Matrix inversion can be a bottleneck, so in practice we cache and reuse factorizations where possible.
+
+\subsection{Exponential Map}
+
+Using the Lie-group exponential \(\exp(A)\) of a skew-symmetric \(A=W-W^T\) yields an orthogonal matrix since \(\exp(A)^T = \exp(-A)\).  We normalise \(A\) by its spectral norm to avoid overflow and truncate the power series after \(p\) terms \cite{singla_skew_2021}:
+
+\begin{algorithm}[H]
+\begin{algorithmic}[1]
+\Require \(W\in\mathbb{R}^{C\times C}\), \(p\in\mathbb{N}\)
+\Ensure \(\hat W = \exp(A)\) with \(A=-A^T\)
+\Procedure{Lipschitz Exponential}{W,p}
+    \State \(A \gets W - W^T\)
+    \State \(\hat A \gets A / \|A\|_2\) \Comment{spectral normalization}
+    \State \(\hat W \gets I_C\), \(\hat A_k \gets I_C\)
+    \For{\(k=1,\dots,p\)}
+        \State \(\hat A_k \gets \frac1k\,\hat A_k\,\hat A\)
+        \State \(\hat W \gets \hat W + \hat A_k\)
+    \EndFor
+    \State \Return \(\hat W\)
+\EndProcedure
+\end{algorithmic}
+\caption{Exponential Map with Spectral Normalization}
+\label{alg:EXP}
+\end{algorithm}
+
+This method parametrizes only \(\mathrm{SO}(C)\) and its accuracy depends on \(p\).
+
+\subsection{Cholesky Decomposition}
+
+Following \cite{hu_recipe_2023}, we form the Gram matrix \(C = W W^T + \varepsilon I\) (\(\varepsilon>0\) for PD), compute its Cholesky \(C = L L^T\), and solve
+\[
+  L\,\hat W = W \quad\Longrightarrow\quad \hat W = L^{-1} W,
+\]
+which enforces \(\hat W\,\hat W^T = I\).  This triangular solve is \(O(C^3)\) but highly tuned in modern BLAS libraries.
+
+\subsection{Björck–Bowie Iterative Projection}
+
+The Björck–Bowie algorithm \cite{bjorck1971iterative} finds the nearest orthogonal matrix by fixed-point iteration
+\[
+  W_{t+1} = (1+\beta)\,W_t - \beta\,W_t W_t^\top W_t,
+  \quad \beta\in\bigl(0,\tfrac12\bigr].
+\]
+With spectral normalization of \(W_0\) and \(\beta=\tfrac12\), convergence is fast: 12–25 iterations suffice in practice \cite{anil_sorting_2019}.  We reuse a cached power-iteration estimate of the top singular vector across updates to further accelerate each step.
+
+
+
+
+\section{Technical details of our unit testing scheme} \label{ap:unit_testing}
+
+    \paragraph{Evaluating the Lipschitz constant of a network}
+    \thib{PAragraph trop long et un peu hors du sujet du papier. Condenser voire supprimer (en ajoutant les citation dans ``the need for an empirical evaluation...'')}
+    % Assessing the Lipschitz constant of convolutional layers is crucial but challenging, as exact computation is NP-hard \cite{virmaux2018lipschitz}. Recent works propose efficient methods based on FFT \cite{sedghi_singular_2019, senderovich_towards_2022, grishina_tight_2024} or SDP-based upper bounds \cite{delattre2023efficient, pauli_lipschitz_2024, fazlyab_efficient_2019}. \Orthogonium complements these methods by offering tight, layer-wise constraints, facilitating more accurate global Lipschitz estimations.
+
+    Beyond the creation of a constrained layer, the evaluation of the Lipschitz constant of a layer is by itself an active field: early work used fast Fourier transform to evaluate a lower bound of the Lipschitz constant of a convolutional layer with circular padding \cite{sedghi_singular_2019}. This work was later improved with a method that is quicker \cite{senderovich_towards_2022}, supports other types of padding \cite{grishina_tight_2024}, or allows the extraction of a larger part of the spectrum \cite{boroojeny_spectrum_2024}. The work of \cite{delattre2023efficient} \cite{delattre2024spectral} allows us to compute a certifiable upper bound efficiently under different types of padding.
+    It is worth recalling that inferring the global Lipschitz constant of a network given the Lipschitz constant of each layer is an NP-Hard problem\cite{virmaux2018lipschitz}. Then, \cite{pauli_lipschitz_2024,fazlyab_efficient_2019,wang2024scalability} aim to tackle using SDP (Semi-definite programming) tools. Our work can also contribute to this issue as the orthogonal layer allows a tighter product bound (ie. bound using the product of the Lipschitz constant of each layer to evaluate the constant of the whole network).
+
+    \paragraph{The need for an empirical evaluation of the Lipschitz constant of layers.}
+     % Despite theoretical guarantees, empirical verification remains crucial to detect (i) numerical instabilities (e.g., floating-point precision errors) and (ii) implementation discrepancies (e.g., padding mismatch), ensuring orthogonality in practice.
+
+    Despite the theoretical guarantees ensuring orthogonality in our construction, empirical checks are necessary to confirm implementation correctness. Such verification prevents two types of issues:
+    \begin{enumerate}
+        \item \textbf{Checking of numerical Instabilities:} Issues arising from floating-point precision, such as those introduced by small epsilon values added to avoid division by zero.
+        \item \textbf{Checking for implementation discrepancies:} Differences between mathematical formalism and its translation to popular frameworks (e.g., SOC proofs assume circular padding, while its implementation uses zero padding, it is hard to determine how this difference affects the Lipschitz constant of such a layer).
+    \end{enumerate}
+
+
+    \paragraph{Checking the orthogonality of a layer under stride, group, transposition, and dilation conditions.}
+    % Orthogonality depends on training hyperparameters and convolution parameters (stride, group, dilation, transposition). We ensure correctness by combining two methods: (i) explicit SVD on Toeplitz matrices for precise validation on small inputs, and (ii) scalable spectral methods (\texttt{conv.singular\_values}) for practical, large-scale validation. All tests maintain singular value tolerance below $10^{-4}$ (or $10^{-4}$ for some layers).
+
+    Orthogonality is sensitive to convolutional parameters such as stride, groups, dilation, and transposition, as well as training hyperparameters like learning rate, weight decay, and orthogonalization iterations. To robustly validate orthogonality, we combine two complementary approaches: (i) explicit singular-value decomposition (SVD) on convolution-induced Toeplitz matrices, ensuring exactness for small-scale inputs, and (ii) scalable spectral norm estimation via \texttt{conv.singular\_values}, suitable for larger-scale practical validation. We thoroughly test diverse configurations—varying kernel sizes, strides, channel dimensions, and padding—ensuring all singular values remain within a stringent tolerance ranging from $10^{-4}$ to $5e^{-3}$ (for some methods).
+
+    The numerical stability and the convergence of an orthogonal layer is dependent on the training hyper-parameters: mainly the number of iterations used in most methods, but the learning rate and weight decay can also play a significant role. We then need an evaluation method that scales along with the convolution and that can be used at the end of each training. On the other hand, as scalable methods can be imperfect, we also need a method that computes very precise bounds without making any assumptions on the layer parameters (like padding, or stride). In order to overcome this, we tested our layers with two distinct methods:
+    
+    \textbf{Explicit SVD on Toeplitz Matrices:} Using the impulse response approach, we construct the Toeplitz matrix for any padding and stride, allowing direct computation of singular values. This method, though accurate, is computationally expensive for large input images (in spite of full parallelization of the matrix's construction).
+    
+    \textbf{Evaluation from the \texttt{conv.singular\_values} module:} We use the more scalable methods (like \cite{delattre2023efficient, delattre2024spectral, grishina_tight_2024}) from this module to check that the produced bounds from this module are valid.
+    
+    We used both of these two approaches in our unit tests. This enables us to ensure that the second method (which is faster and more scalable) is correct to check that our layer is effectively orthogonal. 
+
+    We tested multiple values for kernel size, stride, dilation, input channels, and output channels. For the kernel size, along with standard configurations of $3 \times 3$ and $5 \times 5$ kernels, we also covered cases for $1 \times 1$ kernels and even-sized kernels. For input/output channels, we covered various relevant inequalities (for instance, when $c_o > c_is^2$ as indicated in \cite{achour2022existence}).
+    We ran similar tests for transposed convolution (to the extent of what PyTorch allows: notably, circular padding is not supported for transposed convolutions and could not be tested). Also, as the computation of the singular values using the explicit construction of the Toeplitz matrix is quite expensive, we used it on small $8 \times 8$ images; this is also a good way to check for padding issues, as the kernel size is not negligible with respect to the image size. All the checks over the singular values for both methods were done with a tolerance of $1e^{-4}$. 
+
+    \paragraph{Unit testing of non-linear layers.}
+    To guarantee that activations and higher-order residual blocks do not silently violate the global $1$-Lipschitz constraint, we complement the linear checks described above with a non-linear test-suite.  
+    For every candidate activation we sample small random tensors, build the full Jacobian with, and compute its spectral norm; checking $\max\sigma(J)\le1+10^{-4}$ and—when applicable— $\min\sigma(J)\ge1-10^{-4}$, certifying both $1$-Lipschitzness and orthogonality.  
+    A similar strategy is applied to parametrized layers such as SLL, CPL or AOL \cite{araujo_unified_2023, xiao_dynamical_2018, prach_almost-orthogonal_2022} with the difference that before and after ten optimization steps we re-measure their Jacobian's spectral norm and assert it never exceeds~$1$, ensuring that optimizer updates cannot drift the block outside the desired constraint.  
+    
+    Because the Jacobian scales quadratically with the number of activations, inputs are restricted to $8 \times 8$ images or $64$-d vectors—small enough for tractable SVD yet large enough to expose implementation bugs. Empirically, this design provokes failures in under three seconds on a laptop GPU and offers a pragmatic alternative to more expensive SDP-based constants.
