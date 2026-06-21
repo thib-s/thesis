@@ -3,7 +3,119 @@
 
 \section{Introduction and Related Works}
 
-\input{chapters/aoc_parts/01_intro_related_works}
+
+% \iffalse
+% \begin{table*}[ht] 
+%     \centering 
+%     \begin{tabular}{lcp{18mm}p{14mm}p{15mm}p{10mm}p{16mm}cc} 
+%         \textbf{Method} & \textbf{Orthogonal} & \textbf{Equivalent Kernel Size} & \textbf{Code available} & \textbf{Change Channels} & \textbf{Stride} & \textbf{Conv Transpose} & \textbf{Groups} & \textbf{Dilation}\\
+%         \hline 
+%         BCOP \cite{singla_skew_2021} & \cmark & $k$ & \cmark & \cmark & $\capprox$ & \xmark & \xmark & \xmark \\
+%         SC-FAC \cite{su_scaling-up_2021} & \cmark & $k$ separable & \xmark & \cmark &  \cmark & $\capprox$ & \cmark & \cmark \\
+%         ECO \cite{yu_constructing_2021} & \cmark & $I_w \times I_h$ & \xmark & $\capprox$ & $\capprox$ & \xmark & \xmark & $\capprox$ \\
+%         Cayley \cite{trockman_orthogonalizing_2021} & \cmark & $I_w \times I_h$ & \cmark & $\capprox$ & $\capprox$ & $\capprox$ & \xmark & \xmark \\
+%         LOT \cite{xu_lot_2023} & \cmark & $I_w \times I_h$ & \cmark & \cmark & $\capprox$ & \xmark & \xmark & \xmark \\
+%         ProjUNN-T \cite{kiani_projunn_2022} & \cmark & $I_w \times I_h$ & \cmark & \xmark & \xmark & \xmark & \xmark & \xmark\\
+%         SLL \cite{araujo_unified_2023} & \xmark & composed & \cmark & \xmark & \xmark & \xmark & \xmark  & \xmark\\
+%         Sandwich \cite{wang_direct_2023} & \xmark & composed & \cmark & $\capprox$ & $\capprox$ & \xmark & \xmark  & \xmark\\
+%         AOL \cite{prach_almost-orthogonal_2022} & \xmark & $k$ & \cmark & \cmark & \cmark & \xmark & \xmark & \xmark \\
+%         SOC \cite{singla_skew_2021} & \cmark & $k + (n\frac{k}{2})$ & \cmark & $\capprox$ & $\capprox$ & \xmark & \xmark & \xmark \\
+%         \hline
+%         \textbf{AOC (Ours)} & \cmark & $k$ & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark \\
+%     \end{tabular}
+%     \caption{\textbf{Comparison of orthogonal convolution methods.} A check mark (\cmark) indicates full support for the feature, a cross mark (\xmark) indicates lack of support (in the implementation), and an approximate symbol ($\approx$) indicates partial support (emulation). Here, $k$ denotes the kernel size, and $I_w \times I_h$ represents the input dimensions. AOC is the first method to support strides, dilations, group convolution and transposed convolution. \vspace{-4mm}}
+%     \label{tab:big_picture}
+% \end{table*}
+
+% \fi
+
+\begin{table*}[ht] 
+    \centering 
+    \begin{tabular}{llp{17mm}cccccc} 
+        \textbf{Method} &\rotatebox[origin=c]{80}{\textbf{Orthogonal}} & \rotatebox[origin=c]{80}{\parbox[c]{16mm}{\centering \textbf{Equivalent Kernel Size}}} & \rotatebox[origin=c]{80}{\parbox[c]{16mm}{\centering \textbf{Code available}}} & \rotatebox[origin=c]{80}{\parbox[c]{16mm}{\centering \textbf{Change Channels}}} & \rotatebox[origin=c]{80}{\textbf{Stride}} & \rotatebox[origin=c]{80}{\parbox[c]{16mm}{\centering \textbf{Conv Transpose}}} & \rotatebox[origin=c]{80}{\textbf{Groups}} & \rotatebox[origin=c]{80}{\textbf{Dilation}}\\
+        \hline 
+        BCOP \cite{li_preventing_2019} & \cmark & $k$ & \cmark & \cmark & $\capprox$ & \xmark & \xmark & \xmark \\
+        SC-FAC \cite{su_scaling-up_2021} & \cmark & $k$ separable & \xmark & \cmark &  \cmark & $\capprox$ & \cmark & \cmark \\
+        ECO \cite{yu_constructing_2021} & \cmark & $I_w \times I_h$ & \xmark & $\capprox$ & $\capprox$ & \xmark & \xmark & $\capprox$ \\
+        Cayley \cite{trockman_orthogonalizing_2021} & \cmark & $I_w \times I_h$ & \cmark & $\capprox$ & $\capprox$ & $\capprox$ & \xmark & \xmark \\
+        LOT \cite{xu_lot_2023} & \cmark & $I_w \times I_h$ & \cmark & \cmark & $\capprox$ & \xmark & \xmark & \xmark \\
+        ProjUNN-T \cite{kiani_projunn_2022} & \cmark & $I_w \times I_h$ & \cmark & \xmark & \xmark & \xmark & \xmark & \xmark\\
+        SLL \cite{araujo_unified_2023} & \xmark & composed & \cmark & \xmark & \xmark & \xmark & \xmark  & \xmark\\
+        Sandwich \cite{wang_direct_2023} & \xmark & composed & \cmark & $\capprox$ & $\capprox$ & \xmark & \xmark  & \xmark\\
+        AOL \cite{prach_almost-orthogonal_2022} & \xmark & $k$ & \cmark & \cmark & \cmark & \xmark & \xmark & \xmark \\
+        SOC \cite{singla_skew_2021} & \cmark & $k + (n\frac{k}{2})$ & \cmark & $\capprox$ & $\capprox$ & \xmark & \xmark & \xmark \\
+        \hline
+        \textbf{AOC} \textbf{(Ours)} & \cmark & $k$ & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark \\
+    \end{tabular}
+    \caption{\textbf{Comparison of orthogonal convolution methods.} A check mark (\cmark) indicates full support for the feature, a cross mark (\xmark) indicates lack of support (in the implementation), and an approximate symbol ($\capprox$) indicates partial support (emulation). Here, $k$ denotes the kernel size, and $I_w \times I_h$ represents the input dimensions. The pip package of AOC provides an implementation supporting strides, dilations, group convolution and transposed convolution. This work also covers the conditions under which other methods could support those features.  
+}
+    \label{tab:big_picture}
+\end{table*}
+
+
+% \begin{table*}[ht] 
+%     \centering 
+%     \begin{tabular}{llcp{16mm}cccccc} 
+%         \textbf{Method} & &\rotatebox[origin=c]{80}{\textbf{Orthogonal}} & \rotatebox[origin=c]{80}{\parbox[c]{16mm}{\centering \textbf{Equivalent Kernel Size}}} & \rotatebox[origin=c]{80}{\parbox[c]{16mm}{\centering \textbf{Code available}}} & \rotatebox[origin=c]{80}{\parbox[c]{16mm}{\centering \textbf{Change Channels}}} & \rotatebox[origin=c]{80}{\textbf{Stride}} & \rotatebox[origin=c]{80}{\parbox[c]{16mm}{\centering \textbf{Conv Transpose}}} & \rotatebox[origin=c]{80}{\textbf{Groups}} & \rotatebox[origin=c]{80}{\textbf{Dilation}}\\
+%         \hline 
+%         BCOP &\cite{li_preventing_2019} & \cmark & $k$ & \cmark & \cmark & $\capprox$ & \xmark & \xmark & \xmark \\
+%         % --- ORTHOGONIUM version
+%          \includegraphics[height=2ex]{figures/ch3_aoc/illustrations/orthogonium_logo_b.png} AOC & & \cmark & $k$ & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark \\
+
+%         SLL &\cite{araujo_unified_2023} & \xmark & composed & \cmark & \xmark & \xmark & \xmark & \xmark  & \xmark\\
+%          \includegraphics[height=2ex]{figures/ch3_aoc/illustrations/orthogonium_logo_b.png} SLL & & \cmark & composed & \cmark & \cmark & \cmark & \cmark & \cmark  & \cmark\\
+
+%         AOL &\cite{prach_almost-orthogonal_2022} & \xmark & $k$ & \cmark & \cmark & \cmark & \xmark & \xmark & \xmark \\
+%         \includegraphics[height=2ex]{figures/ch3_aoc/illustrations/orthogonium_logo_b.png} AOL & & \cmark & $k$ & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark \\
+
+%         SOC &\cite{singla_skew_2021} & \cmark & $k + (n\frac{k}{2})$ & \cmark & $\capprox$ & $\capprox$ & \xmark & \xmark & \xmark \\
+%          \includegraphics[height=2ex]{figures/ch3_aoc/illustrations/orthogonium_logo_b.png} SOC & & \cmark & $k + (n\frac{k}{2})$ & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark \\
+%         \hline
+%     \end{tabular}
+%     \label{tab:big_picture}
+% \end{table*}
+
+
+Orthogonal layers have become fundamental components in various deep learning architectures due to their unique mathematical properties, which offer benefits across multiple applications. 
+For instance, robustness against adversarial attacks can be achieved by managing a model’s Lipschitz constant~\cite{szegedy_intriguing_2013} -- with 1-Lipschitz networks being a prime candidate: such networks allowing the computation of robustness certificates. 
+Initially, researchers experimented with regularization techniques~\cite{cisse2017parseval}; however, constrained networks, especially those employing orthogonal layers, soon became central, as they provided the advantage of tighter certification bounds: The overall Lipschitz constant of a sequence of layers is typically estimated as the product of the individual layer constants; however, this bound is often loose, and computing the exact constant is NP-hard \cite{virmaux2018lipschitz}. \cite{anil_sorting_2019} 
+shows that combining MaxMin activation with orthogonal layers makes the aforementioned bound tight.
+Beyond robustness, orthogonal layers also play a key role in enhancing performance in normalizing flows. Normalizing flows are generative models that transform simple distributions into complex ones via invertible mappings \cite{dinh2016density, rezende2015variational}.  Orthogonal convolutions enable these transformations with a computable Jacobian determinant, thus improving training efficiency \cite{kingma2018glow} and forming the basis for invertible residual networks \cite{behrmann2019invertible}.
+Additionally, orthogonal layers stabilize training deep and recurrent neural networks (RNNs) by preserving gradient norms through time, essential in capturing long-term dependencies in time-series, such as language and speech tasks \cite{kiani_projunn_2022,qi_deep_isometric_2020, bansal2018gainorthogonalityregularizationstraining}. Lastly, in Wasserstein GANs (WGANs) \cite{arjovsky2017wasserstein} orthogonality in both the discriminator and generator~\cite{muller2019orthogonal} supports stability and expressivity without requiring weight clipping or gradient penalties~\cite{gulrajani2017improved}, making it essential for large-scale GAN training~\cite{brock2018large, miyato2018spectral}.
+See \cref{sec:ap_intro} for a detailed list of applications.
+
+
+Despite these benefits, extending orthogonality to convolutional layers remains challenging. The orthogonalization of large Toeplitz matrices-structures central to convolution- is challenging to do without compromising its convolutional properties and is sometimes non-feasible~\cite {achour2023existencestabilityscalabilityorthogonal}. Efficient orthogonalization of these structured matrices has theoretical importance, affecting generalization~\cite{bethune_pay_2022} and indicating when orthogonal convolution is feasible~\cite{achour2023existencestabilityscalabilityorthogonal}.
+
+Early approaches \cite{wang_orthogonal_2020, qi_deep_isometric_2020} explored regularization, yet practical constraints led to the following solutions:
+
+\noindent \textbf{Explicit Construction Methods.} Building on \cite{xiao_dynamical_2018}, approaches like BCOP \cite{li_preventing_2019}, SC-Fac \cite{su_scaling-up_2021}, and ECO \cite{yu_constructing_2021} construct orthogonal convolutions directly in the spatial domain. These methods maintain orthogonality but often lack flexibility in kernel size control and do not support operations like striding and transposed convolutions.
+
+\noindent \textbf{Frequency Domain Approaches.} Methods such as Cayley Convolution \cite{trockman_orthogonalizing_2021}, LOT \cite{xu_lot_2023}, and ProjUNN-T \cite{kiani_projunn_2022} enforce orthogonality by parameterizing kernels in Fourier space,
+albeit at the cost of increased computational complexity and constraints on spatial or grouped convolutions.
+
+\noindent \textbf{Composite Layer Techniques.} Skew Orthogonal Convolutions \cite{singla_skew_2021} combine multiple convolutional layers to approximate orthogonality, resulting in an orthogonal block that uses convolutions. 
+
+
+\noindent \textbf{Mitigating vanishing gradients.} In some cases, strict orthogonality is relaxed. Leading to layers that are 1-Lipschitz while mitigating vanishing gradients. This avoids the computational demands of full orthogonalization~\cite{prach_almost-orthogonal_2022, meunier_dynamical_2022, araujo_unified_2023}.
+
+\noindent Despite their success in certifiable adversarial robustness, these methods have seen limited adoption in other fields. This is largely due to implementation limitations: current layers fail to support essential features like stride, groups, or dilation, which are critical for architectures such as U-Nets~\cite{ronneberger2015u}, GANs~\cite{goodfellow2014generative}, VAEs~\cite{kingma2013auto} (upsampling convolutions), dilated CNNs~\cite{li2018csrnet} (dilation), and modern models like ResNeXt~\cite{xie2017aggregated} and EfficientNet~\cite{tan2019efficientnet} (grouped convolutions).  On the other end, performance in certifiable adversarial robustness is tied to model size and training duration \cite{prach_1-lipschitz_2023}. However, 1-Lipschitz constrained networks lack the usual scaling laws \cite{prach2024intriguing}, often requiring massive datasets even for small-scale problems \cite{hu_recipe_2023}. Developing an efficient and scalable method that supports modern features method could address both challenges simultaneously.
+
+
+\paragraph{Our Contributions.}
+In response to the limitations of existing methods, we introduce \textbf{A}daptive \textbf{O}rthogonal \textbf{C}onvolution (\textbf{AOC}), a method that combines two existing approaches to construct convolution layers that address the following key constraints \textit{simultaneously} while remaining efficient:
+\begin{itemize}[itemsep=7pt, topsep=5pt, parsep=0pt, partopsep=0pt]
+    \item \textbf{Orthogonal}: AOC enforces strict orthogonality, allowing convolutional layers to retain essential properties across applications.     
+    \item \textbf{Explicit}: In contrast to frequency domain methods, AOC generates explicit convolution kernels in the spatial domain, allowing straightforward implementation in standard deep learning frameworks without specialized operations or significant computational overhead. 
+    \item \textbf{Flexible}: Supporting a range of essential operations -- including striding, transposed convolutions for upsampling, grouped convolutions, and dilation -- AOC adapts effectively to modern neural network architectures.
+    \item \textbf{Scalable}: Designed for large-scale applications, our implementation maintains efficiency, incurring only a 10\% slowdown compared to unconstrained models in realistic ImageNet 1K~\cite{deng2009imagenet} training setup.
+\end{itemize}
+To underscore the advantages of our method, we include a comparative summary in  \cref{tab:big_picture}, highlighting support for key features across different methods.
+By combining orthogonality, explicit construction, and flexibility, our approach seamlessly bridges theoretical rigor with practical efficiency in deep learning models. Beyond AOC, this work introduces a mathematical framework that unlocks improvements of other existing methods such as SOC, SLL, or Sandwich (See \cref{sec:conv}). Our implementation was rigorously tested and is available in a package called \fulllibname, which also contains improved implementations of other existing methods.
+
+
+The paper is organized as follows:  \Cref{sec:AOC} outlines the three main aspects of AOC -- its core tools, kernel construction, and scalable implementation. \Cref{sec:eval} presents an evaluation of the method's performance in terms of speed and expressive power. Finally, \cref{sec:conclusions} discusses how our approach can enhance existing methods in the literature.
+
     
 \section{An Adaptive scheme to build Orthogonal Convolution (AOC)}\label{sec:AOC}
 
@@ -13,21 +125,653 @@ Finally, \cref{sec:implem} provides implementation details that allow the method
 
 \subsection{Core tool: \Bconv}\label{sec:fusing_kernel}
 
-\input{chapters/aoc_parts/02_block_conv}
+Our approach builds upon three foundational papers: \cite{xiao_dynamical_2018}, which generalized orthogonal initialization to convolution to enable training networks with $10~000$ layers, though without addressing constrained training; \cite{su_scaling-up_2021}, which tackled this for separable convolutions; and \cite{li_preventing_2019}, which extended it to general 2D convolutions. These works rely heavily on a tool known as \Bconv. In this section, we review, clarify, and extend this mathematical framework.
+
+\paragraph{Notations:}  
+We consider convolutional layers characterized by $c_o$, the number of output channels; $c_i$, the number of input channels; $k_1 \times k_2$, the kernel size; $s$, the stride parameter;  $g$, the number of groups; $d$ the dilation rate . For simplicity in the notation, we fix the group parameter to  $g=1$ and $d=1$ by default (all proofs hold for other values of $g$ and $d$, see \cref{sec:group}). Also, we assume circular padding in all proofs.
+The kernel tensor of the convolution is denoted $\kernel{K} \in \KbbfS$, while $x \in \RR^{c_i \times h \times w}$ denotes the input tensor. We describe the convolution operation with three equivalent notations:
+\begin{align}
+    y = \kernel{K} \convker{s} x & \quad  \text{(Kernel notation)} \label{def_convker}\\
+    \toepvec{y} = \toepstride{s} \toep{K} \toepvec{x} & \quad  \text{(Toeplitz notation)} \label{def_convtoep} \\
+    y = \convcode{K}{x}{s} &  \quad \text{(Code notation)} \label{def_convcode}
+\end{align}
+
+\Cref{def_convker} defines the convolution operation with kernel $\kernel{K}$ and stride $s$ applied on $x$. \Cref{def_convtoep} highlights that this convolution is equivalent to a linear operation defined by a matrix product between a Toeplitz matrix $\toep{K} \in \KkS$ and a vector $\toepvec{x} \in \RR^{c_i hw}$, which is obtained by flattening $x$. The striding operation is represented by a masking diagonal matrix $\toepstride{s} \in \RR^{c_o \frac{h}{s} \frac{w}{s} \times c_o hw}$ with ones on the selected entries and zeros elsewhere. When $s=1$, we have $\toepstride{1} = \toepid$, the identity matrix (with kernel $\kernelid$). \Cref{def_convcode} shows these notations in pseudo-code form.
+
+\begin{definition}[\Bconv{} $\mathbconv$\footnote{Initially denoted by \cite{li_preventing_2019} as $\square$}]  
+    The \Bconv, denoted as $\kernel{B} \mathbconv \kernel{A}$, computes the equivalent kernel of the composition of two convolutional kernels, $\kernel{A}$ and $\kernel{B}$, enabling their combined effect without performing each convolution separately.
+    \begin{align}
+        (\kernel{B} \mathbconv \kernel{A}) \convker{s} x = \kernel{B} \convker{s} (\kernel{A} \convker{1} x ) \label{def_blocker}\\
+        \toepstride{s} (\toep{B} \toep{A}) \toepvec{x} = (\toepstride{s} \toep{B}) \toep{A} \toepvec{x} \label{def_bloctoep} \\
+        \shortconvcode{B \mathbconv A}{x}{s} = \shortconvcode{B}{\shortconvcode{A}{x}{1}}{s} \label{def_bloccode}
+    \end{align}
+\end{definition}
+\noindent This operator assumes that the number of input channels of the second convolution $\kernel{B}$ matches the number of output channels of the first convolution $\kernel{A}$ (condition denoted as $\compat{A}{B}$). Given $\kernel{A} \in \RR^{c_{int} \times c_i \times k_1^A \times k_2^A}$ and $\kernel{B} \in \RR^{c_o \times c_{int} \times k_1^B \times k_2^B}$, then $\kernel{B} \mathbconv \kernel{A} \in \RR^{c_o \times c_i \times (k_1^A + k_1^B - 1) \times (k_2^A + k_2^B - 1)}$. 
+The computation of \Bconv{} kernel weights is given by:
+\begin{equation}
+\label{eq:blockconv}
+   {(\kernel{B} \mathbconv \kernel{A})}_{m,n,i,j} = \sum_{c = 0}^{c_{int}-1} \sum_{i' = 0}^{k_1^B - 1} \sum_{j' = 0}^{k_2^B - 1} \kernel{B}_{m,c,i',j'} \cdot \kernel{A}_{c,n,i - i',j - j'} 
+\end{equation}
+where $\kernel{A}$ is zero-padded, i.e., $\kernel{A}_{c,n,i,j} = 0$ if $i \notin [0, k_1^A[$ or $j \notin [0, k_2^A[$. While a classic result, for completeness, we provide the proof for 1D convolution kernels in \cref{sec:ap_proofs_mathbconv}. This operator $\mathbconv$, using matrix products between order 4 tensors, should not be confused with standard convolution, which takes a 4-dimensional tensor and a 3-dimensional input tensor. The complexity of these weight computations is $\mathcal{O}(c_o c_i c_{int} \prod\limits_{p=1}^{2} (k_p^A + k_p^B - 1) k_p^B)$, necessitating an efficient implementation, detailed in  \cref{subsec:bconv_implem}.
+
+    \paragraph{\Bconv{} and Orthogonality:} We will recall the definition of an orthogonal convolution, using \cref{def_bloctoep} and the definition of an orthogonal matrix:
+
+    \begin{definition}[Orthogonal Convolution]\label{def:orthogonal}  
+        A convolution defined by \cref{def_convtoep} is row/column orthogonal iff:
+        \begin{align*}
+            (\toepstride{s} \toep{K})(\toepstride{s} \toep{K})^T = \toepid & \quad \text{(row orthogonal)} \\
+            (\toepstride{s} \toep{K})^T(\toepstride{s} \toep{K}) = \toepid & \quad \text{(column orthogonal)}
+        \end{align*}
+    \end{definition}
+        The type of orthogonality (row or column) is determined by the larger dimension of the matrix in the toeplitz notation (\cref{def_convtoep}). When $c_i s^2 > c_o$, $\toepstride{s} \toep{K}$ is column orthogonal \cite{achour2023existencestabilityscalabilityorthogonal}. When $c_i s^2 = c_o$, $\toepstride{s} \toep{K}$ is a square matrix, and the two conditions are equivalent. Unless explicitly stated, we will use the term orthogonal to refer to row (resp. column) orthogonal. Finally, when $s=1$, the condition on the Toeplitz matrices is equivalent to $\kernel{K} \mathbconv \kernel{K}^T = \kernelid$ (resp. $\kernel{K}^T \mathbconv \kernel{K} = \kernelid$). A formal definition of $\kernel{K}^T$ can be found in  \cref{def_transpose}.
+    
+    Through this paper, we leverage the \Bconv{} property to compute implicitly the composition of convolutions. This operation preserves orthogonality when the following requirement is met:
+    
+    \begin{proposition}[Composition of Orthogonal Convolutions]\label{prop:composition_ortho}  
+        The composition of two row orthogonal convolutions is a row orthogonal convolution:
+        \[
+            \toep{A} \toep{A}^T = \toepid \quad \text{and} \quad \toep{B} \toep{B}^T = \toepid \implies \toep{AB}(\toep{AB})^T = \toepid
+        \]
+        The same applies to two column orthogonal convolutions.
+    \end{proposition}
+    The proof is straightforward using the Toeplitz notation and matrix multiplications. Note that, the composition of a row orthogonal with a column orthogonal convolution is, in general, not orthogonal. This will significantly influence the construction of AOC convolutions.
+
 
 \subsection{Construction of Strided, Transposed, Grouped, Dilated, Orthogonal Convolutions with AOC}\label{sec:construction}
-\input{chapters/aoc_parts/bigfigs/bigfig_method}
+\begin{figure*}[ht]
+    \centering
+    %\includegraphics[width=0.95\textwidth]{figures/ch3_aoc/illustrations/fig_method_2.png}
+    %\includegraphics[width=0.95\textwidth]{figures/ch3_aoc/illustrations/fig_method_3b.png}
+    \includegraphics[width=0.95\textwidth]{figures/ch3_aoc/illustrations/method_v4.png}
+    \caption{\textbf{AOC enables the construction of orthogonal kernels with customizable sizes and strides.} By leveraging the $\mathbconv$ operator, we can fuse kernels obtained from two existing methods, namely BCOP and RKO. With this approach, we can build orthogonal kernels that support native striding, effectively mitigating the drawbacks of the two base methods. 
+    }% \vspace{-4mm}}
+    \label{fig:method_bigpic}
+\end{figure*}
 
-\input{chapters/aoc_parts/03_method}
+
+
+As mentioned previously, existing methods for explicit orthogonal convolution construction face several challenges that hinder their scalability in modern CNNs. Frequency-domain approaches, for instance, require computing the FFT on input images, which becomes prohibitive for large image resolutions (e.g., 224×224 in ImageNet-1K). Methods like SOC, LOT, ECO, and Cayley~\cite{singla_skew_2021,xu_lot_2023,yu_constructing_2021,trockman_orthogonalizing_2021} handle cases where $ c_i \neq c_o $ through inefficient padding or channel dropping, further limiting their practicality. Most of these methods also emulate striding, using a channel reshaping method called InvertibleDownSampling, significantly increasing the computational cost compared to native striding (see \cref{sec:stride}). Beyond inefficiency, these limitations prevent the adoption of essential modern convolutional features such as strides, transposition, groups, and dilation. Since these features were specifically designed to enhance the efficiency of modern neural network architectures, emulation is not a viable option for computationally demanding scenarios.
+\paragraph{The strategy of AOC.}  The core idea of our method is to combine several convolution kernels with an efficient implementation of the \Bconv{} $\mathbconv$ to build any type of orthogonal convolution. We mainly build upon two type of kernels: one that guarantees orthogonality for any kernel size (when \( s=1 \)) and another that guarantees orthogonality for any stride \( s \). BCOP and SC-Fac \cite{li_preventing_2019, su_scaling-up_2021}, by leveraging \Bconv{} $\mathbconv$, are effective for the first kernel, whereas other methods lack control over the kernel size. For the second kernel, RKO \cite{serrurier_achieving_2021} is the only viable option, as all other methods depend on stride emulation.
+
+\paragraph{Standard Orthogonal Convolution}\label{sec:standard}  
+    For standard orthogonal convolutions with a fixed kernel size, we rely on three main works \cite{xiao_dynamical_2018}, \cite{li_preventing_2019}, and \cite{su_scaling-up_2021}. In \cref{ap:BCOP_detail}, we unify these works within a consistent notation framework, highlighting similarities and differences among their approaches to constructing standard orthogonal convolutions (i.e., without stride, transposition, grouping, or dilation). These methods primarily rely on constructing elementary blocks ($1 \times 1$, $1 \times 2$, and $2 \times 1$ orthogonal convolutions) and assembling these blocks to create orthogonal convolutions of the desired size and shape. 
+    Briefly, both methods construct symmetric projectors (matrices such that $N = N^2 = N^T \quad \text{and} \quad (I - N) = (I - N)^2 = (I - N)^T$). This property allows to construct orthogonal convolution whose kernel size is $1\times 2$ (resp. $2\times 1$).
+
+    \cite{li_preventing_2019, xiao_dynamical_2018} chose to compose $(k_1-1)$ $2 \times 1$ kernels $\kernel{P_i}$ with $(k_2-1)$ $1 \times 2$ kernels $\kernel{Q_i}$ and a $1 \times 1$ kernel $\kernel{M}$ to form a $k_1 \times k_2$ kernel:
+    \[
+        \kernel{K}_{\text{\tiny{BCOP}}} = \underbrace{(\kernel{P_{k-1}} \mathbconv \kernel{Q_{k-1}})}_{\text{pairs of 1x2 and 2x1 kernels}} \mathbconv \dots \mathbconv (\kernel{P_1} \mathbconv \kernel{Q_1}) \mathbconv \underbrace{\kernel{M}}_{\text{1x1}}
+    \] 
+     A detailed description of the BCOP method is provided in \cref{fig:method_bigpic}, with additional details in  \cref{ap:BCOP_detail,sec:ap_1x2_ortho} for the proof of orthogonality.
+    It is also worth noting that both approaches have the same number of parameters, which is lower than the number of parameters required to span all orthogonal convolutions. This is further discussed in  \cref{sec:ap_incomplete}.
+
+
+\paragraph{Native Striding for Orthogonal Convolutions}\label{sec:stride}
+
+     Classical convolutional networks use strided convolutions. However, most existing work on orthogonal convolutions does not support stride directly, instead emulating striding via a reshaping operation~\cite{shi2016real}: transforming the $c_i \times I_h \times I_w$ tensor into a $c_i s^2 \times \frac{I_h}{s} \times \frac{I_w}{s}$ tensor, followed by a non-strided convolution. Unlike native striding, emulation increases the number of parameters of the convolution ($s^2$ times more parameters), which means constraining larger matrices. Since algorithms used for this tasks have cubic time complexity in the number of channels \cite{prach_1-lipschitz_2023}, emulation induces a prohibitive cost for strided convolutions ($s^6$ times slower). Beyond this limitation, emulated striding also prevents native implementation of transposed convolutions with stride (see \cref{sec:transpose}). In this section, we propose a method to construct orthogonal kernels that support native striding.
+
+    To our knowledge, only two works \cite{serrurier_achieving_2021,serrurier_explainable_nodate} claim to use native stride. These rely on a method referred to by \cite{li_preventing_2019} as Reshaped Kernel Orthogonalization (RKO). This method involves reshaping the kernel $\kernel{K}_{\text{RKO}} \in \RR^{c_o \times c_i \times k_1 \times k_2}$ into a matrix $K' \in \RR^{c_o \times c_i k_1 k_2}$ and orthogonalizing it. In general, with the adequate multiplicative factor, the resulting convolution is 1-Lipschitz but not orthogonal. 
+    In this work, we prove that no additional factor is required when $k=s$ to obtain an orthogonal convolution. This result can be carefully combined with BCOP (\cref{sec:standard}) to provide orthogonal convolutions of desired kernel size and stride.
+    \begin{proposition}[RKO gives an orthogonal kernel\label{prop:rko_ortho} when $k_1 = k_2 = s$]
+        When $K' \in \RR^{c_o \times c_i k k}$ is orthogonal, the convolution with the reshaped kernel $\kernel{K}_{\text{RKO}} \in \RR^{c_o \times c_i \times k \times k}$ and a stride $s=k$ is orthogonal.
+    \end{proposition}
+
+    The proof of \cref{prop:rko_ortho} relies on the introduction of a permutation matrix on the inputs, and is given in \cref{sec:ap_proof_rko}.
+    The proposed method, called AOC, combines the BCOP and RKO methods to construct a Strided Convolution with Arbitrary Kernel Size:
+    \begin{align}
+        \kernel{K}_{AOC}= \kernel{K}_{\text{RKO}} \mathbconv \kernel{K}_{\text{BCOP}} \label{def:AOC_kernel}
+    \end{align}
+    As shown in \cref{fig:method_bigpic}, by choosing specific sizes for $\kernel{K}_{\text{BCOP}} \in \RR^{c \times c_i \times (k_1+1-s) \times (k_2+1-s)}$ and $\kernel{K}_{\text{RKO}} \in \RR^{c_o \times c \times s \times s}$, the fusion results in an orthogonal convolution of kernel size $k_1 \times k_2$ and stride $s$. 
+    
+    While the formulation (\cref{def:AOC_kernel}) may seem straightforward, the order of composition and the choice of the internal channel size $c$ are crucial to preserve orthogonality.
+% \vspace{10mm}
+    \begin{proposition}
+        [Orthogonality of strided AOC]\label{prop:ortho_stride}
+        The composition  of two kernels $\kernel{K}_{\text{BCOP}} \in \RR^{c \times c_i \times (k_1+1-s) \times (k_2+1-s)}$ and $\kernel{K}_{\text{RKO}} \in \RR^{c_o \times c \times s \times s}$ (\cref{def:AOC_kernel}) with an internal channel size $c = \text{max}(c_i, \lfloor\frac{c_o}{s^2}\rfloor)$ yields an orthogonal convolution with stride. %\sout{\textcolor{red}{The complete proof can be found in  \cref{sec:ap_proof_aoc_ortho}.}}
+    \end{proposition}
+    
+    The proof of \cref{prop:ortho_stride},  relies on  \cref{prop:composition_ortho} which holds for strided convolutions applied to $\toepstride{s} \toep{K}_{\text{RKO}}$, is detailed in \cref{sec:ap_proof_aoc_ortho} .
+    %The proof relies on  \cref{prop:composition_ortho} which holds for strided convolutions applied to $\toepstride{s} \toep{K}_{\text{RKO}}$. 
+    We prove that when $\text{min}(c_i, \frac{c_o}{s^2})\leq c \leq \text{max}(c_i, \frac{c_o}{s^2})$, the two matrices $\toep{K}_{\text{BCOP}}$ and $\toepstride{s} \toep{K}_{\text{RKO}}$ are either both row-orthogonal or both column-orthogonal. The choice of $c = \text{max}(c_i, \lfloor\frac{c_o}{s^2}\rfloor)$ maximizes the expressiveness of the parametrization while ensuring that the resulting convolution is orthogonal. 
+    Note that the size of the $\kernel{K}_{\text{BCOP}}$ imposes the condition $k+1-s \geq 0$. However, according to \cite{achour2023existencestabilityscalabilityorthogonal}, no orthogonal kernel exists when $s > k$. Therefore, our approach encompasses all valid configurations of orthogonal convolutions.
+
+\begin{figure*}[ht!]
+    \centering
+    \begin{subfigure}[b]{0.3\textwidth}
+         \centering
+         % \includegraphics[trim={0 0 0 3cm},clip, width=\textwidth]{figures/ch3_aoc/illustrations/block_conv_code_crop.png}
+         \includegraphics[width=\textwidth]{figures/ch3_aoc/illustrations/block_conv_code_2.png}
+         \caption{\textbf{Fast block convolution.} We optimized the 2D convolution in order to compute the $\mathbconv$ operator with maximum parallelism.}
+         \label{fig:bconv_code}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.43\textwidth}
+         \centering
+         %\includegraphics[width=\textwidth]{figures/ch3_aoc/illustrations/parallel_associative_scan.drawio.png}
+         %\includegraphics[width=\textwidth]{figures/ch3_aoc/illustrations/parallel_bcop_v2.png}
+         %\includegraphics[width=\textwidth]{figures/ch3_aoc/illustrations/parallel_associative_scan_2.png} % with or without M at the end
+         \includegraphics[width=\textwidth]{figures/ch3_aoc/illustrations/parallel_v3.png}
+         \vspace{3mm}
+         \caption{\textbf{Parallelize BCOP iterations.} By leveraging associativity of $\mathbconv$, we can compute the $n$ iteration in $\mathcal{O}\log(n)$ steps using parallel associative scan.}
+         \label{fig:bcop_pscan}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.22\textwidth}
+         \centering
+         %\includegraphics[width=\textwidth]{figures/ch3_aoc/illustrations/flowchart.drawio.png}
+         \includegraphics[width=\textwidth]{figures/ch3_aoc/illustrations/flowchart_v4.png}
+         % % \vspace{1mm}
+         \caption{\textbf{Parsimonious parametrization.} The method can sometimes simplify to quicker equivalent parametrization.}
+         \label{fig:method_simplify}
+    \end{subfigure}
+    \caption{\textbf{Fast implementation of AOC.} We achieve a highly scalable parametrization thanks to optimizations at every level of our method: starting from the $\mathbconv$ operator \ref{fig:bconv_code}, to BCOP \ref{fig:bcop_pscan}, to our complete method \ref{fig:method_simplify}. It results in a method with a lower overhead as scale increases.
+    \vspace{-2mm}
+    }
+    \label{fig:optimizations}
+\end{figure*}
+
+    
+\paragraph{Native Transposed Orthogonal Convolutions}\label{sec:transpose}
+
+    In addition to the practical verification of orthogonality in  \cref{def:orthogonal}, transposed convolutions are mostly used as learnable upscaling layers in architectures such as U-Net~\cite{ronneberger2015u} or VAEs~\cite{kingma2013auto,van2017neural}. Even though some methods in \cref{tab:big_picture} can provide transposition for standard convolution, none are applicable to strided convolutions due to their use of emulation via reshaping, as described in \cref{sec:stride}. Thus, AOC is the first method to support transposed orthogonal convolutions with upscaling.
+    
+    For a given convolution with stride defined by  \cref{def_convtoep}, the transposed convolution corresponds to the application of the transposed matrix $(\toepstride{s} \toep{K})^T$, inverting the role of $c_i$ and $c_o$. 
+    The resulting operation can be defined by the three notations:
+    \begin{definition}[Transposed Convolution]\label{def_transpose}
+        A transposed convolution is defined as follows:
+        \begin{align}
+            y = \kernel{K}^T \convker{\frac{1}{s}} x \label{def_transposeker}\\
+            \toepvec{y} = (\toepstride{s} \toep{K})^T \toepvec{x} = \toep{K}^T \toepstride{s}^T \toepvec{x} \label{def_transposetoep} \\
+            y = \convtrcode{K}{x}{s} \label{def_transposecode}
+        \end{align}
+    \end{definition}
+        The code notation (\cref{def_transposecode}) corresponds to the implementation in PyTorch parametrized by the original kernel $\kernel{K}$. The \cref{def_transposetoep} corresponds to the transposition of the underlying Toeplitz matrix. %( \cref{def_transposetoep}).
+        The kernel notation (\cref{def_transposeker}) can be viewed as a standard convolution with a transposed kernel and fractional striding. The kernel $\kernel{K}^T \in \RR^{c_i \times c_o \times k_1 \times k_2}$ is obtained by transposing the channel dimensions (the first ones) and reversing the kernel ones (the last two). 
+    By using an orthogonal direct convolution $\kernel{K}_{AOC}$, this construction results in an orthogonal transposed convolution. Although the definition and proof are straightforward, the practical application requires the explicit construction of a strided orthogonal convolution kernel (as detailed in \cref{def:AOC_kernel}).
+
+    \begin{proposition}[Transposed Orthogonal Convolution]\label{prop:transpose}
+        The transposition of a row orthogonal convolution is a column orthogonal convolution, and vice versa.  
+        %\sout{\textcolor{red}{The proof is given in \cref{sec:ap_proof_transposed}.}}
+    \end{proposition}
+
+    The proof is straightforward with the Toeplitz matrix notation, but is given for completeness in \cref{sec:ap_proof_transposed}.
+    It is worth noting that, despite its apparent simplicity, \cref{prop:transpose} has important implications for practical implementation—particularly concerning the direct use of \texttt{torch.nn.conv\_transpose2d}. Moreover, it raises considerations related to the preservation of orthogonality under conditions such as stride, groups, and dilation. For instance, transposed strided convolutions can be effectively utilized in the upsampling layers of U-Net architectures~\cite{ronneberger2015u}.
+    They can also be employed to design invertible neural networks for Normalizing Flows (see \cref{ap:invert}).
+    
+
+\paragraph{Native Grouped Orthogonal Convolutions:}\label{sec:group}
+    Most modern CNNs use grouped convolutions \cite{howard2017mobilenets, xie2017aggregated, liu2022convnet}. Beyond its advantages in terms of parameters and computational efficiency, it makes AOC more efficient as its parametrization can be parallelized, similarly as \cite{gorbunov2024group,liuparameter}.
+    Given a group number $g$, the kernel of a grouped convolution $\kernel{K} \in \RR^{c_o \times \frac{c_i}{g} \times k \times k}$ can be viewed as a stack of $g$ kernels $\kernel{K_i} \in \RR^{\frac{c_o}{g} \times \frac{c_i}{g} \times k \times k}$, each constructed independently. Note that $c_o$ and $c_i$ must be multiple of $g$. 
+    \begin{proposition}[Grouped Orthogonal Convolution]\label{lemma:grouped_conv}
+        A grouped convolution composed of $g$ kernels $(\kernel{K_i})_g$ is orthogonal if and only if each individual convolution of kernel $\kernel{K_i}$ is orthogonal. %\sout{\textcolor{red}{The proof is given in \cref{sec:ap_proof_grouped}.}} 
+    \end{proposition}
+    
+    The proof of \cref{lemma:grouped_conv} is provided in \cref{sec:ap_proof_grouped} and relies on the fact that the Toeplitz matrix of a grouped convolution is block diagonal.
+    \noindent Note that when $g = c_i = c_o$, each kernel $\kernel{K}_i$ has a single channel $c_i=c_o=1$ that cannot be built with BCOP which requires $c\geq 2$.
+
+\paragraph{Native Orthogonal Convolutions with Dilation:}
+
+    Introduced by \cite{yu2015multi}, Dilation is an effective means to increase the receptive field of a convolution without increasing its number of parameters or its computational cost. In  \cite{su_scaling-up_2021}, the authors stated in an appendix that "any filter bank that is orthogonal for a standard convolution is also orthogonal for a dilated convolution and vice versa." While this is mathematically accurate, it is essential to note that circular padding must be adjusted accordingly to remain within the scope of their theorem. Our method thus also supports orthogonal convolution with dilation. A description is given in \cref{sec:ap_proof_dilated}.
+
 
 \subsection{Efficient implementation of AOC}
 
-\input{chapters/aoc_parts/04_implem}
+\label{sec:implem}
+Beyond a mathematical framework that unlocks a more flexible use of orthogonal convolutions, we propose several design choices for an implementation that scales well to larger kernels, larger images and larger batch sizes. Although AOC includes the construction of BCOP and RKO kernels, our implementation improves the original ones at many stages. It results in an \textbf{8x} reduction of the original overhead in realistic settings. The implementation of AOC and several additional layers described in~\cref{sec:conv} is provided as an Open-source library called \fulllibname. 
+%Our implementation will be integrated \libname. 
+Other implementation details and empirical testing are discussed in \cref{ap:tech_details,sec:unit_testing}.
+
+% \vspace{-3mm}
+
+\vspace{-1mm}\paragraph{Fast implementation of the \Bconv.}\label{subsec:bconv_implem}
+
+    To the best of our knowledge, the only differentiable implementation of the BCOP method is available in the reference code \cite{li_preventing_2019}. However, since there is no cuda kernel available for \Bconv, the authors relied on nested loops to perform all matrix multiplication to compute the resulting kernel. % Unfortunately, this approach prevents PyTorch from parallelizing the nested loops. %\sout{could be paralleled. Also, pytorch does not allow easily to parallelize cuda operators (that are already paralleled).}
+    % \paragraph{Hacking the 2D convolution to compute $\mathbconv$ operator.}
+    We propose an efficient and parallelized implementation with a single operation. %However, our analysis have shown that this can be efficiently paralleled in a single operation. 
+    %can be implemented as proposed in \cite{li_preventing_2019} by unrolling all the loops and explicit the full summation:
+    % In order to efficiently implement this operation we can unroll all the loops and explicit the full summation:
+    % \[
+    %     R_{m,n,i,j} = \sum_{k \in 0}^{c-1}\sum_{i' \in 0}^{k-l-1}\sum_{j' \in 0}^{k-l-1} A_{m,k,i',j'} . B_{k,n,i-i',j-j'}
+    % \]
+    Inspired by \cite{wang_orthogonal_2020} and \cite{delattre2023efficient}, which aimed to compute $A\mathbconv A^T$ to prove orthogonality, we propose to replace the computation $B\mathbconv A$  by a convolution with zero padding between $B$ and $A^T$. This approach can also be seen as a specific case of convolutional einsum \cite{rabbani2024conv_einsum}.
+    This operation can be rewritten by re-ordering the summation to use a 2D convolution at its core. The strategy is to use the 2D convolution to compute one output filter. Then, the batch dimension can be used to compute all output filters in parallel. The code is detailed in the \cref{fig:bconv_code}.
+
+%             \begin{figure}
+%                 \centering
+%                     \begin{verbatim}
+% def fast_matrix_conv(m1, m2, groups=1):
+%     # m1 is m*n*k1*k2
+%     # m2 is nb*m*l1*l2
+%     m, n, k1, k2 = m1.shape
+%     nb, mb, l1, l2 = m2.shape
+%     assert m == mb * groups
+%     # Rearrange m1 for conv
+%     m1 = m1.transpose(0, 1)  # n*m*k1*k2
+%     # Rearrange m2 for conv
+%     m2 = m2.flip(-2, -1)
+%     # Run convolution
+%     # output shape nb*n*(k+l-1)*(k+l-1)
+%     r2 = torch.nn.functional.conv2d(m1, m2, 
+%            groups=groups, 
+%            padding=(l1 - 1, l2 - 1))
+%     # Rearrange result
+%     # n*nb*(k+l-1)*(k+l-1)
+%     return r2.transpose(0, 1)
+%             \end{verbatim}
+%                 \caption{Pytorch implementation of the algorithm. Tensorflow implementation differs only in the data format.}
+%                 \label{fig:code}
+%             \end{figure}
+
+    
+    % \begin{figure}
+    %     \centering
+    %     \includegraphics[width=\linewidth]{figures/ch3_aoc/benchmark/bloc_conv_speed_cin.png}
+    %     \caption{kernel size is fixed while number of channels is increased. The runtime for 100 operation is reported on log scale. The previous implementation is very insensitive to the number of channels since the cost of the matrix multiplication is negligible against the cost of the convolution.}
+    %     \label{fig:timeit_cin}
+    % \end{figure}
+    
+    % \begin{figure}
+    %     \centering
+    %     \includegraphics[width=\linewidth]{figures/ch3_aoc/benchmark/bloc_conv_speed_k.png}
+    %     \caption{number of channels is set to 16 whils kernel size in increased. The runtime for 100 operation is reported on log scale. This implementation scale better to larger kernel sizes.}
+    %     \label{fig:timeit_cin}
+    % \end{figure}
+% \vspace{-3mm}
+
+\vspace{-1mm}\paragraph{Reducing time complexity of BCOP.}
+
+    Beyond the efficient parallelism of the $\mathbconv$ operation, we propose to parallelize the whole kernel computation: the parametrization can be seen as the composition of many small kernels. Not only can those be created in parallel, but they can also be combined efficiently. As the $\mathbconv$ is an associative operation (\cref{prop:associativity}), we can leverage the parallel associative scan~\cite{zouzias2023parallel, daniel1986data} to parallelize the iterations of the original algorithm. The original $2*(k-s)$ sequential $\mathbconv$ operations can then be done in  $\mathcal{O} (\log (k-s)) $ iterations (\cref{fig:bcop_pscan}). This is unlocked in practice if $\mathbconv$ implementation supports batching. %Unfortunately, the batch dimension of our efficient implementation already uses the dimension originally dedicated to batching to compute the $c_o$ channels, so it cannot be used directly. 
+    We propose to achieve this by using grouped \texttt{Conv2d} implementation: by concatenating $g$ kernels and setting $\text{groups}=g$, we can compute the batched $\mathbconv$ in parallel.
+    However this implementation suffers the same limitation as the \textit{torch.bmm}: as it does not support heterogeneous kernel shapes.
+
+% \vspace{-3mm}
+
+\vspace{-1mm}\paragraph{Efficient implementation.}
+
+    
+    % By looking at \cref{def:method} one can notice that depending on values of $s$ and $k$ the parametrization can be simplified to either $\kernel{K} = \kernel{K}_{\text{BCOP}}$ or $\kernel{K} = \kernel{K}_{\text{RKO}}$. Furthermore we also proved that there exists cases where stride can be applied directly on a BCOP kernel  without relying on the full parametrization (see \cref{proof:stride_opt}). The complete decision tree we use in our implementation can be found in the \cref{fig:method_simplify}. We proved the orthogonality of each branch through this paper.
+    By examining \cref{def:AOC_kernel}, one observes that, depending on the values of $s$ and $k$, the parametrization can be simplified to either $ \kernel{K}_{AOC} = \kernel{K}_{\text{BCOP}} $ or  $\kernel{K}_{AOC} = \kernel{K}_{\text{RKO}}$. While BCOP is generally not suited for handling stride directly, we have identified specific cases -- namely when $c_i < c_o$ -- where stride can indeed be applied directly to a BCOP kernel (see \cref{proof:stride_opt}) without requiring the full parametrization. Although not proposed in \cite{li_preventing_2019}, this observation refines our overall characterization of BCOP’s limitations with stride, showing that exceptions exist under certain conditions. The complete decision tree used in our implementation is shown in \cref{fig:method_simplify}, with each branch’s orthogonality proved in \cref{sec:ap_proof_aoc_ortho,sec:ap_proof_rko,proof:stride_opt}.
+    
+    % \begin{figure}
+    %     \centering
+    %     \includegraphics[width=0.75\linewidth]{figures/ch3_aoc/illustrations/flowchart.drawio.png}
+    %     \caption{\textbf{Our implementation automatically select the most efficient implementation}: under some circumstances, our method can be simplified by using only one of the two parametrizations initially required}
+    %     \label{fig:flowchart}
+    % \end{figure}
+    
+
 
 \section{Evaluation and applications}
 
-\input{chapters/aoc_parts/05_eval}\label{sec:eval}
+\begin{table}[ht]
+    \centering
+        \begin{tabular}{crrrr}
+        \toprule
+                 & Models & \makecell{Acc-\\uracy} &  \makecell{Provable \\ Accuracy \\ $\epsilon = \frac{36}{255}$} &  \makecell{Trainable\\ Parameters}  \\
+        \midrule
+          \multirow{12}{*}{\rotatebox{90}{CIFAR-10}} &          BCOP &   72.2 &   58.2 &     2.6M \\
+          &         GloRo$^\dagger$ &   77.0 &   58.4 &     8.0M \\
+          &   Local-Lip-B$^\dagger$ &   77.4 &   60.7 &     2.3M \\
+          &  Cayley Large &   74.6 &   61.4 &    21.0M \\
+          &        SOC 20 &   78.0 &   62.7 &    27.0M \\
+          &       SOC+ 20 &   76.3 &   62.6 &    27.0M \\
+          &        CPL XL$^\dagger$ &   78.5 &   64.4 &   236.0M \\
+          &     AOL Large$^\dagger$ &   71.6 &   64.0 &   136.0M \\
+          &     SLL Small$^\dagger$ &   71.2 &   62.6 &    41.0M \\
+          &    SLL Medium$^\dagger$ &   72.2 &   64.3 &    78.0M \\
+          &     SLL Large$^\dagger$ &   72.7 &   65.0 &   118.0M \\
+          &   SLL X-Large$^\dagger$ &   73.3 &   65.8 &   236.0M \\
+          &  $\text{Li-Resnets}^{\dagger*}$ &   82.1 &   70.1 &    49.0M \\
+          &  $\text{Li-Resnets++}^{\dagger*}$ &   87.0 &   78.1 &    49.0M \\
+        \cline{2-5}
+          & \textbf{AOC} \small{accurate} &   91.5 &   00.0 &    2.3M \\
+          & \textbf{AOC} \small{robust} &   74.0 &   64.3 &    41.3M \\
+          & \textbf{AOC} \small{robust*} & 85.3  &  75.0  &    46.3M \\
+        \midrule
+        \midrule
+        \multirow{3}{*}{\rotatebox{90}{IN-1K}}
+          & $\text{Li-Resnets}^{\dagger*}$ &   45.6 &   35.0 &     86.0M \\
+          & $\text{Li-Resnets++}^{\dagger*}$ &   49.0 &   38.3 &     86.0M \\
+        \cline{2-5}
+          & \textbf{AOC} \small{accurate} &   68.2 &   00.0 &     53.1M \\
+          & \textbf{AOC} \small{robust} &   42.1 &   26.3 &     53.1M \\
+        \bottomrule
+        \end{tabular}
+    \caption{\textbf{AOC is competitive on small-scale datasets and enables affordable training on large-scale datasets.} For both cifar-10 (top) and Imagenet-1K (bottom), we reported provable accuracy (accuracy guaranteed under any attack whose $l_2$ radius is $\frac{36}{255}$) from respective papers.
+    % While AOC does not improve expressiveness of BCOP, this table shows that the state of the art is driven by 
+    we evaluate our models under two settings: one tailored for accuracy and another for robustness. $^*$ denotes the use of extra data.%Our baseline can be improved with techniques such as last layer normalization, certificate regularization \cite{singla_skew_2021}, or augmentation using diffusion \cite{hu_recipe_2023}.
+    Our networks are trained under two settings that use similar architectures but differ in their loss parameters (see \cref{sec:ap_training_details}).
+    $^\dagger$ denotes nonorthogonal methods.
+    % \vspace{1mm}
+    }
+    \label{tab:robust_cifar10}
+\end{table}
+
+
+% \begin{table}[h!]
+%     \centering
+%     \begin{tabular}{|c|c|c|c|c|c|}
+%         \hline
+%         \textbf{Metric} & \textbf{BCOP} & \textbf{AOC (ours)} & \textbf{Conv2D} & \textbf{BCOP Overhead (\%)} & \textbf{AOC (ours) Overhead (\%)} \\
+%         \hline
+%         Max Train Memory (GB) & 8.208 & 5.195 & 4.667 & 75\% & 11\% \\
+%         \hline
+%         Max Test Memory (GB) & 1.473 & 1.421 & 1.391 & 5\% & 2\% \\
+%         \hline
+%         Train Mean (s) & 0.368 (0.012) & 0.222 (0.016) & 0.134 (0.003) & 174\% & 65\% \\
+%         \hline
+%     \end{tabular}
+%     \caption{Comparison of BCOP, AOC (ours), and Conv2D with Overhead Calculations}
+%     \label{tab:comparison_overhead}
+% \end{table}
+
+% \begin{table}[h!]
+%     \centering
+%     \begin{tabular}{c|ccccc}
+%         \textbf{Metric} & \textbf{BCOP} & \textbf{AOC (ours)} & \textbf{Conv2D} & \textbf{BCOP Overhead (\%)} & \textbf{AOC (ours) Overhead (\%)} \\
+%         \hline
+%             Max Train Memory (GB) & 13.891GB & 9.759GB & 9.082GB & 52\% & 7\% \\ 
+%         Max Test Memory (GB) & 2.785GB & 2.731GB & 2.699GB & 3\% & 1\% \\ 
+%         Train Mean (ms) & 0.624ms & 0.354ms & 0.284ms & 119\% & 24\% \\ 
+%         Test Mean (ms) & 0.135ms & 0.097ms & 0.091ms & 48\% & 6\% \\ 
+%     \end{tabular}
+%     \caption{Comparison of BCOP, AOC (ours), and Conv2D}
+%     \label{tab:comparison_overhead}
+% \end{table}
+% \begin{@twocolumnfalse}
+% \begin{figure}
+% \begin{table*}[ht]
+%     \centering
+%     \begin{tabular}{ccccc}
+%         \textbf{Name} & \textbf{Train Time (ms)} & \textbf{Train Memory (GB)} & \textbf{Test Time (ms)} & \textbf{Test Memory (GB)} \\
+%         \hline
+%             AOC (ours) & 239.43 $\pm$ 22.333 (75\%) & 5.347 $\pm$ 0 (14\%) & 53.04 $\pm$ 10.013 (5\%) & 1.421 $\pm$ 0 (2\%) \\ 
+%             BCOP & 388.897 $\pm$ 16.677 (184\%) & 8.601 $\pm$ 0 (84\%) & 62.454 $\pm$ 3.034 (24\%) & 1.47 $\pm$ 0 (5\%) \\
+%             SOC & 664.422 $\pm$ 1.534 (386\%) & 12.754 $\pm$ 0 (173\%) & 428.588 $\pm$ 1.541 (755\%) & 1.806 $\pm$ 0 (30\%) \\
+%             Cayley & 583.609 $\pm$ 22.73 (327\%) & 18.999 $\pm$ 0 (307\%) & 247.297 $\pm$ 4.535 (393\%) & 2.016 $\pm$ 0 (45\%) \\
+%             Conv2D & 136.602 $\pm$ 2.363  & 4.668 $\pm$ 0  & 50.101 $\pm$ 7.936  & 1.388 $\pm$ 0  \\
+%         \hline
+%             AOC (ours) & 354.019 $\pm$ 15.234 (24\%) & 9.759 $\pm$ 0 (7\%) & 96.896 $\pm$ 18.774 (6\%) & 2.731 $\pm$ 0 (1\%) \\ 
+%             BCOP & 624.391 $\pm$ 9.206 (119\%) & 13.891 $\pm$ 0 (52\%) & 135.08 $\pm$ 8.559 (47\%) & 2.785 $\pm$ 0 (3\%) \\ 
+%             Conv2D & 284.021 $\pm$ 9.403  & 9.082 $\pm$ 0  & 91.337 $\pm$ 8.234  & 2.699 $\pm$ 0  \\ 
+%         \hline
+%             AOC (ours) & 622.232 $\pm$ 21.486 (13\%) & 18.57 $\pm$ 0 (3\%) & 175.995 $\pm$ 43.804 (2\%) & 5.35 $\pm$ 0  \\ 
+%             BCOP & 1116.203 $\pm$ 48.184 (103\%) & 24.612 $\pm$ 0 (37\%) & 255.735 $\pm$ 24.586 (48\%) & 5.401 $\pm$ 0 (1\%) \\ 
+%             Conv2D & 549.864 $\pm$ 7.059  & 17.893 $\pm$ 0  & 172.412 $\pm$ 28.683  & 5.318 $\pm$ 0  \\ 
+%     \end{tabular}
+%     % \caption{Comparison of Convolution Types}
+%     % \label{tab:comparison_overhead}
+% % \end{table}
+%     \caption{Comparison of Convolution Types}
+%     \label{tab:comparison_overhead}
+% % \end{figure}
+% \end{table*}
+
+% \end{@twocolumnfalse}
+
+
+% \begin{table*}[ht]
+%     \centering
+%     \begin{tabular}{cccc}
+%         \textbf{Name} & \textbf{Max batch size} & \textbf{Time Overhead (train/test)} & \textbf{Memory overhead (train/test)} \\
+%         \hline
+%             SOC & 128 & 386\% / 755\% & 173\% / 30\% \\
+%         % \hline
+%             Cayley & 128 & 327\% / 393\% & 307\% / 45\% \\
+%             BCOP & 512 & 103\% / 48\% & 37\% / 1\%\\ 
+%             FlashLipschitz (ours) & \textbf{512} &\textbf{ 13\% / 2\%} & \textbf{3\% / 0\%} \\ 
+%     \end{tabular}
+%     % \caption{Comparison of Convolution Types}
+%     % \label{tab:comparison_overhead}
+% % \end{table}
+%     \caption{Comparison of Convolution Types}
+%     \label{tab:comparison_overhead}
+% % \end{figure}
+% \end{table*}
+
+% \begin{table*}[ht]
+%     \centering
+%     \begin{tabular}{cccc}
+%         \textbf{Name} & \textbf{Max batch size} & \textbf{Time (train/test)} & \textbf{Memory (train/test)} \\
+%         \hline
+%             Conv2D & 512 & 1x / 1x & 1x / 1x \\
+%         % \hline
+%             SOC & 128 & 4,86x / 8,55x & 2,73x / 1,3x \\
+%             Cayley & 128 & 4,27x / 4,93x & 4,07x / 1,45x \\
+%             BCOP & 512 & 2,03x / 1,48x & 1,37x / 1,01x\\ 
+%             FlashLipschitz (ours) & 512 & 1,13x / 1,02x & 1,03x / 1,006x \\ 
+%     \end{tabular}
+%     % \caption{Comparison of Convolution Types}
+%     % \label{tab:comparison_overhead}
+% % \end{table}
+%     \caption{Comparison of Convolution Types}
+%     \label{tab:comparison_overhead}
+% % \end{figure}
+% \end{table*}
+
+% \begin{table*}[ht]
+%     \centering
+%     \begin{tabular}{cccc}
+%         \textbf{Name} & \textbf{Max batch size} & \textbf{Train Time} & \textbf{Train Memory } \\
+%         \hline
+%             Conv2D & 512 & 1x & 1x \\
+%             SOC & 128 & 4,86x & 2,73x \\
+%             Cayley & 128 & 4,27x & 4,07x \\
+%             BCOP & 512 & 2,03x & 1,37x \\ 
+%             FlashLipschitz (ours) & \textbf{512} & \textbf{1,13x} & \textbf{1,03x} \\ 
+%     \end{tabular}
+%     % \caption{Comparison of Convolution Types}
+%     % \label{tab:comparison_overhead}
+% % \end{table}
+%     \caption{Comparison of Convolution Types}
+%     \label{tab:comparison_overhead}
+% % \end{figure}
+% \end{table*}
+
+% \begin{table*}[ht]
+%     \centering
+%     \begin{tabular}{lccccc}
+%         \textbf{Name} & \textbf{Batch Size} & \textbf{Train Time (ms)} & \textbf{Train Memory (GB)} & \textbf{Test Time (ms)} & \textbf{Test Memory (GB)} \\
+%         \hline        
+%             Conv2D & 128 & 136.602  & 4.668  & 50.101  & 1.388  \\
+%             FlashLipschitz (ours) &  & \textbf{239.43 (+75\%)} & \textbf{5.347 (+14\%)} & \textbf{53.04 (+5\%)} & \textbf{1.421 (+2\%)} \\ 
+%             BCOP &  & 388.897 (+184\%) & 8.601 (+84\%) & 62.454  (+24\%) & 1.47 (+5\%) \\
+%             SOC &  & 664.422 (+386\%) & 12.754 (+173\%) & 428.588 (+755\%) & 1.806 (+30\%) \\
+%             Cayley &  & 583.609 (+327\%) & 18.999 (+307\%) & 247.297 (+393\%) & 2.016 (+45\%) \\
+%         \hline
+%             Conv2D & 256 & 284.021  & 9.082  & 91.337  & 2.699  \\ 
+%             FlashLipschitz (ours) &  & \textbf{354.019 (+24\%)} & \textbf{9.759 (+7\%)} & \textbf{96.896 (+6\%)} & \textbf{2.731 (+1\%)} \\ 
+%             BCOP &  & 624.391 (+119\%) & 13.891 (+52\%) & 135.08 (+47\%) & 2.785 (+3\%) \\
+%         \hline
+%             Conv2D & 512 & 549.864  & 17.893  & 172.412  & 5.318  \\
+%             FlashLipschitz (ours) &  & \textbf{622.232 (+13\%)} & \textbf{18.57 (+3\%)} & \textbf{175.995 (+2\%)} & \textbf{5.35 (+0\%)} \\ 
+%             BCOP &  & 1116.203 (+103\%) & 24.612 (+37\%) & 255.735 (+48\%) & 5.401 (+1\%) \\
+%     \end{tabular}
+%     % \caption{Comparison of Convolution Types}
+%     % \label{tab:comparison_overhead}
+% % \end{table}
+%     \caption{\textbf{Our implementation benefits from scale}: As demonstrated on a ResNet-34, previous methods impose significant overhead when input images are large (224x224). By contrast, since our method's computational cost is independent of layer input size, its overhead decreases as batch size increases. Furthermore, the low memory overhead enables larger batches at scale.}
+%     \label{tab:comparison_overhead}
+% % \end{figure}
+% \end{table*}
+
+% \begin{table*}[ht]
+%     \centering
+%     \begin{tabular}{llllll}
+%         \textbf{Name} & \textbf{Batch Size} & \textbf{Train Time (ms)} & \textbf{Train Memory (GB)} & \textbf{Test Time (ms)} & \textbf{Test Memory (GB)} \\
+%         \hline        
+%             Conv2D & 128 & 136  & 4.6  & 50  & 1.4  \\
+%             AOC (ours) &  & \textbf{239 (+75\%)} & \textbf{5.347 (+14\%)} & \textbf{53 (+5\%)} & \textbf{1.4 (+2\%)} \\ 
+%             BCOP &  & 388 (+184\%) & 8.6 (+84\%) & 62  (+24\%) & 1.5 (+5\%) \\
+%             Cayley &  & 583 (+327\%) & 18.9 (+307\%) & 247 (+393\%) & 2.0 (+45\%) \\
+%             SOC &  & 664 (+386\%) & 12.7 (+173\%) & 428 (+755\%) & 1.8 (+30\%) \\
+%         \hline
+%             Conv2D & 256 & 284  & 9.0  & 91  & 2.6  \\ 
+%             AOC (ours) &  & \textbf{354 (+24\%)} & \textbf{9.7 (+7\%)} & \textbf{96 (+6\%)} & \textbf{2.7 (+1\%)} \\ 
+%             BCOP &  & 624 (+119\%) & 13.8 (+52\%) & 135 (+47\%) & 2.7 (+3\%) \\
+%         \hline
+%             Conv2D & 512 & 549  & 17.8  & 172  & 5.3  \\
+%             AOC (ours) &  & \textbf{622 (+13\%)} & \textbf{18.5 (+3\%)} & \textbf{175 (+2\%)} & \textbf{5.3 (+0\%)} \\ 
+%             BCOP &  & 1116 (+103\%) & 24.6 (+37\%) & 255 (+48\%) & 5.4 (+1\%) \\
+%     \end{tabular}
+%     % \caption{Comparison of Convolution Types}
+%     % \label{tab:comparison_overhead}
+% % \end{table}
+%     \caption{\textbf{Our implementation benefits from scale}: As demonstrated on a ResNet-34, previous methods impose significant overhead when input images are large (224x224). By contrast, since our method's computational cost is independent of layer input size, its overhead decreases as batch size increases. Furthermore, the low memory overhead enables larger batches at scale.}
+%     \label{tab:comparison_overhead}
+% % \end{figure}
+% \end{table*}
+
+
+\begin{table*}[ht]
+    \centering
+    \small
+    \begin{tabular}{lrrrrr}
+        \textbf{Name} & \makecell[r]{\textbf{Batch}\\\textbf{Size}} & \makecell[r]{\textbf{Train Time}\\\textbf{(ms)}} & \makecell[r]{\textbf{Train Memory}\\\textbf{(GB)}} & \makecell[r]{\textbf{Test Time}\\\textbf{(ms)}} & \makecell[r]{\textbf{Test Memory}\\\textbf{(GB)}} \\
+        \hline
+            Conv2D (ref) & 128 & 137 (1.00x) & 4.7 (1.00x) & 50 (1.00x) & 1.4 (1.00x) \\
+            AOC (ours) & 128 & \textbf{239 (1.75x)} & \textbf{5.3 (1.15x)} & \textbf{53 (1.06x)} & \textbf{1.4 (1.02x)} \\ 
+            BCOP & 128 & 389 (2.85x) & 8.6 (1.84x) & 62 (1.25x) & 1.5 (1.06x) \\
+            SOC & 128 & 664 (4.86x) & 12.8 (2.73x) & 429 (8.55x) & 1.8 (1.30x) \\
+            Cayley & 128 & 584 (4.27x) & 19.0 (4.07x) & 247 (4.94x) & 2.0 (1.45x) \\
+        \hline
+            Conv2D (ref) & 256 & 284 (1.00x) & 9.1 (1.00x) & 91 (1.00x) & 2.7 (1.00x) \\ 
+            AOC (ours) & 256 & \textbf{354 (1.25x)} & \textbf{9.8 (1.07x)} & \textbf{97 (1.06x)} & \textbf{2.7 (1.01x)} \\ 
+            BCOP & 256 & 624 (2.20x) & 13.9 (1.53x) & 135 (1.48x) & 2.8 (1.03x) \\
+        \hline
+            Conv2D (ref) & 512 & 550 (1.00x) & 17.9 (1.00x) & 172 (1.00x) & 5.3 (1.00x) \\
+            AOC (ours) & 512 & \textbf{622 (1.13x)} & \textbf{18.6 (1.04x)} & \textbf{176 (1.02x)} & \textbf{5.4 (1.01x)} \\ 
+            BCOP & 512 & 1116 (2.03x) & 24.6 (1.38x) & 256 (1.48x) & 5.4 (1.02x) \\
+    \end{tabular}
+    % \caption{Comparison of Convolution Types}
+    % \label{tab:comparison_overhead}
+% \end{table}
+    \caption{\textbf{AOC benefits from scale.} As demonstrated on a ResNet-34, previous methods impose significant overhead when input images are large ($224 \times 224$). In contrast, since our method's computational cost is independent of layer input size, its overhead decreases as batch size increases. Furthermore, the low memory overhead enables larger batches at scale.\vspace{-4mm}}
+    \label{tab:comparison_overhead}
+% \end{figure}
+\end{table*}
+
+
+
+In this section, we evaluate the expressiveness and scalability of AOC convolutions. To assess expressiveness, we require a benchmark that also accounts for the orthogonality property. 
+%We choose to conduct this evaluation in the context of certifiable robustness using 1-Lipschitz constrained networks, where enforcing orthogonality allows for a tighter Lipschitz estimation, ultimately leading to improved robustness.
+We evaluate this within the framework of 
+%We evaluate this in 
+certifiable robustness using 1-Lipschitz constrained networks, where enforcing orthogonality tightens Lipschitz estimation, improving robustness.
+\iffalse
+\textbf{Indeed, if $f$ is a 1-Lipschitz classification function and $l$ is the label index, a lower bound on robustness radius $ \epsilon$ in $L_2$ norm at $x$ is:}
+
+\vspace{-3mm}
+\[
+    \epsilon \geq \frac{f(x)_l - \max_{i \neq l}f(x)_i}{\sqrt{2}}
+    \vspace{-2mm}
+\]
+\textbf{This certificate is independent of adversarial attacks, ensuring that it remains valid even if new type of attacks arise. It is also computationally cheap and optimizable in a loss function \cite{singla_improved_2022, hu_recipe_2023}.}
+
+\textbf{The tightness of the Lipschitz constant estimation for a classifier directly impacts the robustness certificates. The overall Lipschitz constant of a sequence of layers is typically estimated as the product of the individual layer constants; however, this bound is often loose, and computing the exact constant is NP-hard \cite{virmaux2018lipschitz}. \cite{anil_sorting_2019} shows that combining MaxMin activation with orthogonal layers makes the aforementioned bound tight, aligning with the objectives of AOC layers.
+}
+\fi
+% AOC is strictly constrained to represent 1-Lipschitz functions, which is particularly relevant for building Lipschitz-constrained neural networks. 
+AOC strictly represents 1-Lipschitz functions, crucial for Lipschitz-constrained networks.
+The overall Lipschitz constant of a sequence of layers is typically estimated as the product of the individual layer constants; however, this bound is often loose, and computing the exact constant is NP-hard \cite{virmaux2018lipschitz}. \cite{anil_sorting_2019} 
+shows that combining MaxMin activation with orthogonal layers makes the aforementioned bound tight. \cite{bartlett2017spectrally} showed that if $f$ is a 1-Lipschitz classification function and $l$ is the label index, a lower bound on robustness radius $ \epsilon$ in $L_2$ norm at $x$ is:
+\vspace{-1.5mm}
+\[
+    \epsilon \geq \frac{f(x)_l - \max_{i \neq l}f(x)_i}{\sqrt{2}}
+    \vspace{-2mm}
+\]
+%has demonstrated that combining the MaxMin activation with orthogonal layers enables tightly bounded Lipschitz constants, contributing to enhanced robustness. This work also showed that if $f$ is a 1-Lipschitz classification function and $l$ is the label index,  it is possible to compute a lower bound of the robustness radius $ \epsilon$ in $L_2$ norm at a given $x$:
+% This certificate does not involve empirical adversarial attacks, so the certifiable robustness of a network will not change if new adversarial attacks are developed. Also, this certificate is cheap to compute and can be optimized in a loss function \cite{singla_improved_2022, hu_recipe_2023}.
+This certificate is independent of adversarial attacks, ensuring robustness remains unchanged even if new attacks arise. It is also computationally cheap and optimizable in a loss function \cite{singla_improved_2022, hu_recipe_2023}.
+
+% To illustrate the expressiveness and scalability of AOC, we conduct experiments on two image classification benchmarks: CIFAR-10 \cite{krizhevsky2009learning}, a widely used dataset for certifiable robustness evaluation, and ImageNet \cite{deng2009imagenet}, which serves as a large-scale benchmark to assess scalability. For both tasks, we train two networks under different configurations: one prioritizing accuracy and another emphasizing robustness, allowing us to comprehensively analyze the capabilities of AOC convolutions.
+To showcase AOC's expressiveness and scalability, we conduct experiments on CIFAR-10, a widely used benchmark for certifiable robustness, and ImageNet, a large-scale dataset. 
+We train two networks per task: one prioritizing accuracy-noted \textit{"AOC accurate"} in~\cref{tab:robust_cifar10}- and the other robustness-denoted \textit{"AOC robust"}-enabling a thorough evaluation. Finally, the training recipe of \cite{hu_recipe_2023} was used with original convolutions replaced by AOC, showcasing its expressiveness with extra data. This last recipe is denoted \textit{"AOC robust*"}.
+\iffalse
+\textbf{To highlight AOC's expressiveness and scalability, we conduct experiments on CIFAR-10, a widely used benchmark for certifiable robustness, and ImageNet, a large-scale dataset. We showcase their capability to explore the trade-off between robustness and accuracy by training two networks per task -one optimized for accuracy and the other for robustness—allowing for a thorough evaluation.}
+\fi
+% Finally, to evaluate the scalability of AOC, we compare the computational overhead induced by AOC convolutions on a standard architecture, providing insights into the practical feasibility of AOC in large-scale applications.
+For scalability, we compare AOC's computational overhead on a standard architecture, assessing its feasibility in large-scale applications.
+% Reparametrization offers a property that cannot be enforced by regularization methods: the layer is constrained to represent 1-Lipschitz functions. Since most networks are built as a sequence of layers, it is possible to construct a neural whose Lipschitz constant is bounded: this constant is computed as the product of the lipschitz constant of each layer. This bound is usually loose and its exact computation is NP-hard \cite{virmaux2018lipschitz}. Work of \cite{anil_sorting_2019} showed that the MaxMin activation, coupled with orthogonal layers allows the construction of networks whose Lipschitz constant is tightly bounded. Hence our evaluation focuses only on Lipschitz constrained networks. Those networks find many uses: they are tightly related with WGAN, and optimal transport \cite{arjovsky2017wasserstein, bethune2024deep} but can also unlock scalable differential privacy \cite{bethunedp}, avoid singularities in diffusion models \cite{yang2023lipschitz} and enjoy proof of existence and uniqueness of their solution in classification \cite{bethune_pay_2022} and flow matching networks \cite{perko2013differential, coddington1956theory}. Finally those networks can be used to compute robustness certificates.
+
+% In this section, we show that AOC convolutions allow the training of expressive, robust, and larger neural networks with minimal training and inference overhead.
+
+% \noindent\textbf{Choice of the benchmark: } \todo{In order to evaluate the expressivity and scalability of AOC layers, we decided to focus on certifiable robustness with Lipschitz constrained networks.
+% Pourquoi on choisit les Lips constaint}
+% Reparametrization ensures a property that regularization methods cannot: the layer is strictly constrained to represent 1-Lipschitz functions. Since most neural networks are composed of sequential layers, this enables the construction of models with a bounded Lipschitz constant, typically estimated as the product of the Lipschitz constants of individual layers. However, this bound is often loose, and computing the exact constant is NP-hard \cite{virmaux2018lipschitz}. The work of \citet{anil_sorting_2019} demonstrated that combining the MaxMin activation with orthogonal layers allows for tightly bounded Lipschitz constants. AOC will be evaluated in this context.
+% \todo{On mesure Accuracy, certifiable robustness, et cout en calcul: 
+% accuracy strightforward pour expressivité en particulier sous contrainte 1Lip (plus dur d'etre accurate)
+% certifiable mesure la robustesse sans attaque + tight bound}
+
+
+%Lipschitz-constrained networks have diverse applications: they are closely linked to WGANs and optimal transport \cite{arjovsky2017wasserstein, bethune2024deep}, enable scalable differential privacy \cite{bethunedp}, and prevent singularities in diffusion models \cite{yang2023lipschitz}. Additionally, they guarantee the existence and uniqueness of solutions in classification \cite{bethune_pay_2022} and flow-matching networks \cite{perko2013differential, coddington1956theory}. 
+% Importantly, these networks also facilitate the computation of robustness certificates, further solidifying their role in reliable and interpretable machine learning.
+
+\subsection{Certifiable robustness with 1-Lipschitz Networks.}\label{subsec:certif_rob}
+%  \citet{anil_sorting_2019} showed that if $f$ is a 1-Lipschitz classification function and $l$ is the label index we can compute a lower bound of the robustness radius $ \epsilon$ in $L_2$ norm at a given $x$:
+% \vspace{-2mm}
+% \[
+%     \epsilon \geq \frac{f(x)_l - \max_{i \neq l}f(x)_i}{\sqrt{2}}
+%     \vspace{-2mm}
+% \]
+% This certificate does not involve empirical adversarial attacks, so the certifiable robustness of a network will not change if new adversarial attacks are developed. Also, this certificate is cheap to compute and can be optimized in a loss function \cite{singla_improved_2022, hu_recipe_2023}.
+%We illustrate the expressiveness and scalability of AOC on two image classification tasks: CIFAR-10 \cite{krizhevsky2009learning} as an established benchmark on certifiable robustness and ImageNet \cite{deng2009imagenet} to illustrate the scalability of our approach. For both tasks we train two networks in two different settings: one emphasizing accuracy and one emphasizing robustness. 
+Detailed architectures and training parameters are detailed in \cref{sec:ap_training_details}. We report in \cref{tab:robust_cifar10} both the standard and provable accuracy\footnote{proportion of samples with a certificate greater than $\epsilon$}  and compare with previous methods.  
+We will highlight the interest of AOC through the 3 following observations.
+
+\noindent\textbf{Observation 1: AOC allows construction of expressive 1-Lipschitz networks.}
+While AOC does not improve the expressiveness of its original building blocks (namely BCOP)\footnote{see \cref{ap:repoducing_bcop} for the reproduction of their results}, its flexibility unlocks the construction of complex blocks as depicted in \cref{fig:imagenet_block}. Such a block permits the training of 1-Lipschitz networks that achieve competitive performance with similar sizes and similar training cost as their unconstrained counterparts; 
+The \textit{"AOC accurate"} training configuration (in \cref{tab:robust_cifar10}) achieves more than  90\% clean accuracy on  CIFAR-10 using less than 3M parameters, showing that AOC is expressive.
+This comes at the cost of 0\% provable accuracy (certificates smaller than the radius $\epsilon = 36/255$): regardless of its resilience to empirical adversarial attacks.
+Conversely, the \textit{AOC robust} provides a high certifiable accuracy (64.3\%), but lower clean accuracy (74\% instead of 91.5\%), illustrating the well-known accuracy-robustness trade-off \cite{bethune_pay_2022}. Finally, networks trained with AOC do not use normalization techniques such as batch normalization~\cite{ioffe2015batch} or layer normalization~\cite {ba2016layer}. 
+
+%The training of a 1-Lipschitz network with more than 90\% accuracy on  CIFAR-10 using less than 3M parameters shows that AOC is expressive.
+\noindent\textbf{Observation 2: Old methods become competitive with scale.} Scaling the original BCOP network of \cite{li_preventing_2019} from 2.6M to 41.3M parameters makes this method competitive with more recent approaches ($+6\%$ on provable accuracy). This is especially notable as our experiments did not use techniques such as last layer normalization\cite{singla_improved_2022}, certificate regularization \cite{singla_skew_2021}, or DDPM augmentation \cite{hu_recipe_2023}.
+%to obtain our results. 
+This was possible only due to the fast implementation of AOC, which enables larger batch sizes and faster training.
+% This was possible only thanks to the fast implementation of AOC, which unlocks larger batch sizes and quicker training. % for the same computational budget.
+
+\noindent\textbf{Observation 3: State of the art aligns with computational budget.} Our experiments align with the work of \cite{prach2024intriguing, bubeck2021universal}, who noted that robust training does not have the same scaling laws as standard training: in order to obtain robustness, alongside accuracy and generalization, more data and larger architectures are required by an order of magnitude greater than was is currently being done. This explains why \cite{hu_recipe_2023} used 4.5 million of images for their results on CIFAR-10, highlighting the need for scalable implementations that can handle this trend. 
+
+% However, authors of \cite{prach_1-lipschitz_2023} observed that improvement of the state of the art in certifiable adversarial robustness comes along with larger architectures and longer training times. Therefore, given the same computational budget, we can expect that our efficient implementation unlocks larger networks and more training steps, which in turn should improve final performance.
+
+
+
+    
+
+\subsection{Scalability of AOC}
+% \todo{Soft constraints (regularization) methods for orthogonal convolution are only briefly mentioned in the paper as early works and Riemannian gradient descent methods are not reviewed, hurting the completeness and systematicness of the review.}
+    As observed by \cite{prach_1-lipschitz_2023}, a slow implementation leads to increased training time and, consequently, lower performances in practical contexts. In this section, we demonstrate that AOC offers a key advantage: its computational cost does not depend on the input size or shape, making it well-suited for large-scale datasets, where handling large images is crucial. Although other methods may perform better on smaller datasets, they struggle to scale to widely used architectures like ResNet-34 \cite{he_deep_2015}, as shown in \cref{tab:comparison_overhead}. On the other end, our method’s low memory cost enables larger batch sizes, and since our parameterization is batch-size independent, the overhead decreases as batch size increases. Ultimately, this results in a training time only 13\% slower than its unconstrained counterpart. The detailed protocol is detailed in \cref{ap:scale_xp}.
+    % As observed by \cite{prach_1-lipschitz_2023}, a method's implementation is a key factor for its success: a slow implementation leads to increased training time and, consequently, lower performances in practical contexts like robust training. In this section, we demonstrate that AOC offers a key advantage: its computational cost does not depend on the input size or shape, making it well-suited for large-scale datasets like ImageNet \cite{deng2009imagenet}, where handling large images is crucial. Although other methods may perform better on smaller datasets such as CIFAR \cite{krizhevsky2009learning} or Tiny ImageNet \cite{wu2017tiny}, they struggle to scale to widely used architectures like ResNet-34 \cite{he_deep_2015}, as shown in \cref{tab:comparison_overhead}. On the other end, our method’s low memory cost enables larger batch sizes, and since our parameterization is batch-size independent, the overhead decreases as batch size increases. Ultimately, this results in a training time only 13\% slower than its unconstrained counterpart.
+    % Among others components, our method is build on top of BCOP that were known for being slow. This resulted in slower training time and ultimately, lower performance in robust training \cite{prach_1-lipschitz_2023}. In this section we show that, despite its slow implementation, such method enjoy a desirable property: its cost is not dependent of the input size and shape, making it suitable for practical training on datasets like imagenet which require handling large images. Despite their relative performance on smaller dataset like cifar or tiny imagenet, most methods don't scale well to usual architectures like resnet-34 as shown in \cref{tab:comparison_overhead}. We can also notice that the low memory overhead of our method unlock larger batch sizes. Coupled with the fact that our parametrization is independent to the batch size, it result in lower overheads as the batch size increases. Ultimately, this results in a training time that is only 13\% slower than its unconstrained counterpart on a Resnet34 (modified : replaced transition blocks with strided convs)
+    
+
+% \vspace{-2mm}
+
+
+
+\label{sec:eval}
 
 \section{Conclusion and Broader Impact}
 
-\input{chapters/aoc_parts/06_conclusions}\label{sec:conclusions}
+% \begin{itemize}
+%     \item we handle all extensions together: ie a strided, dilated, grouped convtranspose
+%     \item  beyond the application to this method: it's a powerfull tool to improve many existing methods cf appendix with improvements of SOC (6x less memory) SLL (unlock stride / channel change), Sandwish layers (order of magnitude on convolutions).
+% \end{itemize}
+%We introduced AOC, a method to build orthogonal convolutions that support features like stride, transposition, groups, and dilation. 
+%
+% \vspace{-2mm}
+In this paper, we introduced AOC, a method that combines two existing approaches in order to build orthogonal convolutions that support essential features such as stride, transposition, groups, and dilation. Our results demonstrate that this layer is both expressive and scalable.
+%
+%We also showed that this layer is expressive and scales well. Beyond this, our framework can enhance other existing layers: in  \cref{sec:ap_improving_existing}, we combine our method with SLL~\cite{araujo_unified_2023} to build a downsampling residual block, propose an improvement to reduce SOC~\cite{singla_fantastic_2021} memory consumption or suggest a way to make Sandwich layers~\cite{wang_direct_2023} scalable for convolutions.
+Beyond its standalone benefits, our framework enhances existing layers: In \cref{sec:conv}, we integrate our method with SLL \cite{araujo_unified_2023} to build an efficient downsampling residual block, propose optimizations to reduce the memory footprint of SOC \cite{singla_fantastic_2021}, and present a strategy to make Sandwich layers \cite{wang_direct_2023} scalable for convolutions.
+%
+%Also, although our experiments used AOC in isolation, we think this layer is intended to be seamlessly combined with other methods, such as SLL, where each approach's strengths can amplify the other's capabilities.
+%We believe this work opens new paths for advancing modern convolutional architectures. 
+Besides, AOC, by unlocking features such as transposition, grouping, or dilation, paves the way for future work leveraging orthogonality in varied architectures and applications, such as upsampling convolutions for U-Nets~\cite{ronneberger2015u}, VAEs~\cite{kingma2013auto},  WGANs and Optimal transport ~\cite{arjovsky2017wasserstein,bethune2024deep}, or reduced complexity ~\cite{li2018csrnet,xie2017aggregated}. 
+In support of further research and development, we open sourced our implementation in the \fulllibname{} library.
+
+
+%
+%We believe that this unlocks future exploration of modern convolutional architectures. As a part of our contributions lie in its implementation, we made it available \libname, fostering future research and improvements.
+%inviting future research and improvements.
+\label{sec:conclusions}

@@ -40,7 +40,7 @@ In this section, we  outline the key steps in constructing orthogonal convolutio
         \kernel{P} = \mathtt{stack(}[\kernel{N}, \kernel{I - N}]\mathtt{, axis=-1)} \Rightarrow \kernel{P} \mathbconv \kernel{P}^T = \kernel{I}
         \]
     Similarly, stacking along the penultimate dimension, $\kernel{Q} = \mathtt{stack([N, I - N], axis=-2)}$, results in an orthogonal $c \times c \times 2 \times 1$ kernel. 
-    % \franck{est ce qu'il faut que c soit divisible par 2?} 
+     
     Although already proven by previous work, proof of this can be found in \cref{sec:ap_1x2_ortho}.
     
     \paragraph{From $1 \times 2$ to $k_1 \times k_2$ Orthogonal Convolutions.}  
@@ -443,7 +443,7 @@ We present here several properties of the  \Bconv{} operator  $\mathbconv$:
 \end{align*}
 
         \end{proof}
-        \todo{\franck{DONE mais j'ai pas trouvé plus clair}The proof of the orthogonality of RKO in Appendix E3 is incomplete and informal. Since there is no page limit for the Appendix, it would be better to provide a full and formal proof of all theoretical results presented in the paper.}
+        \todo{The proof of the orthogonality of RKO in Appendix E3 is incomplete and informal. Since there is no page limit for the Appendix, it would be better to provide a full and formal proof of all theoretical results presented in the paper.}
 
         %The proof is given by the property that when $k=s$ the convolution can be decomposed into a reshaping operation (invertible downsampling with factor s) followed by a $1\times 1$ convolution with kernel $K'\in\RR^{c_o\times c_is^2 \times 1\times 1}$. The kernel $K'$ is the orthogonal matrix built by RKO method. 
 
@@ -600,7 +600,7 @@ Thus the convolution with dilation is equivalent to the application of the convo
    
     For strided convolutions, strict orthogonality implies that $c_o=c_is^2$. This allows to construct Normalizing Flows that reduce the spatial input dimensions by increasing  the number of channels. Note that, this is not equivalent to applying an InvertibleDownSampling operation before the convolution since the strided convolution kernel requires $s^2$ fewer parameters. Note that AOC allow to extend invertibilty to grouped and/or dilated convolutions.
     
-    %\franck{todo what about dilated? }
+    
     
 \section{Architecture and training details}\label{sec:ap_training_details}
 
@@ -630,7 +630,7 @@ Thus the convolution with dilation is equivalent to the application of the convo
         \hfill
         \begin{subfigure}[b]{0.40\textwidth}
             \includegraphics[width=\linewidth]{figures/ch3_aoc/illustrations/ortho_block2.png}
-            \caption{\textbf{We can construct complex blocks.} These blocks can reduce the number of parameters of our models, thanks to the flexibility of AOC. Lipschitz continuity is guaranteed when $\alpha \in [0, 1]$. }%\thib{todo missing alpha in skip connection}
+            \caption{\textbf{We can construct complex blocks.} These blocks can reduce the number of parameters of our models, thanks to the flexibility of AOC. Lipschitz continuity is guaranteed when $\alpha \in [0, 1]$. }
             \label{fig:imagenet_block}
         \end{subfigure}
         \caption{\textbf{Architecture used for CIFAR-10 accurate setting.} This architecture makes use of its flexibility to allow performance with a limited parameter count. \textbf{Left,} table of the global network architecture. \textbf{Right,} detail of he residual depthwise block.}
@@ -638,7 +638,72 @@ Thus the convolution with dilation is equivalent to the application of the convo
     \end{figure*}
 
     
-    \input{chapters/aoc_parts/hparams}
+    \begin{table}[h]
+    \centering
+    \small
+    \renewcommand{\arraystretch}{1.2}
+    \begin{tabular}{lcccc}
+        \hline
+        \textbf{Hyperparameter} 
+        & \makecell{\textbf{CIFAR-10}\\\textbf{Acc.}} 
+        & \makecell{\textbf{CIFAR-10}\\\textbf{Rob.}} 
+        & \makecell{\textbf{ImageNet}\\\textbf{Acc.}} 
+        & \makecell{\textbf{ImageNet}\\\textbf{Rob.}} 
+        \\
+        \hline
+        \textbf{Loss function} 
+        & Cosine similarity 
+        & \makecell{\cite{prach_almost-orthogonal_2022} \\ $m= 1.5\sqrt{2}$ \\ $\tau=0.125$} 
+        & Cosine similarity 
+        & \makecell{\cite{prach_almost-orthogonal_2022} \\ $m= 1.5\sqrt{2}$ \\ $\tau=0.125$} 
+        \\
+        \textbf{Optimizer} 
+        & \multicolumn{4}{c}{ScheduleFree \cite{defazio2024roadscheduled}} 
+        \\
+        \textbf{Learning rate} 
+        & $5 \times 10^{-3}$ 
+        & $1 \times 10^{-4}$ 
+        & $1 \times 10^{-2}$ 
+        & $1 \times 10^{-3}$ 
+        \\
+        \textbf{Batch size} 
+        & 1024 
+        & 1024 
+        & 512 
+        & 512
+        \\
+        \textbf{Epochs}
+        & 150 
+        & 3000 
+        & 90
+        & 300
+        \\
+        \makecell[l]{\textbf{RandAugment}\\\textbf{parameters}} 
+        & m=6, n=2
+        & m=6, n=1
+        & m=7, n=2  
+        & None
+        \\
+        \makecell[l]{\textbf{Random crop}\\\textbf{parameters}} 
+        & scale = 0.25
+        & scale = 0.5
+        & scale = 0.5
+        & scale = 0.08
+        \\
+        \textbf{Hardware} 
+        & RTX 3080 $\times$ 1
+        & RTX 4090 $\times$ 1
+        & RTX 4090 $\times$ 2
+        & RTX 4090 $\times$ 2
+        \\
+        \hline
+    \end{tabular}
+    \caption{\textbf{Training Hyperparameters for the Four 1-Lipschitz Networks.} 
+    ``Acc.'' refers to the high-accuracy setting, and 
+    ``Rob.'' refers to the robust setting.}
+    \label{tab:hyperparams}
+\end{table}
+
 
 All hyperparameters of the experiments are detailed in \cref{tab:hyperparams}. These parameters were not heavily tuned: the batch size was set to a large value, but we limited it to 1024 to avoid training for too many epochs. This is due to the fact that robust networks seem to benefit more from more training steps rather than larger batch sizes. Once the batch size was set, the learning rate was tuned the following way: by training multiple times for 500 steps, the learning was increased until the accuracy at the end of these 500 steps was maximized, and the final learning rate was set to the largest values before the metrics plateaus.
 
@@ -742,41 +807,11 @@ This explains the drastic difference between standard and robust networks in ter
     % \begin{figure}%[h]
     %     \centering
     %     \includegraphics[width=0.45\linewidth]{figures/ch3_aoc/illustrations/ortho_block.png}
-    %     \caption{\textbf{We can construct complex blocks.} These blocks can reduce the number of parameters of our models, thanks to the flexibility of AOC.}\thib{todo missing alpha in skip connection}
+    %     \caption{\textbf{We can construct complex blocks.} These blocks can reduce the number of parameters of our models, thanks to the flexibility of AOC.}
     %     \label{fig:imagenet_block}
     % \end{figure}
 
-% \thib{
 
-% \paragraph{Expressive power.}
-
-%     \todo{The reviewer would like to encourage adding explanations for the undeclared letters such as the binary loss threshold eps=36/255  (to explain the so-called “provable accuracy”), the hinge loss margin m=72/255,1.5/2 and how these numbers are tuned to avoid confusion}
-    
-%     The most straightforward way to evaluate the expressiveness of our layers is to apply them to classification problems. It is well known that 1-Lipschitz constrained networks face an inherent trade-off between accuracy and robustness \cite{bethune_pay_2022}. Fortunately, this trade-off can be controlled using the loss's parameters: we can then evaluate our model at two different points of the trade-off to show that it can achieve both a decent accuracy and a decent certifiable robustness. Our approach is not expected to improve the expressiveness of the original building blocks like BCOP and RKO. However, authors of \cite{prach_1-lipschitz_2023} observed that improvement of the state of the art in certifiable adversarial robustness comes along with larger architectures and longer training times. Therefore, given the same computational budget, we can expect that our efficient implementation unlocks larger networks and more training steps, which in turn should improve final performance.
-    
-%     In our evaluation on CIFAR10, we scaled the network from \cite{li_preventing_2019} to be wider and deeper: our model consists of 4 blocks of 3 convolutions interleaved with strided convolutions where the number of channels was increased by a factor of 2x. The head of the network consists of 5 dense layers. The number of channels of the first block was set to 128, and the size of dense layers was set to 1024. A detailed description of our training setting can be found in  \cref{sec:ap_training_details}. We changed the loss to the CrossEntropy loss as in \cite{prach_almost-orthogonal_2022}, which allows us to control the accuracy/robustness trade-off. We did not use techniques such as last layer normalization, certificate regularization \cite{singla_skew_2021}, or DDPM augmentation \cite{hu_recipe_2023} to obtain our results, which are shown in the first part of \cref{tab:robust_cifar10}.
-%     We controlled three elements during the hyper-parameter tuning process:
-%     \begin{itemize}
-%         \item \textbf{Loss parameters}: Increasing the margin in the loss function helps improve training robustness, but reduces training accuracy.
-%         \item \textbf{Model size}: Increasing the model size generally improves training accuracy.
-%         \item \textbf{Data augmentation}: Increasing data augmentation reduces training accuracy but can improve validation accuracy, especially when training accuracy is greater than validation accuracy.
-%     \end{itemize}
-    
-%     The tuning process begins with a given model. We first tune the learning rate and increase the margin in the loss function to improve robustness until training accuracy drops below 100\%. Then, we increase the model size and apply more data augmentation until training accuracy falls below validation accuracy.
-    
-    
-%     % The most straightforward way to evaluate the expressiveness of our layer is to apply it to classification problems. It is well known that 1-Lipschitz constrained networks face an inherent trade-off between accuracy and robustness \cite{bethune_pay_2022}. Fortunately this trade off can be controlled using the loss parameters: we can then evaluate that our model at two different points of the trade-off, to show that it can achieve both a decent accuracy and a decent certifiable robustness. Our approach is not expected to improve the expressiveness of the original building blocs like BCOP and RKO. However, authors of \cite{prach_1-lipschitz_2023} observed that improvement of the state of the art in certifiable adversarial robustness comes along larger architectures and longer training times. Then we can expect that, given the same computational budget, our efficient implementation unlock larger networks and more training steps which in turn, improve final performances. %For reference, the total cost of all experiments ran on CIFAR10, including, architecture search and hyper-parameters tuning amount to 15 GPU days on a consumer RTX4090.
-%     % %we first confirmed that our approach did not introduce any regression by replicating the experiment from \cite{li_preventing_2019}.
-%     % \paragraph{Evaluation on CIFAR10:} We scaled the network from \cite{li_preventing_2019} to be wider and deeper: our model which consist in 4 block of 3 convolutions interleaved with strided convolutions where the number of channels were increased by a factor of 2x. The head of the network consists in 5 dense layers. The number of channels of the first block were set to 128 and the size of dense layers were set to 1024. We changed the loss to the CrossEntropy loss as in \cite{prach_almost-orthogonal_2022}, which allows the control of the accuracy/robustness tradeoff. Although the network were significantly larger, we could increase the batch to 1024 on a single GPU. Results are shown in the first part of  \cref{tab:robust_cifar10}.
-
-%     In our evaluation on ImageNet1K, we leveraged the flexibility of our layers to design more complex blocks. A comprehensive description of the whole architecture is given in \cref{sec:ap_training_details}. Each block consists of a depthwise convolution that doubles the number of channels, followed by a MaxMin activation function \cite{anil_sorting_2019}, and a pointwise convolution that reduces the number of channels. These layers are encapsulated within a skip connection featuring a learnable factor to ensure a Lipschitz constant of 1. The network was constructed by repeating these blocks, using strided convolutions to progressively reduce the spatial dimensions while increasing the channel dimensions. The architecture ends with L2 Norm Pooling \cite{boureau2010theoretical}, followed by a single dense layer for classification.
-%     We evaluated the network under two distinct settings. In the first setting, we used Cosine similarity to maximize accuracy, focusing on achieving optimal performance for clean data. In the second setting, we applied categorical cross-entropy with a margin of $m=1.5\sqrt{2}$ to emphasize robustness against adversarial examples. The results for both settings are presented in the second part of \cref{tab:robust_cifar10}.
-
-
-%     % \paragraph{Evaluation on Imagenet 1K:} We leverage the flexibility of our layer to design more complex blocs. The block we designed consist in a depthwise convolution that double the number of channels followed by a MaxMin \cite{anil_sorting_2019} activation and a pointwise convolution that reduce the number of channels. These layers are encapsulated in a skip connection with a learnable factor that ensure a Lipschitz constant of 1: $y = \alpha x + (1-\alpha) f(x)$ (with $\alpha \in [0, 1])$. We repeated these blocks and added strided convolutions to reduce spatial dimension and increase channels dimension. The network uses an L2 Norm Pooling followed by a single dense layer for classification. In the first setting, we used the Cosine similarity to maximize accuracy, and in the second setting we used the categorical cross-entropy with a margin $m=1.5\sqrt{2}$ to measure robustness. Results are shown in the second part of  \cref{tab:robust_cifar10}.
-    
-
-% }
 
 \subsection{Scalability experiment}\label{ap:scale_xp}
 
@@ -784,7 +819,7 @@ This explains the drastic difference between standard and robust networks in ter
 
     To ensure a fair comparison, the hyperparameters of SOC and Cayley were set to their default values. We adjusted the number of Björck iterations to the same values for BCOP and AOC. While originally set to 20 iterations, our unit testing scheme (see  \cref{sec:unit_testing}) shows that 12 iterations are sufficient to ensure a stable rank \cite{sanyalstable} of 99.9\% of the full rank. Finally, standard \texttt{Conv2D} is used with circular padding to evaluate the overhead induced by our parametrization rather than the overhead induced by the padding.
 
-    We did not include non-orthogonal methods such as AOL, SLL, CPL and RKO \cite{prach_1-lipschitz_2023, araujo_unified_2023, meunier_dynamical_2022, serrurier_achieving_2021} as those are expected to be faster than AOC that add a stronger constraint. The continuum between orthogonal and non-orthogonal methods could be explored by reducing the number of Björck and Bowie iterations. However, the correct way to explore this should be with an experiment that grasp the 3 main aspects of those methods: speed (time per batch), trainability (number of batches to reach certain accuracy) and performance (final accuracy/robustness). This is beyond the scope of this work, and the work of \cite{prach_1-lipschitz_2023} is a relevant track to explore this question. %\thib{Todo: run an experiment with non-orthogonal methods and show that we compete with those}
+    We did not include non-orthogonal methods such as AOL, SLL, CPL and RKO \cite{prach_1-lipschitz_2023, araujo_unified_2023, meunier_dynamical_2022, serrurier_achieving_2021} as those are expected to be faster than AOC that add a stronger constraint. The continuum between orthogonal and non-orthogonal methods could be explored by reducing the number of Björck and Bowie iterations. However, the correct way to explore this should be with an experiment that grasp the 3 main aspects of those methods: speed (time per batch), trainability (number of batches to reach certain accuracy) and performance (final accuracy/robustness). This is beyond the scope of this work, and the work of \cite{prach_1-lipschitz_2023} is a relevant track to explore this question. 
 
 
 \section{Reproducing the results from BCOP paper}\label{ap:repoducing_bcop}
