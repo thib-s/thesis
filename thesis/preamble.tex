@@ -5,6 +5,10 @@
 % Optional: BibLaTeX configuration
 \usepackage[backend=biber,style=numeric]{biblatex}
 \addbibresource{references.bib}
+\appto{\bibsetup}{\emergencystretch=1.5em}
+\setcounter{biburlnumpenalty}{9000}
+\setcounter{biburllcpenalty}{9000}
+\setcounter{biburlucpenalty}{9000}
 
 % Custom macros and mathematical notation
 \newcommand{\R}{\mathbb{R}}
@@ -90,6 +94,7 @@
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{proposition}[theorem]{Proposition}
 \newtheorem{lemma}[theorem]{Lemma}
+\newtheorem*{lemma*}{Lemma}
 \newtheorem{corollary}[theorem]{Corollary}
 \newtheorem{definition}[theorem]{Definition}
 \newtheorem{assumption}[theorem]{Assumption}
