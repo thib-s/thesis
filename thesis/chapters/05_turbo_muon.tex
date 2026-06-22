@@ -1,7 +1,924 @@
 \chapter{Accelerating Orthogonality-Based Optimization with Pre-Conditioning}
 \label{ch:turbo_muon}
 
+\definecolor{muoncolor}{HTML}{0072B2}
+\definecolor{dioncolor}{HTML}{56B4E9}
+\definecolor{turbomuoncolor}{HTML}{009E73}
+\definecolor{frobcolor}{HTML}{7E7E7E}
+\newcommand{\turbomuon}{Turbo-Muon }
+
+Orthogonality-based optimizers, such as Muon, have recently shown strong performance across large-scale training and community-driven efficiency challenges. However, these methods rely on a costly gradient orthogonalization step. Even efficient iterative approximations such as Newton-Schulz remain expensive, typically requiring dozens of matrix multiplications to converge.
+
+%We introduce a pre-conditioning procedure that improves the initialization of the Newton-Schulz iterations. We show that the overhead of this operation can be made negligible.
+We introduce a pre-conditioning procedure that improves the initialization of the Newton–Schulz iterations while incurring negligible overhead.
+Furthermore, our pre-conditioning reduces the initial polar error and enables the removal of one Newton-Schulz iteration (out of the five iterations usually used in practice). 
+The resulting implementation significantly reduces Muon’s overhead.
+%Our publicly available implementation reduces Muon's overhead by a significant margin.
+
+At the end-to-end training level, we observe consistent runtime improvements across speed-run and standard benchmarks, including $\sim3\%$ reductions in training time
+%step-time reductions
+ on multiple fast training benchmarks, while matching reference performance on both language and vision tasks. Crucially, these improvements require no hyperparameter tuning and can be adopted as a simple drop-in replacement.
+
+Beyond empirical gains, we provide theoretical insight into the geometry of the update and its potential robustness against feature collapse.
+Our code is publicly available at 
+ \href{https://github.com/thib-s/flash-newton-schulz/}{github}.
+
+
+
+%providing insight into their improved convergence and robustness to feature collapse.
+%Orthogonality-based optimizers, such as Muon, have recently shown strong performance across large-scale training and community-driven efficiency challenges. However, these methods rely on a costly gradient orthogonalization step, typically implemented via iterative Newton-Schulz procedures requiring dozens of matrix multiplications to converge.
+%. Even efficient iterative approximations such as Newton-Schulz remain expensive, typically requiring dozens of matrix multiplications to converge.
+%We introduce a pre-conditioning procedure that accelerates Newton-Schulz convergence. We evaluate its impact and show that the overhead of our pre-conditioning can be made negligible. Furthermore, the faster convergence it enables allows removing one iteration from the usual five without degrading approximation quality. Our publicly available implementation achieves up to a 2.8× speedup in the Newton-Schulz approximation.
+%We also show that this has a direct impact on end-to-end training runtime with $\approx 3 \%$ improvement in realistic training scenarios across multiple efficiency-focused tasks. On challenging language or vision tasks, we validate that our method maintains equal or superior model performance while improving runtime. Crucially, these improvements require no hyperparameter tuning and can be adopted as a simple drop-in replacement. 
+
 \section{Introduction}
-\section{Turbo-Muon Algorithm}
-\section{Experiments}
-\section{Conclusion}
+
+Optimization algorithms are a central component of modern deep learning, directly affecting training efficiency, stability, and final model performance. Most widely used methods build on stochastic gradient descent, either directly through momentum-based variants or through adaptive extensions such as Adam and AdamW~\cite{kingma2014adam,loshchilovdecoupled}. More recently, orthogonalization of weight updates has become a central ingredient in several optimizers~\cite{bernstein2024oldoptimizernewnorm, bernstein2024modulardualitydeeplearning}.
+%Orthogonalization of weight updates has recently become a central ingredient in several optimizers~\cite{bernstein2024oldoptimizernewnorm, bernstein2024modulardualitydeeplearning}. 
+The most prominent example is the Muon optimizer~\cite{jordan2024muon}, which has been shown to consistently surpass AdamW~\cite{kingma2014adam,loshchilovdecoupled} across diverse training regimes~\cite{wen_fantastic_2025} and has been adopted in large foundation models such as Kimi-K2 and GLM-4.5~\cite{kimi2025k2,zeng2025glm}. 
+Recent large-scale evaluations further report favorable scaling of Muon for LLM training~\cite{liu2025muonscalablellmtraining, shah2025practical}. 
+In Muon and its variants, updates are projected toward the orthogonal manifold to
+ accelerate convergence, stabilize training, and support robust hyperparameter transfer across model scales~\cite{bernstein2025deriving, bernstein2024modulardualitydeeplearning, large2024scalable, pethick2025training}.
+% enable faster convergence, stabilize optimization, and enable robust hyperparameter transfer across model scales~\cite{bernstein2025deriving, bernstein2024modulardualitydeeplearning, large2024scalable, pethick2025training}.
+
+However, the computational cost of this projection remains the primary barrier to broad adoption at scale. Exact orthogonalization via SVD, while numerically precise, is impractical on modern accelerators due to its high cost and instability for large matrices in low precision.
+%\thib{~\cite{svd_stability}}. 
+In practice, state-of-the-art methods therefore rely on efficient but imprecise iterative schemes such as the Newton-Schulz method (abbreviated NS and also known as Bj\"orck)~\cite{bjorck1971iterative, cesista2025muonoptcoeffs}.
+
+In these methods, wall-clock overhead scales with the number of iterative steps needed to achieve a target polar error (i.e., the Frobenius distance to the closest orthogonal matrix), creating a direct 
+trade-off %tension 
+between runtime and optimization quality~\cite{shulgin2025beyond}. 
+%\thib{
+This explains why Newton-Schulz is usually used with only five iterations. This work focuses on improving this specific, low-iteration regime, which is most relevant to deep-learning practitioners.
+%}
+% \franck{As previous work, we consider practical implementation of approximate update and propose a method to better approximate the polar factor in less than five iterations of Newton-Schulz.}
+
+
+\textbf{This paper.} 
+We introduce a pre-conditioned Newton-Schulz method based on Almost Orthogonal Layer (AOL) pre-conditioning~\cite{prach2022almost}. We show that this pre-conditioning yields a significantly improved initialization of the Newton-Schulz iteration toward the polar factor, enabling the removal of one Newton-Schulz iteration. The pre-conditioning incurs negligible overhead by reusing existing computations, leading to a better trade-off between runtime and orthogonalization quality (\cref{fig:pareto8192}).
+%while maintaining or improving accuracy. 
+Crucially, we prove that the resulting update remains a steepest descent direction under a modified norm. 
+
+
+Empirically, \turbomuon acts as a drop-in replacement for Muon~\cite{jordan2024muon}, consistently reducing training time by up to 4\% while preserving downstream performance across diverse settings, including highly optimized speed-run benchmarks on NanoGPT and CIFAR-10 as well as the large-scale ImageNet-1K benchmark.
+%: NanoGPT and CIFAR-10 speed-runs, and the large-scale ImageNet-1K benchmark.
+\iffalse
+We introduce a pre-conditioned Newton-Schulz formulation based on Almost Orthogonal Layer (AOL) pre-conditioning~\cite{prach2022almost}. Our key observation is that this pre-conditioner yields a substantially better initial approximation to the polar factor, especially for large matrices. In practice, this precision gain allows us to remove one Newton-Schulz iteration while improving or maintaining the numerical accuracy of the original algorithm, which typically runs in five iterations. Beyond this, the main computation cost of the pre-conditioner lies in an operation that can be reused, making its cost negligible. This results in an approach that yields an improved tradeoff between computation time and orthogonalization quality, as seen in~\cref{fig:pareto8192}.
+
+Finally, we test our method on a computer vision (CIFAR-10) and a language model training (nano-GPT) task and find consistent speed and convergence gains over already highly efficient baselines.
+Importantly, we improve training time by using a drop-in replacement for the orthogonalization step in Muon~\cite{jordan2024muon}, our method improves runtime while preserving or improving downstream optimization performance. 
+\fi
+
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Orthogonality-based optimizers} form a recent class of training algorithms that enforce or approximate orthogonal updates to improve conditioning and stability during deep network optimization. The foundational work of Muon \cite{jordan2024muon} introduced the idea of orthogonalizing parameter updates via iterative matrix normalization, such as the Newton-Schulz method, yielding isotropic update directions and smoother convergence dynamics. Follow-up works such as Deriving Muon \cite{bernstein2025deriving} and Old Optimizer, New Norm \cite{bernstein2024oldoptimizernewnorm} offered theoretical insights linking these methods to optimization under alternative geometries and norms. Scalable implementations such as Dion \cite{ahn_dion_2025} extended the approach to distributed settings, while Gluon \cite{riabinin_gluon_2025} and AdaMuon \cite{si_adamuon_2025} incorporated adaptivity and layer-wise refinements, bridging the gap between theoretical linear minimization oracle (LMO) frameworks and practical large-model training~\cite{pethick2025training}. Empirical studies \cite{modded_nanogpt_2024, wen_fantastic_2025, kimi2025k2} further demonstrated that such orthogonalization can accelerate convergence, stabilize training under heavy-tailed gradients, and enhance performance across architectures from GPT-2 scale to billion-parameter models. Together, these works position orthogonality-based optimization as a promising direction for efficient and stable large-scale learning.
+
+\paragraph{Orthogonalization methods.} 
+A variety of orthogonalization schemes have been proposed to construct weight matrices with orthogonal constraints.
+The Modified Gram-Schmidt QR factorization~\cite{LaPlace1820} finds the polar factor with an iterative process (one iteration per row). 
+Alternatively, the Cayley transform~\cite{Cayley_1846} establishes a bijection between skew-symmetric and orthogonal matrices through $(I-A)(I+A)^{-1}$, but requires a costly matrix inversion.
+%though it incurs the cost of matrix inversion. 
+The exponential map~\cite{singla_skew_2021} also leverages skew-symmetric matrices, generating $Q=\exp(A)$ while typically approximating the exponential via truncated series. 
+Similarly, The Cholesky-based method~\cite{hu_recipe_2023} orthogonalizes a matrix with a triangular decomposition $MM^\top=L L^\top$ (where $L$ is triangular) and then solves for $L^{-1}M$, offering efficiency when numerical stability is maintained. 
+Finally, the iterative Newton-Schulz algorithm~\cite{bjorck1971iterative,anil_sorting_2019} (also known as the Bj\"orck--Bowie algorithm) projects matrices toward the Stiefel manifold via the computation of matrix polynomials.
+This iteration achieves fast convergence when the input matrix is spectrally normalized.
+%, achieving fast convergence under spectral normalization. 
+Recent works~\cite{jordan2024muon, cesista2025muonoptcoeffs} extended this algorithm with fifth-order polynomials, achieving faster convergence.
+While these methods provide complementary trade-offs between accuracy, stability, and computational cost, Newton-Schulz variants have gained substantial popularity due to their scalability, making these operations feasible even at large scales~\cite {kimi2025k2}.
+
+% ==============================================================
+\section{Background and Motivation}
+% ==============================================================
+\label{sec:bgnd_motiv}
+
+\begin{figure*}[t]
+    \centering
+    \begin{subfigure}{0.45\textwidth}
+        \centering
+        \includegraphics[width=0.99\linewidth]{figures/ch5_turbo_muon/plots_out/normal/bfloat16/polar_error_filtered_pure_AOL.png}
+        \caption{\textbf{Comparing pre-conditioning methods:} While normalization is primarily used for numerical stability, AOL also reduces the polar error of the initial iterate of Newton-Schulz.
+        }
+        \label{fig:precond_bench}
+        \vspace{4mm}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=0.99\linewidth]{figures/ch5_turbo_muon/plots_out/normal/bfloat16/pareto/pareto_size8192.png}
+        \caption{\textbf{Practical implementations of orthogonalization face a trade-off between polar error and computation time}. Thanks to pre-conditioning, our method reduces the polar error of the Newton-Schulz algorithm. This improves the trade-off between convergence and runtime.}
+        \label{fig:pareto8192}
+    \end{subfigure}
+    % \caption{\textbf{Turning pre-conditioning into runtime:} Applying AOL before the algorithm improves its convergence speed (\textbf{a}). This can be used to remove an iteration while achieving a similar polar error. Removing one of the five iterations improves the runtime
+    % %of the algorithm 
+    % (\textbf{b}), making optimizers like Muon more scalable to large matrices.
+    % }
+    % \label{fig:pre-conditioning_time}
+    \caption{\textbf{Our approach} consists of accelerating the core computation of the Muon optimizer: the Newton-Schulz algorithm. With adequate pre-conditioning (\ref{fig:precond_bench}), this routine can achieve lower polar error in less time, translating into a more efficient optimization, either in terms of performance (fewer steps) or runtime (lower time per step).}
+\end{figure*}
+
+\paragraph{Definitions.}
+    Let $\mathbf{X} \in \mathbb{R}^{n \times n}$ denote a square matrix (all results generalize to the non-square case). 
+    The singular value decomposition (SVD) of $\mathbf{X}$ is given by
+    \[
+        \mathbf{X} = \mathbf{U} \boldsymbol{\Sigma} \mathbf{V}^\top,
+    \]
+    where $\mathbf{U}, \mathbf{V} \in \mathbb{R}^{n \times n}$ are orthogonal matrices and 
+    $\boldsymbol{\Sigma} = \mathrm{diag}(\sigma_1, \ldots, \sigma_n)$ is a diagonal matrix containing the singular values 
+    $\sigma_1 \ge \cdots \ge \sigma_n \ge 0$. This also defines the spectral norm of a matrix: $ \| X \|_2 = \sigma_1$.
+    
+    A matrix $\mathbf{X}$ is said to be \textit{orthogonal} if it satisfies
+%    \[
+        $\mathbf{X}^\top \mathbf{X} = \mathbf{X} \mathbf{X}^\top = \mathbf{I}$.
+%    \]
+    For non-square matrices, only one of these two equalities can hold, in which case the matrix is referred to as 
+    \textit{semi-orthogonal}.  
+    To 
+    %quantify 
+    assess
+    deviations from orthogonality, we define the \textit{orthogonality error} as
+    %\[
+        $\varepsilon_{\text{ortho}}(\mathbf{X}) = \|\mathbf{X}^\top \mathbf{X} - \mathbf{I}\|_F$.
+    %\]
+    
+    In the context of this paper, we seek the closest orthogonal matrix to a given matrix $\mathbf{X}$, 
+    with respect to the Frobenius norm. 
+    This matrix is the \textit{polar factor} ($\text{PolarFactor} (\mathbf{X})$), and, for any other matrix $Z$, we assess the approximation quality by the \textit{polar error} ($\varepsilon_{\text{polar}}(Z, \mathbf{X})$):
+    \[
+        \text{PolarFactor} (\mathbf{X}) = \mathbf{Q} = \mathbf{U}\mathbf{V}^\top \quad \text{and} \quad  \varepsilon_{\text{polar}}(Z, \mathbf{X}) = 
+        \frac{\|Z  - \mathbf{Q}\|_F}{\sqrt{n}}.
+    \]
+    \iffalse
+    This matrix is the \textit{polar factor}, given by
+    \[
+        \text{PolarFactor} (\mathbf{X}) = \mathbf{Q} = \mathbf{U}\mathbf{V}^\top.
+    \]
+    As we focus on the iterative Newton-Schulz algorithm, we denote the approximation after the $t^{th}$ iteration $\operatorname{NS}_t(\mathbf{X})$.
+    To assess approximation quality, we define the normalized \textit{polar error} as:
+    \[
+        \varepsilon_{\text{polar}}(\operatorname{NS}_t, \mathbf{X}) = 
+        \frac{\|\operatorname{NS}_t(\mathbf{X}) - \mathbf{Q}\|_F}{\sqrt{n}}.
+    \]
+    \fi
+    These metrics will be used throughout the paper to evaluate the orthogonalization accuracy of the $t^{th}$ iteration $\operatorname{NS}_t(\mathbf{X})$ of the Newton-Schulz algorithm.
+
+\paragraph{Existing methods: strengths and limitations.}
+The original \textit{Muon} formulation introduced the Newton-Schulz (NS) variant of the Björck iteration, which relies on quintic polynomial expansions to approximate the polar factor efficiently~\cite{jordan2024muon}. Building on this, \cite{cesista2025muonoptcoeffs} proposed iteration-dependent polynomial coefficients, allowing convergence within five or six steps--a significant improvement over the fixed-coefficient scheme. This idea was later extended and accelerated by~\cite{grishina_accelerating_2025} and \cite{amsel2025polar}, who analyzed optimal polynomial families and convergence regimes for orthogonalization.
+
+In parallel, \cite{ahn_dion_2025} introduced \textit{Dion}, a distributed implementation supporting model sharding (i.e., splitting a large neural network model into smaller parts) and tensor-parallel decomposition. In addition to their optimizer, they provide an efficient implementation of Muon featuring Triton kernels~\cite{tillet2019triton} that efficiently exploit the matrix’s symmetric structure to reduce redundant computation and memory access. While these contributions collectively enhance the scalability of orthogonality-based optimizers, the computational cost of orthogonalization remains a limiting factor. 
+In practice, Newton-Schulz iterations require dense matrix–matrix products, which interacts nontrivially with sharded training, leading to compute and communication bottlenecks in extreme-scale settings~\cite{essential2025muon}. Hence, each reduction in cost directly broadens the applicability of orthogonality-based optimizers to increasingly large models.
+
+\paragraph{Newton-Schulz iteration}
+
+To circumvent the limitations of exact methods, practical applications often rely on approximate methods. Notably, \cite{bjorck1971iterative} demonstrated that the following scheme:
+\begin{align}
+\label{eq:bjork}
+    X_{k+1} = (1- \beta) X_k -  \beta X_k X_k^\top X_k
+\end{align}
+converges if $\|X_0\|_2\leq 1$ (in spectral norm) for $\beta \in \left[0, 0.5\right]$. More recently, \cite{jordan2024muon} introduced a variant that uses $5^{th}$-order polynomials:
+\begin{align}
+\label{eq:ns_quintic}
+    X_{k+1} = a X_k + b X_k X_k^\top X_k + c X_k X_k^\top X_k X_k^\top X_k
+\end{align}
+which is computed in practice in three steps described in \cref{alg:muon} lines 3, 4, and 5.
+\iffalse
+\begin{align}
+    A_k &= X_k^\top X_k \label{eq:ns_step_1} \\
+    B_k &= bA_k + cA_kA_k \label{eq:ns_step_2} \\
+    X_{k+1} &= a X_k + X_k B_k \label{eq:ns_step_3}
+\end{align}
+\fi
+This formulation opens the door to new optimizations: \cite{cesista2025muonoptcoeffs} showed that $(a,b,c)$ coefficients can be changed across iterations, using $(a_k, b_k, c_k)$ instead of a constant $(a,b,c)$. \cite{amsel2025polar} and \cite{grishina_accelerating_2025} both explored the convergence of these algorithms alongside methods to find efficient polynomial factors. Notably, they observed that the most suitable parameters rely on assumptions about the smallest singular values of $X$.
+Throughout this paper and in our experiments, we compare to two widely used variants of the Newton-Schulz algorithm\footnote{Our experiments used the code from \href{https://github.com/KellerJordan/Muon}{github.com/KellerJordan/Muon} and \href{https://github.com/microsoft/dion}{github.com/microsoft/dion} for baseline evaluation.}:
+
+
+\begin{itemize}
+    \item \textbf{Muon}~\cite{jordan2024muon}: the original Newton-Schulz implementation, written in plain PyTorch. It typically uses five iterations, with constant polynomial factors.
+    \item \textbf{Muon+}~\cite{ahn_dion_2025}: a more efficient implementation, integrating Triton kernels~\cite{tillet2019triton} proposed in \cite{ahn_dion_2025} and adaptive polynomial factors from~\cite{cesista2025muonoptcoeffs}, computed for five iterations. \footnote{Dion is a distributed variant of Muon (with non-trivial modifications), we only compare here to their implementation of the Newton-Schulz algorithm to keep results comparable.}
+    \item \textbf{\turbomuon}: our approach, combining a pre-conditioning method with an additional fused Triton kernel to further reduce runtime and maintain high numerical precision. \turbomuon uses four iterations by default, and uses polynomial factors inherited from Muon+.
+\end{itemize}
+This selection allows us to observe the impact of theoretical improvements (such as adaptive polynomial factors) and design choices (such as Triton kernels). Other approaches such as \cite{grishina_accelerating_2025, amsel2025polar} are discussed in \cref{ap:polar_params}.
+
+% ==============================================================
+\section{Methodology
+%: AOL-pre-conditioning
+}
+% ==============================================================
+
+\begin{figure*}[t]
+    \begin{minipage}[t]{0.45\textwidth}
+        \begin{algorithm}[H]
+            \caption{Newton-Schulz \color{muoncolor}Muon\color{black}/\color{dioncolor}Muon+\color{black}}
+            \label{alg:muon}
+            \begin{algorithmic}[1]
+    \Require Initial point: $\mathbf{X_0} \in \mathbb{R}^{n\times n},(a,b,c)$  NS factors 
+    \Statex
+    \State \color{frobcolor}$s=1/\|\mathbf{X_0}\|_F$\color{black} \Comment{Frobenius scaling factor}
+    \State $\mathbf{X_1}=\mathbf{X_0}s$  \Comment{k=1}
+    \State $\mathbf{A_k}=\mathbf{X_k}^\top \mathbf{X_k} $\Comment{polynomial 1}
+    \State $\mathbf{B_k}=b\mathbf{A_k}+ c \mathbf{A_k} \mathbf{A_k}$\Comment{polynomial 2}
+    \State $\mathbf{X_{k+1}}=a\mathbf{X_k}+ \mathbf{X_k}\mathbf{B_k}$\Comment{polynomial 3}
+    \Statex   ...\Comment {Iteration $k+1$ (no rescaling, step 3)} 
+    \end{algorithmic}
+        \end{algorithm}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.54\textwidth}
+        \begin{algorithm}[H]
+            \caption{Newton-Schulz  \color{turbomuoncolor}\turbomuon\color{black}}
+            \label{alg:turbomuon}
+            \begin{algorithmic}[1]
+    \Require Initial point: $\mathbf{X_0} \in \mathbb{R}^{n\times n},(a,b,c)$  NS factors
+    \State $\mathbf{A_0}=  \mathbf{X_0}^\top \mathbf{X_0} $ \Comment{initial matmul}
+    \State \color{turbomuoncolor}$s=(1/\sqrt{\|\mathbf{~|A_0}_i|~\|_1})_{i\in[0,n-1]}$\color{black}\Comment{AOL vector} 
+    \State $\mathbf{X_1}=\mathbf{X_0}s$\Comment{rescaling $\mathbf{X_1}$} 
+    \State \color{turbomuoncolor}$\mathbf{A_1}=s^\top \mathbf{A_0} s$\color{black} \Comment{$A_1$ without recomputation}
+    %\Comment{Update A to avoid recomputation}
+    \State $\mathbf{B_1}=b\mathbf{A_1}+ c \mathbf{A_1} \mathbf{A_1}$\Comment{polynomial 2}
+    \State $\mathbf{X_2}=a\mathbf{X_1}+ \mathbf{X_1}\mathbf{B_1}$ \Comment{polynomial 3, k= 1}
+    \Statex   ...\Comment {\color{muoncolor}Muon\color{black}~iteration $k+1$ (\cref{alg:muon} step 3)} 
+            \end{algorithmic}
+        \end{algorithm}
+    \end{minipage}
+    %\vspace{2mm}
+    \caption{Our approach changes the normalization step in the first iteration of the Newton-Schulz algorithm. This allows for a faster convergence at a negligible cost since $A_0$ is reused in the first iteration. This approach does not impact memory consumption, which still maintains 3 buffers at most.}
+\end{figure*}
+
+
+
+
+
+Existing improvements of Newton-Schulz focus either on the polynomial steps applied~\cite{grishina_accelerating_2025, amsel2025polar}, or on efficient implementations of the algorithm~\cite{ahn_dion_2025}. However, all practical implementations start with an overlooked step: normalizing the input matrix by its Frobenius norm. This ensures that the Newton-Schulz iterative scheme converges~\cite{bjorck1971iterative}. In this work, we explore an alternative normalization scheme and observe significant improvements in the convergence of the first Newton-Schulz iterations. Moreover, this better performance allows the removal of a Newton-Schulz iteration without loss of precision.
+
+
+\subsection{Almost Orthogonal Pre-conditioning}\label{ssec:AOLprecond}
+
+To ensure $\|X_0\|_2\leq 1$, existing implementations perform an initial normalization step 
+$X_0/\|X_0\|_F$
+. While this guarantees convergence, in practice it often leads to $\|X_0\|_2\ll 1$ and does not modify the condition number, since the ratio $\sigma_{\max} / \sigma_{\min}$ remains unchanged.
+
+In contrast, the ``Almost Orthogonal Layer" (AOL) parametrization introduced by \cite{prach2022almost} provides a lightweight alternative to normalization that simultaneously enforces $\|X_0\|_2\leq 1$ while improving the resulting matrix conditioning. In the following, we define: 
+
+\begin{equation}
+\text{AOL}(X_0) = X_0.\text{diag}\left(\sum_j |X_0^\top X_0|_{(i,j)}\right)^{-1/2} 
+\label{eq:aol}
+\end{equation}
+
+where the inverse square root of the row sum of the Gram matrix acts as a scaling vector applied column-wise to $X_0$. This brings the matrix closer to an orthogonal form. In \cref{fig:precond_bench}, we compare the normalized polar error for the two normalization methods when applied to matrices sampled from a normal distribution (sizes ranging from 16 to 2048, with 32 matrices for each matrix size and algorithm).
+As shown by~\cite{prach2022almost}, AOL converges to the polar factor if the matrix is near column-orthogonal and is of full rank. Importantly, this phenomenon can occur naturally on random high-dimensional matrices, as a byproduct of concentration phenomena which tend to enforce near-orthogonality (see Section 3.2.4 of \cite{vershynin2009high}). We also compare AOL with an alternative preconditioning strategy in \cref{ap:other_preconditioning}, further supporting its effectiveness in this setting.
+
+\paragraph{Pre-conditioning for free.}
+Standard implementations of the Newton-Schulz algorithm normalize the input matrix $X_0$ by its Frobenius norm up front to guarantee convergence (\cref{alg:muon} lines 1-2).
+%, before the first matrix multiplication line 3 of the first Newton-Schulz iteration. 
+\turbomuon instead defers this normalization until after forming the Gram matrix $A_0 = X_0^\top X_0$ (\cref{alg:turbomuon} line 1). 
+%, we strategically defer this normalization until \textit{after} the initial Gram matrix $A_0 = X_0^\top X_0$ is computed (\cref{alg:turbomuon} line 1). 
+The AOL scaling vector $s$ is then computed directly from the row sums of $|A_0|$ via a cheap element-wise inverse square root (line 2).
+%Because $A_0$ is already required for the first Newton-Schulz iteration, we can extract our Almost Orthogonal Layer (AOL) scaling vector $s$ directly from its row sums via a cheap, element-wise inverse square root. 
+The initialization of the Newton-Schulz states is performed by
+%We then simply initialize the Newton-Schulz states by 
+applying this scaling vector via broadcasting ($A_1 = s^\top A_0 s$ and $X_1 = X_0 s$, \cref{alg:turbomuon} lines 3-4). 
+Crucially, this reuses the Gram computation and avoids any additional matrix multiplications. AOL pre-conditioning thus incurs negligible runtime overhead, and only $\mathcal{O}(\min(m,n))$ extra memory.
+%By reusing the Gram matrix computation, we substitute an expensive full-matrix multiplication with lightweight element-wise operations. Consequently, the runtime overhead of AOL pre-conditioning is completely negligible, requiring only an extra $\mathcal{O}(\min(m,n))$ memory buffer.
+
+% \paragraph{pre-conditioning for free.}
+% Option 1
+% The algorithmic descriptions of Muon and Turbo-Muon are given in \cref{alg:muon,alg:turbomuon}. 
+% Classically, the default Newton-Schulz algorithm normalizes $X_0$ by its Frobenius norm to cheaply ensure the proper convergence of the Newton-Schulz iterative process. In our setting, we propose to postpone the normalization process to \textit{after} the computation of the Gram matrix $A_0 = X_0 X_0^\top$, as this allows us to trade a matrix multiplication for an extra rescaling step, by rescaling $A_1 = s^\top A_0 s$ and $X_1 = X_0 s$ while using $A_0$ which is necessary to the Newton-Schulz computation.
+% 
+% % Option 2
+% Importantly, \textit{the AOL rescaling computation can leverage the already computed Gram matrix} $A_0 = X_0 X_0^\top$, and displaces the matrix normalization process to \textit{after} the computation of the Gram matrix as part of the Newton-Schulz iterative process (\cref{alg:turbomuon} line 1). This only requires one sum reduction over the rows and a fast inverse square root computed element-wise,
+% %\thib{~\cite{todo_fast_inverse_sqrt}}, 
+% 
+% \cref{alg:turbomuon} line 2). Finally, the original matrix $X_0$ and $A_0$ are rescaled to guarantee proper Newton-Schulz convergence using an element-wise rescaling (\cref{alg:turbomuon} line 3).
+% On the other hand, Frobenius normalization involves two steps, a reduction (\cref{alg:muon} line 1), and a rescaling (\cref{alg:muon} line 2) using the matrix $X_0$. Leveraging this computation caching method, the runtime overhead from switching from Frobenius to AOL normalization is made negligible, and only requires holding an extra $\operatorname{min}(m,n)$ sized buffer in memory for the rescaling operation.
+
+
+
+
+% \iffalse
+% \begin{align}
+%     A_0 &= X_0^\top X_0 & \text{(matmul)} \label{eq:aol_step_1} \\
+%     s_{(i)}&=\frac{1}{\sqrt{\sum_j |A_0|_{(i,j)}}} & \text{(reduction)} \label{eq:aol_step_2} \\
+%     X_1 &= X_0 s & \text{(rescaling)} \label{eq:aol_step_3}
+% \end{align}
+% \fi
+
+% \iffalse
+% :
+% \begin{align}
+%     s&=\frac{1}{\sqrt{\sum_{i,j} {X_0^2}_{i,j}}} & \text{(reduction)} \label{eq:frob_step_1} \\
+%     X_1 &= X_0 s & \text{(rescaling)} \label{eq:frob_step_2}
+% \end{align}
+% \fi
+% In practice, the cost of 
+% \cref{alg:turbomuon} line 2 
+% %\cref{eq:aol_step_2} 
+% and 
+% \cref{alg:muon} line 1 
+% %\cref{eq:frob_step_1} 
+% is equivalent and so is the cost of 
+% \cref{alg:turbomuon} line 3 
+% %\cref{eq:aol_step_3} 
+% and 
+% \cref{alg:muon} line 2.
+% %\cref{eq:frob_step_2}. 
+% This means that the main computational overhead comes from matrix multiplication used to compute 
+% \cref{alg:turbomuon} line 1. 
+% %\cref{eq:aol_step_1}.
+% While this cost is non-negligible, we can notice the similarity between 
+% \cref{alg:turbomuon} line 1
+% %\cref{eq:aol_step_1} 
+% and 
+% \cref{alg:muon} line 3.
+% %\cref{eq:ns_step_1}
+%  It is then possible to cache the result of the matrix multiplication for reuse in the first step of the Newton-Schulz algorithm. 
+%  Then, $A_1$ can be directly obtained from $A_0$ through
+%  %Then, $A_0$ can be updated to obtain $A_1$ with 
+%  an elementwise multiplication (\cref{alg:turbomuon} line 4):
+% \[
+% A_1 = X_1^\top X_1 = (X_0s)^\top(X_0s) = s^\top A_0 s
+% \]
+% Therefore, the computational load of AOL can be made similar to the original cost of the Frobenius normalization, with an additional elementwise multiplication. 
+
+\subsection{Benefits of AOL pre-conditioning for Newton-Schulz convergence}
+\label{ssec:AOLxNS}
+
+\begin{figure*}[t]
+    \centering
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/ch5_turbo_muon/plots_out/normal/bfloat16/polar_error_filtered_annotated.png}
+        %\vspace{3mm}
+        \caption{\textbf{Pre-conditioning is effective for large matrices:} Applying AOL before the algorithm improves convergence speed, especially for large matrices. In this context, an iteration can be removed while still achieving improved convergence.}
+        \label{fig:polar_error_NS}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/ch5_turbo_muon/plots_out/normal/bfloat16/runtime_filtered_annotated.png}
+        %\vspace{1mm}
+        \caption{\textbf{Breakdown of our speedup:} Building atop Muon+, which includes Triton kernels and dynamic polynomial parameters ($1.7\times$ faster), our approach adds an extra Triton kernel that unlocks moderate gains ($2.2\times$ faster). Finally, removing one of the five iterations also improves runtime ($2.8\times$ faster).}
+        \label{fig:runtime_NS}
+    \end{subfigure}
+    \caption{\textbf{Turning pre-conditioning into runtime:} Applying AOL before the algorithm improves its convergence speed (\textbf{a}). This can be used to remove an iteration while achieving a similar polar error. Removing one of the five iterations improves the runtime
+    %of the algorithm 
+    (\textbf{b}), making optimizers like Muon more scalable to large matrices.
+    }
+    \label{fig:pre-conditioning_time}
+\end{figure*}
+
+The observation made in \cref{ssec:AOLprecond} and \cref{fig:precond_bench} motivates the use of AOL as a pre-conditioner with the goal of removing one iteration from the Newton-Schulz scheme. Our objective is to determine whether iterative approaches to estimating the polar factor exhibit improved performance when preceded by AOL pre-conditioning in the Muon setting.
+In this section, we conduct empirical studies on the effects of AOL pre-conditioning on the convergence of the \turbomuon algorithm toward the ideal polar factor. Our study shows that under widely adopted practical constraints (i.e., using five iterations), our approach yields better approximations of the polar factor on a variety of random matrices.
+
+
+\paragraph{Adequate pre-conditioning reduces the polar error.} 
+In \cref{fig:polar_error_NS}, for each matrix size, we sampled random matrices from a standard normal distribution\footnote{Experiments in \cref{ap:real_gradients} show that our results hold for realistic gradient distributions.} and compared the three  implementations listed in \cref{sec:bgnd_motiv} on the same samples.
+%We sampled batches of 32 matrices from a normal distribution\footnote{Experiments in \cref{ap:real_gradients} shows that our results hold for realistic gradient distributions.} and compared three standard implementations listed in \cref{sec:bgnd_motiv}. 
+We estimate confidence intervals on the polar error (with 32 samples) 
+%then compute the polar error 
+using the singular value decomposition applied to the non-conditioned matrix (as defined in \cref{sec:bgnd_motiv}). It first 
+%\cref{fig:polar_error_NS} 
+shows how the dynamic polynomial parameters from \cite{ahn_dion_2025} reduce the polar error from the baseline of \cite{jordan2024muon}. Additionally, AOL pre-conditioning (\textit{Turbo-Muon iter=5} in \cref{fig:polar_error_NS}) further reduces the polar error significantly. 
+Importantly, our approach lowers the polar error enough to allow the removal of one iteration
+%afford the removal of one iteration 
+(\textit{Turbo-Muon iter=4}), while still achieving a competitive or improved polar error. 
+
+\paragraph{Removing one iteration and its impact on runtime.}
+The default Newton-Schulz setting in Muon uses five iterations. Importantly, we have shown that we can leverage AOL pre-conditioning to remove a Newton-Schulz iteration without losing out on approximation quality relative to Muon and Muon+. Indeed, removing a single iteration reduces the total computational cost by $\approx 20\%$. This becomes particularly advantageous with large matrices, where each iteration follows a time complexity of $\mathcal{O}(n^3)$.
+Alongside this cost reduction, we leverage the Triton kernels proposed in \cite{ahn_dion_2025, lin2025flash}, which improves computation time by using the symmetric nature of the operations used in 
+\cref{alg:muon} lines 3 and 4:
+%\cref{eq:ns_step_1} and \cref{eq:ns_step_2}:
+since $X^\top X$ is symmetric, only one triangular part needs to be computed, effectively saving half of the required computation. However, 
+\cref{alg:muon} line 5
+%\cref{eq:ns_step_3} 
+uses a PyTorch operator that induces a duplicate load of $X$, while this has a small impact on the overall runtime, fixing this issue with a dedicated Triton kernel has a multiplicative effect with the removal of one iteration, leading to increased speedups.
+
+\iffalse
+\paragraph{Stress-testing our approach}
+Importantly, we show that the conclusions of our empirical convergence experiments remain valid in settings where matrices are drawn from heavier-tailed distributions. More specifically, in \cref{ap:real_gradients}, we run experiments on matrices sampled from a Levy distribution. This choice is motivated by observations made by \cite{Simsekli2019TailIndex}, who observed that the tail index ranges from $1.0$ to $1.8$ in typical training of classification neural networks, \cite{kunstner2024heavy} shows similar observations on language transformers.
+\fi
+
+\paragraph{Stress-testing on gradient-like matrices.} The convergence experiments above with normal distribution matrices may not fully reflect the statistics of gradients encountered during neural network training. In particular, empirical studies by~\cite{Simsekli2019TailIndex} have shown that stochastic gradients often exhibit heavy-tailed behavior, with tail indices typically ranging from $1.0$ to $1.8$ in classification networks, and \cite{kunstner2024heavy} shows similar phenomena in language transformers. 
+In \cref{ap:real_gradients}, we conduct additional experiments on matrices sampled from a heavy-tailed Levy distribution, and show that the conclusions of our empirical convergence experiments remain valid in these settings.
+
+\subsection{Ablation study}
+
+Since the proposed method relies on pre-conditioning the gradient matrix, and experiments are conducted using the optimized version \color{dioncolor}{Muon+}\color{black}—which integrates Triton kernels~\cite{tillet2019triton} and adaptive polynomial factors from~\cite{cesista2025muonoptcoeffs}—we provide in \cref{tab:ablation_4096} an ablation study that separates the contributions of each component. The results show that the proposed pre-conditioning yields both a significant reduction in polar error (0.06 compared to 0.17) and a substantial runtime speedup (up to 2.83).
+
+    \begin{table}[t]
+        % \small
+        \centering
+        \begin{tabular}{l l l l c}
+            \toprule
+            Variant & Source & Polar error & Runtime & Cumulative speedup\\
+            \midrule
+            \color{muoncolor}{Muon:}\color{black}~baseline  (5it) & \cite{jordan2024muon}& 0.25 & 130 ms & 1.0\\
+            + Dynamic coeffs & \cite{cesista2025muonoptcoeffs}  & 0.17 & unchanged & 1.0\\
+            \color{dioncolor}{Muon+:}\color{black}~+ Triton kernel& \cite{ahn_dion_2025} & unchanged & 77 ms  & 1.69 \\
+            + AOL & Ours & 0.06 & unchanged $^\ast$ & 1.69\\ 
+            + 3rd Triton kernel & Ours & unchanged & 59 ms & 2.20\\
+            \color{turbomuoncolor}{\turbomuon:}\color{black}~-- 1 iter. (4it) & Ours & 0.12 & 46 ms & 2.83 \\
+            \bottomrule
+        \end{tabular}
+        \vspace{3mm}
+        \caption{\textbf{Ablation summary}. We report polar error and runtime improvement for each component, using the same protocol as \cref{fig:pareto8192} and \cref{fig:polar_error_NS} with matrix size set to  4096. $^\ast$AOL overhead is negligible for large matrices: matrix--vector multiplication is $4096\times$ cheaper than matrix--matrix multiplication.}
+        \label{tab:ablation_4096}
+    \end{table}
+
+
+% ==============================================================
+%\section{Theoretical analysis}
+\section{Theoretical Analysis}
+\label{sec:steepest}
+% ==============================================================
+%AOL rescaling still yields an LMO}
+%\franck{J'ai rechangé le titre pour rester sur steepest descent et mis en section pour eviter le titre bateau theoretical analysis %changer le titre et la proposition pour coller a la terminologie  Linear Minimization Oracle (LMO) 
+%}
+
+Although the previous section shows that, in the practical regime of fewer than five iterations, the proposed method achieves lower polar error (relative to the true projection of the gradients) with reduced runtime, the introduced pre-conditioning modifies the asymptotic target of the Newton-Schulz iterations. In particular, as the number of iterations increases, the method converges to $\operatorname{PolarFactor}(AOL(G))$ rather than $\operatorname{PolarFactor}(G)$ (see \cref{ap:bias_analysis} for a detailed analysis of this residual error across iterations).
+
+We build on the work of \cite{bernstein2024oldoptimizernewnorm}, who show that several optimizers can be interpreted as first-order steepest descent methods under a particular norm. Our analysis, detailed in \cref{ap:proof_convergence}, shows that AOL pre-conditioning leads to a problem close to a steepest descent under 
+an induced norm determined by the AOL rescaling.
+%a $\| .\|_{\ell_2\rightarrow S}$ norm.  
+However, this norm is dependent on $S$, and its impact on the global optimization process remains unclear. Using only the general properties of the matrix $S$, we will answer the following question: if pre-conditioning induces the steepest descent in a different norm, can this bias the global optimization process?
+
+
+        \begin{lemma}
+        \label{lem:alignment}
+            Let $S$ be a diagonal matrix of strictly positive and bounded entries, we have that $\forall \ G \in \mathbb{R}^{m \times n}_{\setminus 0}$:
+        
+            \begin{equation}
+                \langle G, \operatorname{PolarFactor}(GS) \rangle > 0.
+            \end{equation}
+        
+            \noindent Meaning that the projected update recovered by \turbomuon is always ``aligned'' with the raw gradient $G$. Thus, it yields a strict descent direction.
+        \end{lemma}
+        
+        % \begin{proof}
+        % Write $X:=G S$. By definition of the (left) polar factor,
+        % \[
+        %     \operatorname{PolarFactor}(X)=X\,(X^\top X)^{-1/2},
+        % \]
+        % where $(\cdot)^{-1/2}$ denotes the unique positive–semidefinite inverse square root on the support of $X^\top X$.
+        % Hence
+        % \begin{equation*}
+        % \begin{aligned}
+        %     \langle G,\operatorname{PolarFactor}(G S)\rangle
+        %     &= \operatorname{tr}\!\big(G^\top\,\operatorname{PolarFactor}(X)\big) \\
+        %     &= \operatorname{tr}\!\big(S^{-1}\,X^\top \operatorname{PolarFactor}(X)\big),
+        % \end{aligned}
+        % \end{equation*}
+        % since $G^\top = S^{-1}X^\top$ and $S^{-1}\succ0$ (as per \cref{eq:aol}). Using $X^\top \operatorname{PolarFactor}(X)=X^\top X\,(X^\top X)^{-1/2}=(X^\top X)^{1/2}$, we get
+        % \[
+        %     \langle G,\operatorname{PolarFactor}(GS)\rangle
+        %     = \operatorname{tr}\!\big(S^{-1}\,(X^\top X)^{1/2}\big).
+        % \]
+        
+        % The matrix $(X^\top X)^{1/2}\succeq0$ and is nonzero because $G\neq0$ and $S$ is invertible, while $S^{-1}\succ0$. For positive semidefinite $S\neq0$ and positive definite $T$, $\operatorname{tr}(TS)=\operatorname{tr}(T^{1/2}ST^{1/2})>0$. Therefore $\operatorname{tr}\!\big(S^{-1}(X^\top X)^{1/2}\big)>0$ and the claim follows.
+        % The argument does not require $G$ to be square or full rank. If $X$ is rank deficient, interpret $(X^\top X)^{-1/2}$ as the Moore–Penrose inverse square root, so the identity $X^\top \operatorname{PolarFactor}(X)=(X^\top X)^{1/2}$ holds on the support of $X^\top X$, and the same positivity conclusion applies.
+        % \end{proof}
+
+        The proof is detailed in \cref{ap:proof_convergence}.
+
+% Nevertheless, we show in this section that \turbomuon can still be interpreted as a steepest descent method under a suitable geometry, that pushes toward a reduction of sensitivity to feature collapse. 
+% %In this section, 
+% To this end, we build on the work of \cite{bernstein2024oldoptimizernewnorm}, who show that several optimizers can be interpreted as first-order steepest descent methods under a particular norm. They formulate the steepest descent update using a penalized objective, which is equivalent to the constrained formulation for a specific step size $\eta$, i.e.,
+    
+%     \begin{equation}
+%         \arg \min_{\Delta W \in \mathbb{R}^{m \times n}} \left[ \langle G, \Delta W \rangle + \frac{\lambda}{2} \| \Delta W\|_{\alpha \rightarrow \beta}^2 \right], \quad \text{with }  \| M \|_{\alpha \rightarrow \beta} = \max_{x \in \mathbb{R}^{n}} \frac{\| M x \|_\beta}{\| x \|_\alpha}.
+%     \label{eq:steepest_descent}
+%     \end{equation}
+    
+%     \noindent where $\langle \cdot, \cdot \rangle$ denotes the Frobenius inner product, and $\| M \|_{\alpha \rightarrow \beta}$ stands for the induced ``$\alpha \rightarrow \beta$'' operator norm, for any matrix $M \in \mathbb{R}^{m \times n}$, and normed spaces $(\mathbb{R}^{n}, \| \cdot \|_\alpha)$ and $(\mathbb{R}^{m}, \| \cdot \|_\beta)$.
+%     %For any matrix $M \in \mathbb{R}^{m \times n}$, and normed spaces $(\mathbb{R}^{n}, \| \cdot \|_\alpha)$ and $(\mathbb{R}^{m}, \| \cdot \|_\beta)$, we recall the induced ``$\alpha \rightarrow \beta$'' operator norm as:
+    
+%     %\begin{equation}
+%     %    \| M \|_{\alpha \rightarrow \beta} = \max_{x \in \mathbb{R}^{n}} \frac{\| M x \|_\beta}{\| x \|_\alpha}.
+%     %\end{equation}
+    
+%     \noindent Importantly, as established in Proposition 5 of \cite{bernstein2024oldoptimizernewnorm}, Muon's update (without accumulation) is the solution to the steepest descent problem when  $(\alpha, \beta) = (\ell_2, \ell_2)$ is given by
+%     %the solution to~\cref{eq:steepest_descent} is the Muon update: 
+%         $\Delta W_{\| \cdot \|_{\ell_2 \rightarrow \ell_2}} = -\eta \operatorname{PolarFactor}(G),$
+%     with $\eta$ being the sum of the singular values of $G$ divided by $\lambda$. The authors also %show that sign update of Adam is the solution of \cref{eq:steepest_descent}  with $(\alpha, \beta) = (\infty, \infty)$, and 
+%     encourage researchers to investigate alternative norms.
+    
+%     Since the \turbomuon update aims to compute $\operatorname{PolarFactor}(AOL(G))$ (instead of $\operatorname{PolarFactor}(G)$), we demonstrate that it can also be characterized within the steepest descent framework under a modified norm.  
+
+%     \begin{proposition}[\turbomuon Steepest Descent]
+%     \label{prop:convergence}
+%         Given any diagonal matrix $S\in \mathbb{R}_{>0}^{n \times n}$ (strictly positive)
+%         %\franck{j'ai pas mis la condition bounded enties est-ce que ce n'est pas evident sur une matrice de taille finie?}), 
+%         and for any gradient matrix $G \in \mathbb{R}^{m \times n}_{\setminus 0}$ 
+%         , and any sharpness $\lambda > 0$, consider the problem:
+        
+%         \begin{equation}
+%         \begin{aligned}
+%             & \arg \min_{\Delta W \in \mathbb{R}^{m \times n}} \left[  \langle G, \Delta W \rangle_F + \frac{\lambda}{2} \| \Delta W \|_{\ell_2 \rightarrow S}^2 \right] \quad
+%              \text{with} \ \| M \|_{\ell_2 \rightarrow S} := \sup_{x \in \mathbb{R}^{n}_{\setminus 0}} \frac{\| M S^{-1} x \|_2}{\| x\|_2}.
+%         \end{aligned}
+%         \end{equation}
+%     %\franck{vu la position de $\alpha$ et $\beta$, j'ai inversé S et $\ell_2$ }
+%         \noindent This problem is solved with a step size $\eta = \frac{1}{\lambda} \operatorname{tr}(\Sigma_{GS})$, with $GS=U \Sigma_{GS} V^\top$ the SVD decomposition of $GS$, with $U$ and $V$ unitary,  and an update:
+    
+%         \begin{equation}
+%             \Delta W_{\| \cdot \|_{\ell_2 \rightarrow S}} = -\eta \operatorname{PolarFactor}(G S)S,
+%         \end{equation}
+    
+%         \noindent This solution is unique if and only if $G$ is of full rank. %We assume $S$ to be a matrix whose diagonal is filled with rescaling values obtained from \cref{eq:aol} (strictly positive and bounded diagonal).
+%     \end{proposition}
+    
+%     The proof is provided in \cref{ap:proof_convergence}, and complemented by \cref{lem:alignment} which states that the update is a strict descent direction, i.e., $\langle G, \operatorname{PolarFactor}(GS) \rangle > 0$. 
+    
+%     By setting $S_{AOL}= \text{diag}\left(\sum_j |G^\top G|_{(i,j)}\right)^{-1/2}$, corresponding to the rescaling coefficients defined in \cref{eq:aol}, this proposition effectively generalizes \turbomuon as an optimizer that yields steepest descent directions in an induced norm determined by the AOL rescaling, in the sense of the framework introduced by~\cite{bernstein2024oldoptimizernewnorm}.
+
+\paragraph{Geometric properties of the \turbomuon rescaling:}
+%we analyze the geometric properties of 
+We analyze the effect of the rescaling matrix $S$ used in \turbomuon pre-conditioning. This rescaling can be interpreted as inducing a norm that adapts to the structural coherence of the gradients, thereby normalizing the worst-case spectral contribution of feature clusters.
+
+        The rescaling matrix $S$ is derived from the Gram matrix of the gradient, $H = G^\top G$. Geometrically, the entry $H_{jk} = \langle g_j, g_k \rangle$ quantifies the correlation between the gradient updates of feature column $j$ and feature column $k$. High values indicate that these features are being pushed in similar directions by the loss function.
+        To extract a scalar measure of feature stability from this matrix without expensive eigendecompositions, we use the \textit{Gershgorin Circle Theorem} \cite{gershgorin1931uber}. The theorem states that the eigenvalues of $H$ are strictly bounded by its row sums. We define the Gershgorin coherence bound $\Lambda_j$ for the $j$-th feature as:
+        
+        \begin{equation}
+            \Lambda_j \triangleq \sum_{k=1}^n |(G^\top G)_{jk}| = \underbrace{|(G^\top G)_{jj}|}_{\text{Feature Energy}} + \underbrace{\sum_{k \ne j} |(G^\top G)_{jk}|}_{\text{Structural Redundancy}}
+        \end{equation}
+        
+        This quantity $\Lambda_j$ serves as an upper bound on the strength and redundancy of feature $j$ as it captures the magnitude of the feature's own gradient, and also its constructive interference with all other correlated features in the layer.
+        By defining the scaling as $S = \operatorname{diag}(\Lambda)^{-1/2}$, the update of \turbomuon{}
+        %$\Delta W = \operatorname{PolarFactor}(GS)$ 
+        corresponds to steepest descent in an induced operator norm $\| \cdot \|_{\ell_2 \rightarrow S}$ (\cref{ap:proof_convergence}), that is explicitly shaped by these coherence bounds. We distinguish the following cases during optimization:
+        
+        \begin{itemize}
+            \item \textbf{Penalization of Coherence:} When a group of features collapses (i.e., learns highly correlated representations), the off-diagonal terms in $G^\top G$ grow large. Consequently, the Gershgorin bound $\Lambda_j$ increases, and the effective step size $s_j$ for those features decreases. 
+            \item \textbf{Amplification of Orthogonality:} Conversely, for features that are orthogonal to others, the redundancy term vanishes and the scaling is determined only by the feature's own energy, allowing for relatively larger updates.
+        \end{itemize}
+        
+        Therefore, the steepest descent of \turbomuon ensures that the worst-case curvature estimate of every feature channel—bounded by the Gershgorin disk—is at most 1, resulting in a stabilized spectral update that 
+        %\franck{
+        reduces sensitivity
+        %}
+        %is robust 
+        to feature collapse.
+
+\paragraph{Limitations:} The previous analysis, as in~\cite{amsel2025polar,bernstein2024oldoptimizernewnorm}, relies on the assumption that the update direction exactly matches the $\operatorname{PolarFactor}$. In practice, however, the Newton-Schulz procedure only provides an approximation of this operator. Although we have shown that our method yields a tighter approximation, a gap remains between the theoretical analysis and the actual update used in practice~\cite{gonon2026insights}. 
+Additionally, as in Muon, the effective step size $\eta$ depends on the gradient matrix $G$ and is implicitly absorbed into the optimizer’s learning rate. A dedicated analysis of how AOL pre-conditioning influences $\eta$ could provide useful insights for principled learning rate selection.
+
+It would therefore be valuable to extend the analysis to explicitly account for approximate updates, for instance along the lines of approaches based on Linear Minimization Oracle (LMO)~\cite{pethick2025training}. We leave such an investigation to future work.
+% ==============================================================
+\section{Experiments: End-to-end training with \turbomuon}
+% ==============================================================
+
+While orthogonalization lies at the core of optimizers such as Muon, it is not the sole factor determining end-to-end performance. In this section, we first demonstrate that the proposed method can be used as a drop-in replacement of Muon, achieving equivalent performance while reducing training time across several benchmarks, including challenging and competitive speed-run settings. 
+%We then examine the overhead introduced by \turbomuon under different training regimes. 
+% We also provide a detailed ablation study to quantify the individual contributions of each optimization component beyond the pre-conditioning.
+%\franck{
+%\subsection{VU LA LONGUEUR DES EXPERIMENTS IL FAUDRAIT ENLEVER CETTE SUBDIVISION SURTOUT QUE LE TITRE DU 6 C4EST DEJA END2END End-to-end training.}
+%}
+%\subsection{Impact on end-to-end training.}
+\begin{table}[t]
+\centering
+\begin{subtable}{0.47\linewidth}
+    \centering
+        \begin{tabular}{lccc}
+        \toprule
+        \textbf{It} & \textcolor{turbomuoncolor}{\turbomuon} & \textcolor{dioncolor}{Muon+} & \textcolor{muoncolor}{Muon} \\
+        \midrule
+        
+        % 2 
+        % & \cellcolor{orange!80} 3.32$\pm 1e^{-3}$ 
+        % & \cellcolor{red!80} 3.35$\pm 3e^{-3}$ 
+        % & \cellcolor{red!73} 3.34$\pm 2e^{-3}$ \\
+        
+        % 3 
+        % & \cellcolor{yellow!80} 3.29$\pm 1e^{-3}$ 
+        % & \cellcolor{orange!73} 3.31$\pm 2e^{-3}$ 
+        % & \cellcolor{orange!66} 3.30$\pm 2e^{-3}$ \\
+        
+        % 4 
+        % & \cellcolor{green!80} 3.28$\pm 1e^{-3}$ 
+        % & \cellcolor{yellow!80} 3.29$\pm 3e^{-3}$ 
+        % & \cellcolor{yellow!80} 3.29$\pm 5e^{-3}$ \\
+        
+        % 5 
+        % &  \cellcolor{green!80} 3.28$\pm 1e^{-3}$ 
+        % & \cellcolor{green!80} 3.28$\pm 3e^{-3}$ 
+        % & \cellcolor{green!80} 3.28$\pm 1e^{-3}$ \\
+
+        2 
+        & \cellcolor{red!15!white} 3.32$\pm 1e^{-3}$ 
+        & \cellcolor{red!25!white} 3.35$\pm 3e^{-3}$ 
+        & \cellcolor{red!20!white} 3.34$\pm 2e^{-3}$ \\
+        
+        3 
+        & \cellcolor{red!10!blue!5} 3.29$\pm 1e^{-3}$ 
+        & \cellcolor{red!12!white} 3.31$\pm 2e^{-3}$ 
+        & \cellcolor{red!10!white} 3.30$\pm 2e^{-3}$ \\
+        
+        4 
+        & \cellcolor{blue!12!white} 3.28$\pm 1e^{-3}$ 
+        & \cellcolor{red!8!blue!8} 3.29$\pm 3e^{-3}$ 
+        & \cellcolor{red!8!blue!8} 3.29$\pm 5e^{-3}$ \\
+        
+        5 
+        & \cellcolor{blue!15!white} 3.28$\pm 1e^{-3}$ 
+        & \cellcolor{blue!15!white} 3.28$\pm 3e^{-3}$ 
+        & \cellcolor{blue!15!white} 3.28$\pm 1e^{-3}$ \\
+        
+        \bottomrule
+        \end{tabular}
+        %\vspace{6mm}
+        \caption{\textbf{Our approach allows the removal of one Newton-Schulz iteration:} We trained a 144M GPT model on the FineWeb dataset~\cite{penedo2024fineweb} up to the performance of GPT-2 and reported validation loss. We reused the fastest existing training script and replaced the Newton-Schulz implementation without changing any other parameters. %Each line compared \turbomuon with baselines that have one extra iteration.
+        }
+        \label{tab:nanoGPT_accuracy}
+\end{subtable}
+\hfill
+\begin{subtable}{0.51\linewidth}
+    \centering
+        % \begin{tabular}{l l c c c}
+        % \begin{tabular}{p{45pt}p{52pt}p{22pt}p{39pt}p{5pt}}
+        \begin{tabular}{lccc}
+        \toprule
+        \textbf{Dataset} & \textbf{Variant} & \textbf{Perf} & \textbf{Time}   \\
+        \hline
+        %\multirow{3}{*}{\makecell[l]{speed-run\\Cifar10}} & \textcolor{muoncolor}{Muon}   & \textbf{94.04}\%  & ??s \\
+        
+        \multirow{2}{*}{\makecell[l]{speed-run\\Cifar10}} & \textcolor{dioncolor}{Muon+}   & \textbf{94.04}\%  & 1.359s \\
+        & \textcolor{turbomuoncolor}{T-Muon}   & 94.03\%  & \textbf{1.348}s  (-0.8 \%) % \times 0.99 % 0.8\% 
+         \\
+        %& \textcolor{muoncolor}{Muon}   & \textbf{??}\%  & ??s \\
+        %speed-run  & \textcolor{dioncolor}{Muon+}   & \textbf{94.04}\%  & 1.359s \\
+         % Cifar10 & \textcolor{turbomuoncolor}{T-Muon}   & \textbf{94.03}\%  & \textbf{1.348}s  (-0.8 \%) % \times 0.99 % 0.8\% \\
+        \hline
+        %\multirow{2}{*}{sr-nanoGPT} 
+        %\multirow{3}{*}{\makecell[l]{speed-run\\nanoGPT}}& \textcolor{muoncolor}{Muon}   & \textbf{3.28}  & ??s \\
+        %speed-run 
+        \multirow{2}{*}{\makecell[l]{speed-run\\nanoGPT}}& \textcolor{dioncolor}{Muon+}   & \textbf{3.28}  & 273.8s \\
+         %nanoGPT 
+         & \textcolor{turbomuoncolor}{T-Muon}   & \textbf{3.28}  & \textbf{266.0}s (-2.8\%) % \times 0.97 %2.7\%
+         \\
+        \hline
+        %\multirow{2}{*}{ImageNet-1k} 
+        %\multirow{3}{*}{\makecell[l]{ImageNet\\(1K)}}& \textcolor{muoncolor}{Muon}   & \textbf{69.56}\%  & 422 m \\
+        %ImageNet
+        \multirow{2}{*}{\makecell[l]{ImageNet\\(1K)}} & \textcolor{dioncolor}{Muon+}    & \textbf{69.56}\%  & 422 m \\
+         %(1K)
+         & \textcolor{turbomuoncolor}{T-Muon}   & 69.36\%  & \textbf{407} m (-3.6\%) % \times 0.96 % 3.6\% 
+         \\
+          
+        %\multicolumn{3}{c}{\textbf{Muon variants}} \\
+        %\hline
+        %\color{muoncolor}Muon   & $1378.54 \pm 12.35$ & 1.000x \\
+        %\color{dioncolor}Muon+   & $1308.09 \pm 8.36$  & 1.054x \\
+        %\color{turbomuoncolor}\turbomuon   & $1261.93 \pm 6.89$  & 1.092x \\
+        %\hline
+        %\multicolumn{3}{c}{\textbf{Dion (Muon-derived, large-scale oriented)}} \\
+        %\hline
+        %dion-1          & $3477.93 \pm 57.22$ & 0.397x \\
+        %dion-1/4        & $1678.71 \pm 14.64$ & 0.821x \\
+        %dion-1/16       & $1229.01 \pm 14.55$ & 1.122x \\
+        \bottomrule
+        \end{tabular}
+        \vspace{5mm}
+    \caption{\textbf{End-to-end performance and runtime} for several benchmarks using \turbomuon with in-place replacement. \turbomuon (T-Muon) consistently achieves equivalent performance in less time (s: seconds, m: minutes).}
+    \label{tab:end2endperf}
+    \end{subtable}
+\caption{\textbf{Improving Newton-Schulz convergence has an effective impact on end-to-end training.} With all other parameters fixed, the improved orthogonality translates to a lower final loss (\cref{tab:nanoGPT_accuracy}). Beyond 4 to 5 iterations, the loss marginally improves; hence, it is better to remove one iteration to reduce training time while maintaining results.}
+\end{table}
+
+\iffalse
+%\begin{wrapfigure}{r}{0.60\textwidth}
+\begin{figure}
+    \centering
+        \begin{tabular}{p{45pt}lp{25pt}l}
+        \hline
+        \textbf{Dataset} & \textbf{Variant} & \textbf{Perf} & \makecell[l]{\textbf{Time (s)} \\ \textbf{(Gain \%)}} \\
+        \hline
+        \multirow{2}{*}{sr-nanoGPT} & \color{dioncolor}Muon+   & \textbf{3.28}  & 273.75 (ref) \\
+         & \color{turbomuoncolor}\turbomuon   & \textbf{3.28}  & \textbf{266.65} (3\%) \\
+        \hline
+        \multirow{2}{*}{sr-Cifar10} & \color{muoncolor}Muon   & \textbf{94.01}\%  & 2.66 (ref) \\
+         & \color{turbomuoncolor}\turbomuon   & \textbf{94.01}\%  & \textbf{2.64} (1\%) \\
+        \hline
+        \multirow{2}{*}{ImageNet-1k} & \color{muoncolor}Muon   & \textbf{76.74}\%  & ???? (ref) \\
+         & \color{turbomuoncolor}\turbomuon   & 76.53\%  & \textbf{????} (3.5\%) \\
+          
+        %\multicolumn{3}{c}{\textbf{Muon variants}} \\
+        %\hline
+        %\color{muoncolor}Muon   & $1378.54 \pm 12.35$ & 1.000x \\
+        %\color{dioncolor}Muon+   & $1308.09 \pm 8.36$  & 1.054x \\
+        %\color{turbomuoncolor}\turbomuon   & $1261.93 \pm 6.89$  & 1.092x \\
+        %\hline
+        %\multicolumn{3}{c}{\textbf{Dion (Muon-derived, large-scale oriented)}} \\
+        %\hline
+        %dion-1          & $3477.93 \pm 57.22$ & 0.397x \\
+        %dion-1/4        & $1678.71 \pm 14.64$ & 0.821x \\
+        %dion-1/16       & $1229.01 \pm 14.55$ & 1.122x \\
+        \hline
+        \end{tabular}
+
+    \caption{\textbf{End-to-end performance and speedup gain} for several benchmarks using \turbomuon with in-place replacement. % Practical implementations of orthogonalization face a trade-off between polar error and computation time. Thanks to pre-conditioning, our method drastically reduces the polar error of the Newton-Schulz algorithm. This improves the tradeoff between convergence and runtime, effectively lowering the overhead of the Muon optimizer.
+    }
+    \label{fig:end2endperf}
+\end{figure}
+%\end{wrapfigure}
+\fi
+
+We have seen in the previous section that  \turbomuon provides both a better approximation of the polar factor (\cref{fig:polar_error_NS})  and a large speedup (\cref{fig:runtime_NS}) for the core routine of Muon (i.e., the Newton-Schulz algorithm). However, this projection is only a part of the full training step, which also includes forward and backward propagation. In this section, we show that an in-place replacement of Muon by \turbomuon achieves the same performance in less training time on several benchmarks. We choose two "speed-run" settings in NLP (Modded-NanoGPT) and vision (CIFAR-10), and a standard ImageNet-1K setting.
+
+We use the term “speed-run” to refer to highly optimized end-to-end training benchmarks whose objective is to reach a predefined target performance in the minimum possible wall-clock time. Unlike standard evaluations, these benchmarks are explicitly engineered to eliminate avoidable overheads in the model, data pipeline, and training loop, leaving little room for further acceleration. Consequently, even modest reductions in total runtime are meaningful, as they represent measurable gains on top of already highly optimized training recipes in which the Muon optimizer step has already been minimized. In this context, speed-run benchmarks provide a conservative test of whether improvements to Muon’s orthogonalization routine translate into practical end-to-end acceleration.
+
+\iffalse
+\paragraph{NanoGPT "speed-run":} 
+
+We first adopt the Modded-NanoGPT benchmark \cite{modded_nanogpt_2024}, a "speed-run" setup of a 124M-parameter GPT on FineWeb to a validation cross-entropy 3.28--replicating the estimated performance of GPT-2~\cite{radford2019language}-- in less than 3 minutes on 8×NVIDIA H100, consuming roughly 0.73B tokens. The benchmark attributes these gains to combined architectural, optimization, and systems changes, such as rotary embeddings, QK-norm, ReLU\textsuperscript{2}, sliding-window/flash attention, an FP8 LM head, and the Muon optimizer. This benchmark is not the context where our approach would yield the most significant gains, as the model and batch sizes are tuned to make Muon overhead as small as possible. This benchmark is especially relevant as it is, up to date, the most efficient end-to-end training of its category. Additionally, it places a strong emphasis on reproducible runtime measurement, enabling us to precisely evaluate whether our approach can also yield performance gains in end-to-end training even in highly efficient settings.
+
+In our setting, we reused the most recent training recipe and adapted it to use \turbomuon with a configurable number of iterations. All other hyperparameters were left at their original value to validate that our approach can be used without any further modification. We ran all experiments on 4x NVIDIA H100 GPUs and reported the average loss and runtimes over ten runs for each setting (\cref{tab:nanoGPT_accuracy}). An important point is that Turbo-Muon achieves equivalent performance with one fewer iteration.
+
+Even in this heavily optimized setting, our approach yields equivalent performance in a smaller runtime, demonstrating that our algorithm can enhance training efficiency without requiring any modifications to the hyperparameters. \cref{tab:end2endperf} shows that \turbomuon reduced the total runtime from $274.75 \pm 0.14$ seconds for the fastest \color{dioncolor}Muon+\color{black}~version to $266.00 \pm 0.10$ seconds for \color{turbomuoncolor}\turbomuon{}\color{black}. More details can be found in \cref{ap:nanogpt-WR}, and an additional study on the overhead introduced by \turbomuon under different training regimes in \cref{ap:trainingregimes}.
+\fi 
+
+\paragraph{NanoGPT "speed-run":}
+We evaluate \turbomuon on the Modded-NanoGPT benchmark~\cite{modded_nanogpt_2024}, a highly optimized “speed-run” setup for training a 124M GPT model on FineWeb until it reaches a validation cross-entropy of 3.28, replicating the estimated performance of GPT-2~\cite{radford2019language}. This benchmark is particularly challenging for our method, as it is tuned to minimize the overhead of Muon while emphasizing reproducible runtime measurements.
+We reuse the most recent training recipe and replace Muon with \turbomuon, with a configurable number of Newton-Schulz iterations. All other hyperparameters are kept unchanged to assess drop-in compatibility. Experiments are run on 4×H100, reporting average loss and runtime over 10 runs.
+An important point is that \turbomuon achieves equivalent performance with one fewer iteration (\cref{tab:nanoGPT_accuracy}) and reduces total runtime from $273.75 \pm 0.14$ s for the fastest version \textcolor{dioncolor}{Muon+} to $266.00 \pm 0.10$ s for \textcolor{turbomuoncolor}{\turbomuon{}}(\cref{tab:end2endperf}). Additional details and experiments are provided in \cref{ap:nanogpt-WR,ap:trainingregimes}.
+
+\paragraph{CIFAR-10 "speed-run":}%From Language to Vision: Transformers to CNNs}
+
+We further evaluate \turbomuon on the CIFAR-10 speed-run benchmark~\cite{Jordan2024cifar10airbench}, which targets 94\% validation accuracy in the minimum possible time on a single H100 GPU. This setting involves training a convolutional neural network (CNN), where Muon 
+reshapes convolutional gradient updates into 2D matrices before applying iterative orthogonalization.
+%orthogonalizes reshaped convolutional updates. Additional details are given in \cref{ap:cifar}.
+This provides a complementary regime to evaluate AOL preconditioning.
+
+As shown in \cref{tab:end2endperf}, AOL pre-conditioning achieves the same performance while reducing runtime from $1.359s$ to $1.348s$ (0.8\%). Despite the highly optimized nature of this benchmark, this gain highlights the drop-in efficiency of \turbomuon and its applicability across architectures.
+
+\iffalse
+To evaluate the validity of AOL pre-conditioning in a different setting, we also demonstrate empirical gains on small-scale training tasks, such as the CIFAR-10 speed-running task\cite{Jordan2024cifar10airbench}. This task consists of reaching 94\% validation accuracy on the CIFAR-10 classification task~\cite{krizhevsky2009learning}, in the minimum possible time, on a single A100 GPU. Importantly, in this task, we optimize a convolutional neural network (CNN). In this setting, the Muon optimizer reshapes the gradient update on convolution layers to matrices to orthogonalize them iteratively. In %this setting, 
+\cref{tab:end2endperf},
+we demonstrate that AOL pre-conditioning yields a 0.8\% runtime improvement while maintaining the same performance.%, even on this significantly different task. 
+%We obtain the following results:
+%
+%
+%\begin{table}[ht]
+%  \centering
+%  \begin{tabular}{l c c}
+%    \toprule
+%    Method & {Validation accuracy (\%)} & {Runtime (s)} \\
+%    \midrule
+%    Muon            & 94.01 $\pm$ 0.1 & 2.66 \\
+%    \turbomuon      & 94.01 $\pm$ 0.1 & \bfseries 2.64 \\
+%    \bottomrule
+%  \end{tabular}
+%    \vspace{1mm}
+%  \caption{Speedrunning results on the CIFAR-10 dataset using the implementation of ~\cite{Jordan2024cifar10airbench} averages across 20 runs.}
+%  \label{tab:speedrun-cifar}
+%\end{table}
+
+Despite an already highly optimized implementation, achieving a further runtime reduction from $2.66$ s to $2.64$ s via a simple drop-in replacement is nontrivial. More importantly, these experiments substantiate the broad applicability of \turbomuon across heterogeneous training configurations, with consistent gains observed in both the NanoGPT and CIFAR-10 speedruns.
+\fi
+
+\paragraph{ImageNet-1K:} To evaluate the influence of \turbomuon on a larger dataset,
+%and model size, 
+we also evaluate a drop-in replacement on an ImageNet-1K baseline using a ViT-Tiny/16 model from \texttt{timm}~\cite{rw2019timm}. 
+% \franck{@Thomas il faudrait mettre la ref de la conf initiale utilisée ?}. 
+\cref{tab:end2endperf} shows that a 3.6\% runtime improvement is achieved with a similar final performance. % (76.53\% against 76.74\% for standard muon), albeit without further hyperparameter tuning.
+
+
+\iffalse
+\begin{figure*}[t]
+    \begin{subfigure}[b]{0.49\textwidth}
+        \centering
+        \begin{tabular}{lcc}
+        \hline
+        \textbf{Variant} & \textbf{ms/step} & \textbf{Speedup} \\
+        \hline
+        \multicolumn{3}{c}{\textbf{Muon variants}} \\
+        \hline
+        \color{muoncolor}Muon   & $1378.54 \pm 12.35$ & 1.000x \\
+        \color{dioncolor}Muon+   & $1308.09 \pm 8.36$  & 1.054x \\
+        \color{turbomuoncolor}\turbomuon   & $1261.93 \pm 6.89$  & 1.092x \\
+        \hline
+        \multicolumn{3}{c}{\textbf{Dion (Muon-derived, large-scale oriented)}} \\
+        \hline
+        dion-1          & $3477.93 \pm 57.22$ & 0.397x \\
+        dion-1/4        & $1678.71 \pm 14.64$ & 0.821x \\
+        dion-1/16       & $1229.01 \pm 14.55$ & 1.122x \\
+        \hline
+        \end{tabular}
+        \vspace{1mm}
+        \caption{
+        \textbf{Turbo-Muon unlocks step-time speedups at medium scale.}
+        We report training throughput (ms per optimization step) when simulating the training of a 1.3B-parameter model on an A100 80GB GPU with a batch size of 32k tokens per GPU, a setting where Muon's overhead is clearly exposed, and Dion's low rank induces a perceptible loss degradation.
+        The speedup column indicates performance relative to \texttt{Muon}, with higher values corresponding to faster training.
+        }
+        \label{tab:1b_runtime}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.49\textwidth}
+        \centering
+        %\begin{tabular}{lll}
+        %    \toprule
+        %     \color{turbomuoncolor}\turbomuon & \color{dioncolor}Muon+ & \color{muoncolor}Muon \\
+        %   \midrule
+        %        3.35 ± 0.002 \color{turbomuoncolor}{(\textbf{1}it}) & 3.35 ± 0.003 (2it)& 3.34 ± 0.002 (2it) \\
+        %        3.32 ± 0.001 \color{turbomuoncolor}{(\textbf{2}it}) & 3.31 ± 0.002 (3it)& 3.30 ± 0.002 (3it) \\
+        %        3.29 ± 0.001 \color{turbomuoncolor}{(\textbf{3}it}) & 3.29 ± 0.003 (4it)& 3.29 ± 0.005 (4it) \\
+        %        3.28 ± 0.001 \color{turbomuoncolor}{(\textbf{4}it}) & 3.28 ± 0.003 (5it)& 3.28 ± 0.001 (5it) \\
+        %    \bottomrule
+        %\end{tabular}
+        \begin{tabular}{llll}
+        \toprule
+        \textbf{It} & \color{turbomuoncolor}\turbomuon & \color{dioncolor}Muon+ & \color{muoncolor}Muon \\
+        \midrule
+        
+        % 2 
+        % & \cellcolor{orange!80} 3.32$\pm 1e^{-3}$ 
+        % & \cellcolor{red!80} 3.35$\pm 3e^{-3}$ 
+        % & \cellcolor{red!73} 3.34$\pm 2e^{-3}$ \\
+        
+        % 3 
+        % & \cellcolor{yellow!80} 3.29$\pm 1e^{-3}$ 
+        % & \cellcolor{orange!73} 3.31$\pm 2e^{-3}$ 
+        % & \cellcolor{orange!66} 3.30$\pm 2e^{-3}$ \\
+        
+        % 4 
+        % & \cellcolor{green!80} 3.28$\pm 1e^{-3}$ 
+        % & \cellcolor{yellow!80} 3.29$\pm 3e^{-3}$ 
+        % & \cellcolor{yellow!80} 3.29$\pm 5e^{-3}$ \\
+        
+        % 5 
+        % &  \cellcolor{green!80} 3.28$\pm 1e^{-3}$ 
+        % & \cellcolor{green!80} 3.28$\pm 3e^{-3}$ 
+        % & \cellcolor{green!80} 3.28$\pm 1e^{-3}$ \\
+
+        2 
+        & \cellcolor{red!15!white} 3.32$\pm 1e^{-3}$ 
+        & \cellcolor{red!25!white} 3.35$\pm 3e^{-3}$ 
+        & \cellcolor{red!20!white} 3.34$\pm 2e^{-3}$ \\
+        
+        3 
+        & \cellcolor{red!10!blue!5} 3.29$\pm 1e^{-3}$ 
+        & \cellcolor{red!12!white} 3.31$\pm 2e^{-3}$ 
+        & \cellcolor{red!10!white} 3.30$\pm 2e^{-3}$ \\
+        
+        4 
+        & \cellcolor{blue!12!white} 3.28$\pm 1e^{-3}$ 
+        & \cellcolor{red!8!blue!8} 3.29$\pm 3e^{-3}$ 
+        & \cellcolor{red!8!blue!8} 3.29$\pm 5e^{-3}$ \\
+        
+        5 
+        & \cellcolor{blue!15!white} 3.28$\pm 1e^{-3}$ 
+        & \cellcolor{blue!15!white} 3.28$\pm 3e^{-3}$ 
+        & \cellcolor{blue!15!white} 3.28$\pm 1e^{-3}$ \\
+        
+        \bottomrule
+        \end{tabular}
+        \vspace{6mm}
+        \caption{\textbf{Our approach allows the removal of one Newton-Schulz iteration:} We trained a 144M GPT model on the FineWeb dataset\cite{penedo2024fineweb} up to the performance of GPT-2 and reported validation loss. We reused the fastest existing training script and replaced the Newton-Schulz implementation without changing any other parameters. %Each line compared \turbomuon with baselines that have one extra iteration.
+        }
+        \label{tab:nanoGPT_accuracy}
+        \vspace{3.5mm}
+    \end{subfigure}
+    \caption{\textbf{\turbomuon can make realistic training faster without impact on final loss.} \cref{tab:1b_runtime} shows that it can achieve non-negligible speedups on medium-scale training, with runtime improvements nearing 10\% of the total step runtime. \cref{tab:nanoGPT_accuracy} shows that our approach does not induce perceptible loss degradation when an iteration is removed.}
+\end{figure*}
+
+\begin{figure*}[t]
+    \centering
+\end{figure*}
+
+\subsection{Runtime improvements for medium-scale training}
+In practice, the optimizer step accounts for only a small fraction of total training computational cost, which is usually dominated by forward and backward propagation. Nonetheless, Muon’s orthogonalization introduces a measurable overhead compared to AdamW. This overhead decreases as the batch size increases, since Muon’s computational cost is independent of the batch dimension, while the model’s forward cost scales linearly with it. Larger batches, therefore, improve time-to-target performance and typically move Muon past AdamW on the compute-efficiency frontier \cite{shah2025practical}, especially as Muon exhibits a larger critical batch size\cite{wen_fantastic_2025}.
+
+At large model scales, however, global batch size cannot grow indefinitely without sharding, which significantly affects compute efficiency. Naïve replication can increase per-step flops by up to 5×, while more advanced strategies such as sharded matrix multiplication or layer sharding can suffer from bandwidth saturation. The resulting trade-off is tightly linked to the per-device batch size, which limits the amortization of Muon’s overhead \cite{essential2025muon}, leading to an overhead typically around 10-20\%.
+
+Within this context, our pre-conditioned Newton-Schulz method reduces the cost of the orthogonalization subroutine by approximately 3× at fixed polar accuracy. The resulting end-to-end gains are most pronounced at medium scales—where batch size is reduced but full sharding is unnecessary. This regime is illustrated in \cref{tab:1b_runtime}: On a 1.3B language model, one A100 with 80G memory, can achieve a batch size of 32k tokens without sharding. In this context, Muon’s cost is non-negligible, but optimizers tailored for extreme scales, such as Dion\cite{ahn_dion_2025}, are not yet efficient: Dion's low-rank updates--which shine at larger scales--still degrade convergence. Our drop-in pre-conditioned NS offers a competitive trade-off by reducing computational cost without compromising accuracy.
+\fi
+
+% ==============================================================
+\section{Conclusion and Perspectives}
+% ==============================================================
+
+In this work, we propose AOL pre-conditioning 
+%as a novel approach to improving 
+to improve 
+the efficiency of orthogonality-based optimizers such as Muon.
+Under practical approximation budgets (i.e., $t \leq 5$), 
+%we show that AOL pre-conditioning 
+the proposed approach yields both faster and more accurate orthogonalization: Empirically, AOL significantly reduces the initial polar error compared to Frobenius normalization on large random matrices (\cref{fig:precond_bench}), and enables the removal of one Newton-Schulz iteration while still achieving equal or lower error than the five-step Muon and Muon+ baselines (\cref{fig:polar_error_NS}). 
+%These convergence  improvements translate directly into runtime gains: 
+%These convergence improvements translate into consistent runtime gains, 
+These gains translate into consistent runtime improvements, with AOL pre-conditioning acting as a drop-in replacement that requires no hyperparameter tuning:  Across speed-run and standard benchmarks, \turbomuon preserves performance while reducing computation time. In particular, 
+%we observe identical or near-identical accuracy 
+we achieve near-identical performance on NanoGPT and CIFAR-10 speed-runs, 
+with up to 3\% speedup,
+%with step-time reductions of up to 3\%, 
+and similar trends on larger-scale settings such as ImageNet-1K.
+At medium scale (\cref{tab:1b_runtime}), Turbo-Muon can even provide step-time speedups of 8–10\%.
+%More broadly, \cref{tab:1b_runtime} shows that Turbo-Muon provides step-time speedups of 8–10\% at medium scale.%  and reduces end-to-end runtime without requiring any hyperparameter tuning (\cref{tab:nanoGPT_accuracy}).
+
+Beyond empirical performance, we provide a geometric interpretation of AOL pre-conditioning through a steepest descent characterization. We show that \turbomuon updates are close to the solution of a steepest descent problem under a structured operator norm. This perspective reveals that AOL pre-conditioning implicitly controls the spectral geometry of the update. As a consequence, \turbomuon reduces sensitivity to feature collapse and promotes more stable and balanced optimization dynamics.
+
+\paragraph{Broader impact.}
+By reducing the computational cost of orthogonality-constrained optimization without sacrificing performance or requiring additional tuning, AOL pre-conditioning contributes to more efficient training of large-scale models. Moreover, AOL pre-conditioning is orthogonal to many existing Muon improvements; in particular, we show in the appendix (\cref{ap:tridao}) that it can be naturally combined with the very recent Gram-based Newton-Schulz computation method~\cite{GramNewtonSchulz}, making it a complementary building block rather than a competing approach.
+
+%across realistic training settings, Turbo-Muon provides step-time speedups of 8–10\% at medium scale (\cref{tab:1b_runtime}) and reduces the end-to-end runtime of the NanoGPT benchmark without any hyperparameter changes (\cref{tab:nanoGPT_accuracy}). Finally, we demonstrate that these improvements hold across both language modeling and vision tasks, confirming that AOL-based pre-conditioning yields consistent benefits in already highly optimized training pipelines.
+%Finally, we explore if AOL pre-conditionning is suitable for exact estimation of the polar factor, and show that AOL pre-conditioning asymptotically approximates a steepest descent direction with greatly increased iterative convergence (as observed in \cref{tab:asymptotic}).
+
