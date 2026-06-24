@@ -1,0 +1,235 @@
+\tableofcontents
+
+\section{Proofs and comments}\label{app:pandc}
+
+\subsection{Complementary distribution}
+
+\begin{definition}[$\bedd$ Complementary Distribution]\label{def:bedd}
+Let $\Prob_X$ a distribution with compact support $\support \subset B$, with $B\subset\Reals^d$ a bounded measurable set. $Q$ is said to be $(B,\epsilon)$ disjoint from $\Prob_X$ if (i) its support $\supp Q\subset B$ is compact (ii) $d(\supp Q, \support)\geq 2\epsilon$ (iii) for all measurable sets $M\subset B$ such that $d(M,\support)\geq 2\epsilon$ we have $Q(M)>0$.  
+It defines a symmetric but irreflexive binary relation denoted $Q\bedd\Prob_X$.  
+\end{definition}
+
+The idea is to learn one class classifier by reformulating one class learning of $\Prob_X$ as a binary classification of $\Prob_X$ against a carefully chosen adversarial distribution $Q(\Prob_X)$. This simple idea had already occurred repeatedly in the related literature~\cite{sabokrou2018adversarially}. Note that $\hkr$ benefits from generalization guarantees as proved in~\cite{bethune2022pay}: the optimal classifier on the train set and on the test set are the same in the limit of big samples.  
+ 
+\subsection{Learning the SDF with HKR loss}
+
+
+\hkrsdf*
+    \begin{proof}
+    The results follow from the properties of $\hkr$ loss given in Proposition 2  of~\cite{serrurier2021achieving}. If $Q\bedd \Prob_X$, then by definition, the two datasets are $2\epsilon$ separated. Consequently the hinge part of the loss is null: $\max{(0,m-yf(x))}$ for all pairs $(x,+1)$ and $(z,-1)$ with $x\sim\Prob_X$ and $z\sim Q$. We deduce that:
+    \begin{equation}\label{eq:hkrsdfeq1}
+        \forall x\in\support, f(x)\geq m,\qquad \forall z\in\supp Q, f(z)\leq -m.
+    \end{equation}
+    In the following we use:
+    $$F_z=\{\argmin_{z_0\in\supp Q}\|x-z_0\|_2\},\forall x\in\support$$
+    and
+    $$F_x=\{\argmin_{x_0\in\support}\|x_0-z\|_2\},\forall z\in(\supp Q).$$
+    Since $m=\epsilon$, we must have $f(x)=m$ for all $x\in F_x$, and $f(z)=-m$ for all $z\in F_z$, whereas $\Sdf(x)=0$ and $\Sdf(z)=-2m$. Thanks to the 1-Lipschitz property for every $x\in\support$ we have $f(x)\leq f(\partial x)+\|x-\partial x\|$ where $\partial x=\argmin_{\bar x\in\partial\support}\|x-\bar x\|$ is the projection of $x$ onto the boundary $\partial\support$. Similarly $f(z)\geq f(\partial z)-\|z-\partial z\|$. The $-yf(x)$ term in the $\hkr$ loss (Wasserstein regularization), incentives to maximize the amplitude $|f(x)|$ so the inequalities are tight.  Notice that $\Sdf(x)=\Sdf(\partial x)+\|x-\partial x\|$ and $\Sdf(z)=\Sdf(\partial z)-\|z-\partial z\|$. This allows concluding:
+    \begin{equation}
+        \forall x\in \support,\Sdf(x))= f^{*}(x)-m,\qquad \forall z\in\supp Q,\Sdf(z)= f^{*}(z)-m.
+    \end{equation}
+       
+    % Consider the case $m<\epsilon$. Because $f$ is 1-Lipschitz we must have $|f(x)-f(z)|\leq\|x-z\|$. Notice that by definition of $Q$ we have $\|x-y\|\geq 2\epsilon$, and with equation~\ref{eq:hkrsdfeq1} we have $f(x)-f(z)\geq 2m$.  
+    % Assume that $x\in\partial\support$. We have:
+    % \begin{equation}
+    %     \begin{aligned}
+    %     f(x)&\leq f(z)+\|x-z\|\\
+    %     f(x)&\leq -m+\|x-z\|\\
+    %     f(x)&\leq -m+2\epsilon\\
+    %     f(x)-m&\leq 2(\epsilon-m)\\
+    %     |f(x)|-m&\leq 2(\epsilon-m).
+    %     \end{aligned}
+    % \end{equation}
+    % Assume that $z\in\partial\supp Q$, i.e that $z$ is on the boundary of the support of $Q$. The case of $f(z)$ is perfectly symmetric by construction, up to the sign:
+    % \begin{equation}
+    %     \begin{aligned}
+    %     f(z)&\geq f(x)-\|x-z\|\\
+    %     f(z)&\geq m-\|x-z\|\\
+    %     f(z)&\geq m-2\epsilon\\
+    %     |f(z)|&\leq |m-2\epsilon|\\
+    %     |f(z)|-m&\leq 2(\epsilon-m)
+    %     \end{aligned}
+    % \end{equation}
+    % Now, we consider the case where $x\in\interior{\support}$. Thanks to the properties of $\hkr$ loss, the loss is minimized when $f(x)=f(\partial x)+\|x-\partial x\|$ where $\partial x=\argmin_{\bar x\in\partial\support}\|x-\bar x\|$ is the projection of $x$ onto the boundary $\partial\support$. Indeed the term $-yf(x)$ maximizes the amplitude $|f(x)|$, and any other choice is sub-optimal without violating the 1-Lipschitz constraint. This translates into:
+    % $$\forall x\in\support, f(x)-m\leq \Sdf(x)+2(\epsilon-m).$$
+    % The other direction $\Sdf(x)\leq f(x)-m$ follows from $f(x)\geq m$.  
+    % The case of $z\in\interior{\supp Q}$ is identical: $f(z)=f(\partial z)-\|z-\partial z\|\geq -\|z-\partial\|+m-2\epsilon$. It yields:
+    % $$|f(z)|-m\leq \|z-\partial z\|+2(\epsilon-m).$$
+    % Finally, for examples in the stripe $w\in B/(\supp Q\cup \support)$ that separates distributions, we have by definition $d(w,\partial\support)\leq 2\epsilon$ and $m-2\epsilon\leq f(w)\leq2\epsilon-m\implies -m\leq |f(w)|-m\leq2(\epsilon-m)$.   
+    \end{proof}
+  
+\subsection{Finding the right complementary distribution}
+
+Finding the right distribution $Q\bedd\Prob_X$ with small $\epsilon$ is also challenging. 
+
+    %The distributions $Q$ that fulfill the conditions of Definition~\ref{def:bedd} are themselves solution of an optimization problem, as stated in proposition~\ref{thm:qisopt}. First we recall below the definition of Wasserstein-1 distance, as found in~\cite{villani2008optimal} (Definition 6.1).  
+    % \begin{definition}[Wasserstein-1 distance]\label{def:wasserstein}
+    % Let $d:\Reals^n\times\Reals^n\rightarrow\Reals$ be a metric. For any two measures $P$ and $Q$ on $\Reals^n$ the Wasserstein-1 distance is defined by the following formula:
+    % $$\Wasserstein_1(P,Q)\defeq\inf_{\pi\in\Pi(P,Q)}\int_{\Reals^n}d(x,y)\mathrm{d}\pi(x,y)$$
+    % where $\Pi(P,Q)$ denote the set of measures on $\Reals^n\times\Reals^n$ whose marginals are $P$ and $Q$ respectively. Equivalently we can write:
+    % $$\Wasserstein_1(P,Q)\defeq\inf_{\substack{\text{Law}(X)=P\\\text{Law}(Y)=Q}} \Expect{[d(X,Y)]}.$$
+    % \end{definition}
+    
+    % By Remark 6.3 of~\cite{villani2008optimal} the Wasserstein-1 distance is the Kantorovich-Rubinstein distance:  
+    % $$\Wasserstein_1(P,Q)=\sup_{f\in\text{Lip}_1(B,\Reals)}\Expect_{x\sim P}[f(x)]+\Expect_{z\sim Q}[f(z)]$$ 
+    % In our case we are working with neural networks that are Lipschitz with respect to $l2$ distance, so we have $d(x,y) \defeq \|x-y\|_2$.  
+    
+    % \begin{proposition}[Complementary distribution minimizes loss gap]\label{thm:qisopt}
+    % Let $\mathcal{P}(B)$ be the set of probability measures over $B$. Assume that $m<\epsilon$. Let $Q^{*}$ be such that $Q^{*}\bedd\Prob_X$. Then we have:
+    % \begin{equation}\label{eq:gap}
+    % \begin{aligned}
+    % Q^{*}\in\arg\inf_{Q\in\mathcal{P}(B)}\Empirical^{\text{hkr}}(f,\Prob_X,Q)-\Wasserstein_1(\Prob_X,Q).
+    % \end{aligned}
+    % \end{equation}
+    % Here $\Wasserstein_1$ is the Wasserstein-1 distance~\cite{villani2008optimal} with respect to $l2$ norm.
+    % \end{proposition}
+    % \begin{proof}
+    % The results also follow from the properties of $\hkr$ loss given in Proposition 2  of~\cite{serrurier2021achieving}. Let $f$ be such that:
+    % \begin{equation}
+    %     f \in \arg\inf_{f\in\text{Lip}_1(B,\Reals)}\Expect_{x\sim\Prob_X}[\hkr(f(x))]+\Expect_{z\sim Q}[\hkr(-f(z))].
+    % \end{equation}
+    % Observe that if $Q\bedd \Prob_X$ then the hinge part of the loss is null: $\max{(0,m-yf(x))}$ for all pairs $(x,+1)$ and $(z,-1)$ with $x\sim\Prob_X$ and $z\sim Q$. Hence:
+    % \begin{equation}
+    % \begin{aligned}
+    %     \Empirical^{\text{hkr}}(f,\Prob_X,Q) &= -\Expect_{x\sim\Prob_X}[f(x)]+\Expect_{z\sim Q}[f(z)]\\
+    %                                          &\geq -\sup_{f\in\text{Lip}_1(B,\Reals)}\Expect_{x\sim\Prob_X}[f(x)]-\Expect_{z\sim Q}[f(z)]\\
+    %                                          &=\Wasserstein_1(\Prob_X,Q)
+    % \end{aligned}
+    % \end{equation}
+    % \end{proof}
+    
+    % The proposition~\ref{thm:qisopt} is the rational to seek $Q$ through an alternating optimization process.  
+  
+We propose to seek $Q$ through an alternating optimization process. Consider a sample $z\in\Level_t$. If $z$ is a \textit{false positive} (i.e $f_t(z)>0$ and $z\notin\support$), training $f_{t+1}$ on the pair $(z,-1)$ will incentive $f_{t+1}$ to fulfill $f_{t+1}(z)<0$, which will reduce the volume of false positive associated to $f_{t+1}$. If $z$ is a \textit{true negative} (i.e $f_t(z)<0$ and $z\notin\support$) it already exhibits the wanted properties. The case of \textit{false negative} (i.e $f_t(z)<0$ and $z\in\support$) is more tricky: the density of $\Prob_X$ around $z$ will play an important role to ensure that $f_{t+1}(z)>0$.  
+  
+Hence we assume that samples from the target $\Prob_X$ are \textit{significantly} more frequent than the ones obtained from pure randomness. It is a very reasonable assumption (especially for images, for example), and most distributions from real use cases fall under this setting.   
+
+\begin{assumption}[$\Prob_X$ samples are more frequent than pure randomness (informal)]
+For any measurable set $M\subset\support$ we have $\Prob_X(M)\gg \Uniform(M)$.
+\end{assumption}
+  
+To ensure that property (iii) of definition~\ref{def:bedd} is fulfilled, we also introduce stochasticity in algorithm~\ref{alg:newtonraphson} by picking a random ``learning rate'' $\eta\sim\Uniform([0,1])$. To decorrelate samples, the learning rate is sampled independently for each example in the batch.  
+
+The final procedure depicted in algorithm~\ref{alg:mmalgo} benefits from the mild guarantee of proposition~\ref{thm:fixpointstop}. It guarantees that once the complementary distribution has been found, the algorithm will continue to produce a sequence of complementary distributions and a sequence of classifiers $f_t$ that approximates $\Sdf$.  
+
+\section{Signed Distance Function learning framed as Adversarial Training}\label{app:sdfadv}
+
+\begin{property}\label{thm:fixpointstop}
+Let $Q^{t}$ be such that $Q^{t}\bedd\Prob_X$. Assume that $Q^{t+1}$ is obtained with algorithm~\ref{alg:mmalgo}. Then we have $Q^{t+1}\bedd\Prob_X$. 
+\end{property}
+\begin{proof}
+The proof also follows from the properties of $\hkr$ loss given in Proposition 2 of~\cite{serrurier2021achieving}
+Since $Q_t\bedd\Prob_X$ all examples $z\sim Q_t$ generated fulfill (by definition) $d(z,\support)\geq 2\epsilon\geq 2m$. Indeed the 1-Lipschitz constraint (in property~\ref{prop:gnphkr}) guarantees that no example $z_t$ can ``overshoot'' the boundary. Hence for the associated minimizer $f_{t+1}$ of $\hkr$ loss, the hinge part of the loss is null. This guarantees that $f_{t+1}(z)\leq -m$ for $z\sim Q$. We see that by applying algorithm~\ref{alg:newtonraphson} the property is preserved: for all $z\sim Q_{t+1}$ we must have $f_{t+1}(z)\leq -m=-\epsilon$. Finally notice that because $z_0\sim\Uniform(B)$ and $\eta\sim\Uniform([0,1])$ the support $\supp Q$ covers the whole space $B$ (except the points that are less than $2\epsilon$ apart from $\support$). Hence we have $Q_{t+1}\bedd\Prob_X$ as expected.
+\end{proof}
+
+\begin{algorithm}%[tb]
+\caption{Alternating Minimization for Signed Distance Function learning}
+\label{alg:mmalgo}
+\textbf{Input}: 1-Lipschitz neural network architecture $f_{\circ}$\\
+\textbf{Input}: initial weights $\theta_0$, learning rate $\alpha$
+\begin{algorithmic}[1] %[1] enables line numbers
+\REPEAT
+\STATE $f_t\gets f_{\theta_t}$
+\STATE $\tilde\theta\gets \theta_t$
+    \REPEAT
+    \STATE Generate batch $z\sim Q_t$ of negative samples with algorithm~\ref{alg:newtonraphson}
+    \STATE Sample batch $x\sim\Prob_X$ of positive samples
+    \STATE Compute loss on batch $\Loss(\tilde\theta)\defeq\Empirical^{\text{hkr}}(f_{\tilde\theta},x,z)$
+    \STATE Learning step $\tilde\theta\gets \tilde\theta+\alpha\nabla_{\theta}\Loss(\tilde\theta)$
+    \UNTIL{convergence of $\tilde\theta$ to $\theta_{t+1}$.}
+\UNTIL{convergence of $f_t$ to limit $f^{*}$.}
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Lazy variant of algorithm~\ref{alg:mmalgo}}
+
+Algorithm~\ref{alg:mmalgo} solves a MaxMin problem with alternating maximization-minimization. The inner minimization step (minimization of the loss over 1-Lipschitz function space) can be expensive. Instead, partial minimization can be performed by doing only a predefined number of gradient steps. This yields the lazy approach of algorithm~\ref{alg:mmalgolazy}. This provides a considerable speed up over the initial implementation. Moreover, this approach is frequently found in literature, for example, with GAN~\cite{} or WGAN~\cite{}. However, we lose some of the mild guarantees, such as the one of Proposition~\ref{thm:fixpointstop} or even Theorem~\ref{thm:hkrsdf}. Crucially, it can introduce unwanted oscillations in the training phase that can impede performance and speed. Hence this trick should be used sparingly.   
+
+\begin{algorithm}%[tb]
+\caption{One Class Signed Distance Function learning}
+\label{alg:mmalgolazy}
+\textbf{Input}: 1-Lipschitz neural net architecture $f_{\circ}$, initial weights $\theta_0$, learning rate $\alpha$, number of parameter update per time step $K$
+\begin{algorithmic}[1] %[1] enables line numbers
+\REPEAT
+\STATE $\Tilde{\theta} \gets \theta_t$
+\STATE Generate batch $z\sim Q_t$ of negative samples with algorithm~\ref{alg:newtonraphson}
+\STATE Sample batch $x\sim\Prob_X$ of positive samples
+\FOR{$K$ updates }
+\STATE Compute loss on batch $\Loss(\theta)\defeq\Empirical^{\text{hkr}}(f_{\Tilde{\theta}},x,z)$
+\STATE Learning step $\Tilde{\theta} \gets\Tilde{\theta}+\alpha\nabla_{\theta}\Loss(\Tilde{\theta})$
+\ENDFOR
+\STATE $\theta_{t+1} \gets \Tilde{\theta}$
+\UNTIL{convergence of $f_t$.}
+\end{algorithmic}
+\end{algorithm}
+\vspace{-0.3cm}
+
+The procedure of algorithm~\ref{alg:mmalgolazy} bears numerous similarities with the adversarial training of Madry~\cite{madry2017towards}. In our case the adversarial examples are obtained by starting from noise $\Uniform(B)$ and relabeled are negative examples. In their case, the adversarial examples are obtained by starting from $\Prob_X$ itself and relabeled as positive examples.  
+
+\section{Certifiable AUROC (Proposition \ref{certifauroc})}\label{app:certifauroc}
+
+\begin{proposition}[certifiable AUROC]
+ Let $F_0$ be the cumulative distribution function associated with the negative classifier's prediction (when $f(x) = 0$), and $p_1$ the probability density function of the positive classifier's prediction (when $f(x) = 0$). Then, for any attack of radius $\epsilon > 0$, the AUROC of the attacked classifier $f_{\epsilon}$ can be bounded by
+\begin{equation}
+    \text{AUROC}(f_{\epsilon}) = \int_{-\infty}^{\infty} F_0(t)p_1(t-2\epsilon)dt.
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+
+
+Let $p_1$ (resp. $p_{-1}$) be the probability density function (PDF) associated with the classifier's positive (resp. negative) predictions. More precisely, $p_1$ (resp. $p_{-1}$) is the PDF of $f_{\sharp}\Prob_X$ (resp. $f_{\sharp}Q$) for some adversarial distribution $Q$, where $f_{\sharp}\cdot$ denotes the pushforward measure operator~\cite{bogachev2007measure} defined by the classifier. The operator $f_{\sharp}$ formalizes the shift between $\mathbb{P}_X$ (resp. $Q$), the ground truth distributions, and $p_{-1}$ (resp. $p_1$), the imperfectly distribution fitted by $f$. Let $F_{-1}$ and $F_1$ be the associated cumulative distribution functions. For a given classification decision threshold $\tau$, we can define the True Positive Rate (TPR) $F_{-1}(\tau)$, the True Negative Rate (TNR) $1 - F_1(\tau)$, and the False Positive Rate (FPR) $F_{1}(\tau)$. The ROC curve is then the plot of $F_{-1}(\tau)$ against $F_{1}(\tau)$. Hence, setting $v = F_1(t)$, we can define the AUROC as:
+\begin{equation}
+%https://stats.stackexchange.com/questions/180638/how-to-derive-the-probabilistic-interpretation-of-the-auc
+    \text{AUROC}(f) = \int_{0}^{1} F_{-1}(F_1^{-1}(v))dv\\
+\end{equation}
+
+And with the change of variable $dv = p_1(t)dt$
+
+\begin{equation}
+    \text{AUROC}(f) = \int_{-\infty}^{\infty} F_{-1}(t)p_1(t)dt.
+\end{equation}
+
+We consider a scenario with symmetric attacks: the attack decreases (resp. increases) the normality score of One Class (resp. Out Of Distribution samples) for decision threshold $\tau\in\Reals$. When the 1-Lipschitz classifier $f$ is under attacks of radius at most $\epsilon>0$ we note $f_{\epsilon}$ the perturbed classifier:
+\begin{equation}
+    f_{\epsilon}(x)=\min_{\delta \leq \epsilon} (2\indicator\{f(x)\geq \tau\}-1) f(x + \delta).
+\end{equation}
+Note that $f_{\epsilon}(x)\leq f(x)+\epsilon$ when $f(x)<\tau$ and $f_{\epsilon}(x)\geq f(x)-\epsilon$ when $f(x)\geq \tau$ thanks to the 1-Lipschitz property. This effectively translates the pdf of $f_{\epsilon}$ by $|\epsilon|$ atmost.  
+  
+We obtain a lower bound for the AUROC (i.e a certificate):
+\begin{equation}
+\begin{aligned}
+    %\text{AUROC}(f_{\epsilon}) &\geq \int_{-\infty}^{\infty} F_{-1}(F_1^{-1}(t-\epsilon\indicator_{t\geq \tau})+\epsilon\indicator_{t< \tau})dt\\
+                               %&\geq \int_{-\infty}^{\infty} F_{-1}(F_1^{-1}(t-\epsilon)+\epsilon)dt\\
+                               %&= \int_{-\infty}^{\infty} F_{-1}(t)p_1(t-2\epsilon)dt.
+    \text{AUROC}(f_{\epsilon}) &\geq \int_{-\infty}^{\infty} F_{-1}(t+\epsilon)p_1(t-\epsilon)dt\\
+                               &= \int_{-\infty}^{\infty} F_{-1}(t)p_1(t-2\epsilon)dt.
+\end{aligned}
+\end{equation}
+
+\end{proof}
+The certified AUROC score can be computed analytically without performing the attacks empirically, solely from score predictions $f_1(\tau-2\epsilon)$. More importantly, the certificates hold against \textit{any} adversarial attack whose $l2$-norm is bounded by $\epsilon$, regardless of the algorithm used to perform such attacks. We emphasize that producing certificates is more challenging than traditional defence mechanisms (e.g, adversarial training, see~\cite{ijcai2021p591} and references therein) since they do not target defence against a specific attack method. 
+
+
+
+% \begin{equation}
+% %https://stats.stackexchange.com/questions/180638/how-to-derive-the-probabilistic-interpretation-of-the-auc
+% \begin{aligned}
+%     \text{AUROC}(f) &= \int_{-\infty}^{\infty} F_0(F_1^{-1}(t))dt\\
+%                   &= \int_{-\infty}^{\infty} F_0(t)f_1(t)dt.
+% \end{aligned}
+% \end{equation}
+
+% When the 1-Lipschitz classifier $f$ is under attacks of radius at most $\epsilon>0$ we note $f_{\epsilon}$ the perturbed classifier:
+% \begin{equation}
+%     f_{\epsilon}(x)=\argmin_{\delta} (2\indicator\{f(x)\geq \tau\}-1) f(x + \delta).
+% \end{equation}
+
+% We consider a scenario with symmetric attacks: the attack decreases (resp. increases) the normality score of One Class (resp. Out Of Distribution samples) for decision threshold $\tau\in\Reals$. We obtain a lower bound for the AUROC (i.e a certificate):
+% \begin{equation}
+% \begin{aligned}
+%     \text{AUROC}(f_{\epsilon}) &\geq \int_{-\infty}^{\infty} F_0(F_1^{-1}(\tau-\epsilon\indicator_{t\geq T})+\epsilon\indicator_{\tau< T})dt\\
+%                               &\geq \int_{-\infty}^{\infty} F_0(F_1^{-1}(t-\epsilon)+\epsilon)dt\\
+%                               &= \int_{-\infty}^{\infty} F_0(t)p_1(t-2\epsilon)dt.
+% \end{aligned}
+% \end{equation}

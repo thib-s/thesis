@@ -1,0 +1,1219 @@
+@inproceedings{
+occrobust,
+title={Your Out-of-Distribution Detection Method is Not Robust!},
+author={Mohammad Azizmalayeri and Arshia Soltani Moakar and Arman Zarei and Reihaneh Zohrabi and Mohammad Taghi Manzuri and Mohammad Hossein Rohban},
+booktitle={Advances in Neural Information Processing Systems},
+editor={Alice H. Oh and Alekh Agarwal and Danielle Belgrave and Kyunghyun Cho},
+year={2022},
+url={https://openreview.net/forum?id=YUEP3ZmkL1}
+}
+
+@InProceedings{simclr,
+  title = 	 {A Simple Framework for Contrastive Learning of Visual Representations},
+  author =       {Chen, Ting and Kornblith, Simon and Norouzi, Mohammad and Hinton, Geoffrey},
+  booktitle = 	 {Proceedings of the 37th International Conference on Machine Learning},
+  pages = 	 {1597--1607},
+  year = 	 {2020},
+  editor = 	 {III, Hal Daumé and Singh, Aarti},
+  volume = 	 {119},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {13--18 Jul},
+  publisher =    {PMLR},
+  pdf = 	 {http://proceedings.mlr.press/v119/chen20j/chen20j.pdf},
+  url = 	 {https://proceedings.mlr.press/v119/chen20j.html},
+  abstract = 	 {This paper presents SimCLR: a simple framework for contrastive learning of visual representations. We simplify recently proposed contrastive self-supervised learning algorithms without requiring specialized architectures or a memory bank. In order to understand what enables the contrastive prediction tasks to learn useful representations, we systematically study the major components of our framework. We show that (1) composition of data augmentations plays a critical role in defining effective predictive tasks, (2) introducing a learnable nonlinear transformation between the representation and the contrastive loss substantially improves the quality of the learned representations, and (3) contrastive learning benefits from larger batch sizes and more training steps compared to supervised learning. By combining these findings, we are able to considerably outperform previous methods for self-supervised and semi-supervised learning on ImageNet. A linear classifier trained on self-supervised representations learned by SimCLR achieves 76.5% top-1 accuracy, which is a 7% relative improvement over previous state-of-the-art, matching the performance of a supervised ResNet-50. When fine-tuned on only 1% of the labels, we achieve 85.8% top-5 accuracy, outperforming AlexNet with 100X fewer labels.}
+}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%% ONE CLASS CLASSIF %%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+@inproceedings{zenati_adversarially_2018,
+  title={Adversarially learned anomaly detection},
+  author={Zenati, Houssam and Romain, Manon and Foo, Chuan-Sheng and Lecouat, Bruno and Chandrasekhar, Vijay},
+  booktitle={2018 IEEE International conference on data mining (ICDM)},
+  pages={727--736},
+  year={2018},
+  organization={IEEE}
+}
+
+
+@article{han_adbench_nodate,
+  title = {{{ADBench}}: {{Anomaly Detection Benchmark}}},
+  author = {Han, Songqiao and Hu, Xiyang and Huang, Hailiang and Jiang, Minqi and Zhao, Yue},
+  booktitle={Neural Information Processing Systems (NeurIPS)},
+  journal={Neural Information Processing Systems (NeurIPS)},
+  year={2022},
+  pages = {45},
+  langid = {english}
+}
+
+
+
+
+@inproceedings{bergman2019classification,
+  title={Classification-Based Anomaly Detection for General Data},
+  author={Bergman, Liron and Hoshen, Yedid},
+  booktitle={International Conference on Learning Representations},
+  year={2019}
+}
+
+@inproceedings{golan_geometric_2018,
+ author = {Golan, Izhak and El-Yaniv, Ran},
+ booktitle = {Advances in Neural Information Processing Systems},
+ editor = {S. Bengio and H. Wallach and H. Larochelle and K. Grauman and N. Cesa-Bianchi and R. Garnett},
+ pages = {},
+ publisher = {Curran Associates, Inc.},
+ title = {Deep Anomaly Detection Using Geometric Transformations},
+ url = {https://proceedings.neurips.cc/paper/2018/file/5e62d03aec0d17facfc5355dd90d441c-Paper.pdf},
+ volume = {31},
+ year = {2018}
+}
+
+
+
+@article{sager_iterative_1979,
+	title = {An {Iterative} {Method} for {Estimating} a {Multivariate} {Mode} and {Isopleth}},
+	volume = {74},
+	issn = {01621459},
+	url = {https://www.jstor.org/stable/2286331?origin=crossref},
+	doi = {10.2307/2286331},
+	number = {366},
+	urldate = {2022-11-09},
+	journal = {Journal of the American Statistical Association},
+	author = {Sager, Thomas W.},
+	month = jun,
+	year = {1979},
+	pages = {329},
+}
+
+@article{hartigan_estimation_1987,
+	title = {Estimation of a {Convex} {Density} {Contour} in {Two} {Dimensions}},
+	volume = {82},
+	issn = {0162-1459, 1537-274X},
+	url = {http://www.tandfonline.com/doi/abs/10.1080/01621459.1987.10478428},
+	doi = {10.1080/01621459.1987.10478428},
+	language = {en},
+	number = {397},
+	urldate = {2022-11-09},
+	journal = {Journal of the American Statistical Association},
+	author = {Hartigan, J. A.},
+	month = mar,
+	year = {1987},
+	pages = {267--270},
+}
+
+@article{breuning_lof_2000,
+author = {Breunig, Markus M. and Kriegel, Hans-Peter and Ng, Raymond T. and Sander, J\"{o}rg},
+title = {LOF: Identifying Density-Based Local Outliers},
+year = {2000},
+issue_date = {June 2000},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {29},
+number = {2},
+issn = {0163-5808},
+url = {https://doi.org/10.1145/335191.335388},
+doi = {10.1145/335191.335388},
+abstract = {For many KDD applications, such as detecting criminal activities in E-commerce, finding the rare instances or the outliers, can be more interesting than finding the common patterns. Existing work in outlier detection regards being an outlier as a binary property. In this paper, we contend that for many scenarios, it is more meaningful to assign to each object a degree of being an outlier. This degree is called the local outlier factor (LOF) of an object. It is local in that the degree depends on how isolated the object is with respect to the surrounding neighborhood. We give a detailed formal analysis showing that LOF enjoys many desirable properties. Using real-world datasets, we demonstrate that LOF can be used to find outliers which appear to be meaningful, but can otherwise not be identified with existing approaches. Finally, a careful performance evaluation of our algorithm confirms we show that our approach of finding local outliers can be practical.},
+journal = {SIGMOD Rec.},
+month = {may},
+pages = {93–104},
+numpages = {12},
+keywords = {database mining, outlier detection}
+}
+
+
+
+
+@inproceedings{liu2008isolation,
+  title={Isolation forest},
+  author={Liu, Fei Tony and Ting, Kai Ming and Zhou, Zhi-Hua},
+  booktitle={2008 eighth ieee international conference on data mining},
+  pages={413--422},
+  year={2008},
+  organization={IEEE}
+}
+
+@inproceedings{scholkopf_support_1999,
+  title = {Support {{Vector Method}} for {{Novelty Detection}}},
+  booktitle = {Advances in {{Neural Information Processing Systems}}},
+  author = {Sch{\"o}lkopf, Bernhard and Williamson, Robert C and Smola, Alex and {Shawe-Taylor}, John and Platt, John},
+  year = {1999},
+  volume = {12},
+  publisher = {{MIT Press}},
+  url = {https://proceedings.neurips.cc/paper/1999/hash/8725fb777f25776ffa9076e44fcfd776-Abstract.html},
+  urldate = {2022-11-09},
+  abstract = {Suppose you are given some dataset drawn from an underlying probabil(cid:173) ity distribution P  and you want to estimate a "simple" subset S  of input  space such that the probability that a test point drawn from P lies outside  of S equals some a priori specified l/ between 0 and 1.  We  propose a method to  approach this  problem by trying to estimate a  function f  which is positive on S  and negative on the complement.  The  functional form of f  is given by a kernel expansion in terms of a poten(cid:173) tially small subset of the training data; it is regularized by controlling the  length of the weight vector in  an associated feature space.  We provide a  theoretical analysis of the statistical performance of our algorithm.  The algorithm is  a natural extension of the  support vector algorithm to  the case of unlabelled data.},
+  file = {/Users/paul/Zotero/storage/4F7UVILF/Schölkopf et al. - 1999 - Support Vector Method for Novelty Detection.pdf}
+}
+
+
+@inproceedings{ruff2018deep,
+  title={Deep one-class classification},
+  author={Ruff, Lukas and Vandermeulen, Robert and Goernitz, Nico and Deecke, Lucas and Siddiqui, Shoaib Ahmed and Binder, Alexander and M{\"u}ller, Emmanuel and Kloft, Marius},
+  booktitle={International conference on machine learning},
+  pages={4393--4402},
+  year={2018},
+  organization={PMLR}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%% OUTLIER SAMPLING %%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%% EXAMPLES OF OOD SAMPLES FREE ALGOS (but model based)
+
+
+@ARTICLE{tiny_images,
+  author={Torralba, Antonio and Fergus, Rob and Freeman, William T.},
+  journal={IEEE Transactions on Pattern Analysis and Machine Intelligence}, 
+  title={80 Million Tiny Images: A Large Data Set for Nonparametric Object and Scene Recognition}, 
+  year={2008},
+  volume={30},
+  number={11},
+  pages={1958-1970},
+  doi={10.1109/TPAMI.2008.128}}
+
+@inproceedings{hsu_generalized_2020-1,
+  title={Generalized odin: Detecting out-of-distribution image without learning from out-of-distribution data},
+  author={Hsu, Yen-Chang and Shen, Yilin and Jin, Hongxia and Kira, Zsolt},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={10951--10960},
+  year={2020}
+}
+
+@article{sastry_detecting_2020,
+  title = {Detecting {{Out-of-Distribution Examples}} with {{In-distribution Examples}} and {{Gram Matrices}}},
+  author = {Sastry, Chandramouli Shama and Oore, Sageev},
+  year = {2020},
+  month = jan,
+  journal = {arXiv:1912.12510 [cs, stat]},
+  eprint = {1912.12510},
+  eprinttype = {arxiv},
+  primaryclass = {cs, stat},
+  url = {http://arxiv.org/abs/1912.12510},
+  urldate = {2022-02-25},
+  abstract = {When presented with Out-of-Distribution (OOD) examples, deep neural networks yield confident, incorrect predictions. Detecting OOD examples is challenging, and the potential risks are high. In this paper, we propose to detect OOD examples by identifying inconsistencies between activity patterns and class predicted. We find that characterizing activity patterns by Gram matrices and identifying anomalies in gram matrix values can yield high OOD detection rates. We identify anomalies in the gram matrices by simply comparing each value with its respective range observed over the training data. Unlike many approaches, this can be used with any pre-trained softmax classifier and does not require access to OOD data for fine-tuning hyperparameters, nor does it require OOD access for inferring parameters. The method is applicable across a variety of architectures and vision datasets and, for the important and surprisingly hard task of detecting far-from-distribution out-of-distribution examples, it generally performs better than or equal to state-of-the-art OOD detection methods (including those that do assume access to OOD examples).},
+  archiveprefix = {arXiv},
+  keywords = {baselines,Computer Science - Computer Vision and Pattern Recognition,Computer Science - Machine Learning,posthoc,Statistics - Machine Learning},
+  file = {/Users/paul/Zotero/storage/IPZ8E4Q8/Sastry et Oore - 2020 - Detecting Out-of-Distribution Examples with In-dis.pdf;/Users/paul/Zotero/storage/NNEXYS6X/1912.html}
+}
+
+
+@inproceedings{dinghyperparameter2022,
+  title={Hyperparameter Sensitivity in Deep Outlier Detection: Analysis and a Scalable Hyper-Ensemble Solution},
+  author={Ding, Xueying and Zhao, Lingxiao and Akoglu, Leman},
+  booktitle={Advances in Neural Information Processing Systems},
+  year={2022}
+}
+
+
+@misc{hendrycks_baseline_2018,
+  title = {A {{Baseline}} for {{Detecting Misclassified}} and {{Out-of-Distribution Examples}} in {{Neural Networks}}},
+  author = {Hendrycks, Dan and Gimpel, Kevin},
+  year = {2018},
+  month = oct,
+  number = {arXiv:1610.02136},
+  eprint = {1610.02136},
+  eprinttype = {arxiv},
+  primaryclass = {cs},
+  publisher = {{arXiv}},
+  doi = {10.48550/arXiv.1610.02136},
+  url = {http://arxiv.org/abs/1610.02136},
+  urldate = {2022-07-07},
+  abstract = {We consider the two related problems of detecting if an example is misclassified or out-of-distribution. We present a simple baseline that utilizes probabilities from softmax distributions. Correctly classified examples tend to have greater maximum softmax probabilities than erroneously classified and out-of-distribution examples, allowing for their detection. We assess performance by defining several tasks in computer vision, natural language processing, and automatic speech recognition, showing the effectiveness of this baseline across all. We then show the baseline can sometimes be surpassed, demonstrating the room for future research on these underexplored detection tasks.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Computer Vision and Pattern Recognition,Computer Science - Machine Learning,Computer Science - Neural and Evolutionary Computing,posthoc},
+  file = {/Users/paul/Zotero/storage/GUUE8BRZ/Hendrycks et Gimpel - 2018 - A Baseline for Detecting Misclassified and Out-of-.pdf;/Users/paul/Zotero/storage/XVAIPU2K/1610.html}
+}
+
+@article{yang2021generalized,
+  title={Generalized out-of-distribution detection: A survey},
+  author={Yang, Jingkang and Zhou, Kaiyang and Li, Yixuan and Liu, Ziwei},
+  journal={arXiv preprint arXiv:2110.11334},
+  year={2021}
+}
+
+%%%%%%%%
+
+@inproceedings{forrest1994self,
+  title={Self-nonself discrimination in a computer},
+  author={Forrest, Stephanie and Perelson, Alan S and Allen, Lawrence and Cherukuri, Rajesh},
+  booktitle={Proceedings of 1994 IEEE computer society symposium on research in security and privacy},
+  pages={202--212},
+  year={1994},
+  organization={Ieee}
+}
+
+@inproceedings{gonzalez2002combining,
+  title={Combining negative selection and classification techniques for anomaly detection},
+  author={Gonzalez, Fabio and Dasgupta, Dipankar and Kozma, Robert},
+  booktitle={Proceedings of the 2002 Congress on Evolutionary Computation. CEC'02 (Cat. No. 02TH8600)},
+  volume={1},
+  pages={705--710},
+  year={2002},
+  organization={IEEE}
+}
+
+@inproceedings{jinyin2011study,
+  title={A study of detector generation algorithms based on artificial immune in intrusion detection system},
+  author={Jinyin, Chen and Dongyong, Yang},
+  booktitle={2011 3rd International Conference on Computer Research and Development},
+  volume={1},
+  pages={4--8},
+  year={2011},
+  organization={IEEE}
+}
+
+@article{ayara_negative_2002,
+  title = {Negative Selection: {{How}} to Generate Detectors},
+  shorttitle = {Negative Selection},
+  author = {Ayara, M. and Timmis, Jon and Lemos, R. and De Castro, Leandro and Duncan, R.},
+  year = {2002},
+  month = jan,
+  journal = {Proceedings of the 1st International Conference on Artificial Immune Systems (ICARIS)},
+  abstract = {The immune system is a remarkable and complex natural system, which has been shown to be of interest to computer scientists and engineers alike. This paper reports an ongoing investigation into the usefulness of the negative selection metaphor for immune inspired fault tolerance. Various procedures to generate detectors for the negative selection algorithm are reviewed and compared in terms of time and space complexity for the production of competent detectors. A new algorithm has been identified and implemented. Experimentation was undertaken, and an analysis is presented on the effectiveness of the various algorithms. The outcome of this empirical analysis reveals that trade-offs have to be made in the choice of algorithm based on the time and space complexities, as well as the detection rate.}
+}
+
+@inproceedings{stibor_is_2005,
+  title = {Is Negative Selection Appropriate for Anomaly Detection?},
+  booktitle = {Proceedings of the 7th Annual Conference on {{Genetic}} and Evolutionary Computation},
+  author = {Stibor, Thomas and Mohr, Philipp and Timmis, Jonathan and Eckert, Claudia},
+  year = {2005},
+  month = jun,
+  series = {{{GECCO}} '05},
+  pages = {321--328},
+  publisher = {{Association for Computing Machinery}},
+  address = {{New York, NY, USA}},
+  doi = {10.1145/1068009.1068061},
+  url = {https://doi.org/10.1145/1068009.1068061},
+  urldate = {2022-11-09},
+  abstract = {Negative selection algorithms for hamming and real-valued shape-spaces are reviewed. Problems are identified with the use of these shape-spaces, and the negative selection algorithm in general, when applied to anomaly detection. A straightforward self detector classification principle is proposed and its classification performance is compared to a real-valued negative selection algorithm and to a one-class support vector machine. Earlier work suggests that real-value negative selection requires a single class to learn from. The investigations presented in this paper reveal, however, that when applied to anomaly detection, the real-valued negative selection and self detector classification techniques require positive and negative examples to achieve a high classification accuracy. Whereas, one-class SVMs only require examples from a single class.},
+  isbn = {978-1-59593-010-1},
+  keywords = {anomaly detection,artificial immune systems,negative selection,one-class SVM,positive selection}
+}
+
+@inproceedings{goyal_drocc_2020,
+  title = {{{DROCC}}: {{Deep Robust One-Class Classification}}},
+  shorttitle = {{{DROCC}}},
+  booktitle = {Proceedings of the 37th {{International Conference}} on {{Machine Learning}}},
+  author = {Goyal, Sachin and Raghunathan, Aditi and Jain, Moksh and Simhadri, Harsha Vardhan and Jain, Prateek},
+  year = {2020},
+  month = nov,
+  pages = {3711--3721},
+  publisher = {{PMLR}},
+  issn = {2640-3498},
+  url = {https://proceedings.mlr.press/v119/goyal20c.html},
+  urldate = {2022-02-24},
+  abstract = {Classical approaches for one-class problems such as one-class SVM and isolation forest require careful feature engineering when applied to structured domains like images. State-of-the-art methods aim to leverage deep learning to learn appropriate features via two main approaches. The first approach based on predicting transformations (Golan \& El-Yaniv, 2018; Hendrycks et al., 2019a) while successful in some domains, crucially depends on an appropriate domain-specific set of transformations that are hard to obtain in general. The second approach of minimizing a classical one-class loss on the learned final layer representations, e.g., DeepSVDD (Ruff et al., 2018) suffers from the fundamental drawback of representation collapse. In this work, we propose Deep Robust One Class Classification (DROCC) that is both applicable to most standard domains without requiring any side-information and robust to representation collapse. DROCC is based on the assumption that the points from the class of interest lie on a well-sampled, locally linear low dimensional manifold. Empirical evaluation demonstrates that DROCC is highly effective in two different one-class problem settings and on a range of real-world datasets across different domains: tabular data, images (CIFAR and ImageNet), audio, and time-series, offering up to 20\% increase in accuracy over the state-of-the-art in anomaly detection. Code is available at https://github.com/microsoft/EdgeML},
+  langid = {english},
+  keywords = {baselines},
+  file = {/Users/paul/Zotero/storage/FKDY4R7J/Goyal et al. - 2020 - DROCC Deep Robust One-Class Classification.pdf;/Users/paul/Zotero/storage/PG2XUD7H/Goyal et al. - 2020 - DROCC Deep Robust One-Class Classification.pdf}
+}
+
+@inproceedings{
+lee_training_2018-1,
+title={Training Confidence-calibrated Classifiers for Detecting Out-of-Distribution Samples},
+author={Kimin Lee and Honglak Lee and Kibok Lee and Jinwoo Shin},
+booktitle={International Conference on Learning Representations},
+year={2018},
+url={https://openreview.net/forum?id=ryiAv2xAZ},
+}
+
+@inproceedings{pourreza_g2d_2021,
+  title = {{{G2D}}: {{Generate}} to {{Detect Anomaly}}},
+  shorttitle = {{{G2D}}},
+  booktitle = {2021 {{IEEE Winter Conference}} on {{Applications}} of {{Computer Vision}} ({{WACV}})},
+  author = {Pourreza, Masoud and Mohammadi, Bahram and Khaki, Mostafa and Bouindour, Samir and Snoussi, Hichem and Sabokrou, Mohammad},
+  year = {2021},
+  month = jan,
+  pages = {2002--2011},
+  publisher = {{IEEE}},
+  address = {{Waikoloa, HI, USA}},
+  doi = {10.1109/WACV48630.2021.00205},
+  url = {https://ieeexplore.ieee.org/document/9423181/},
+  urldate = {2022-02-21},
+  abstract = {In this paper, we propose a novel method for irregularity detection. Previous researches solve this problem as a OneClass Classification (OCC) task where they train a reference model on all of the available samples. Then, they consider a test sample as an anomaly if it has a diversion from the reference model. Generative Adversarial Networks (GANs) have achieved the most promising results for OCC while implementing and training such networks, especially for the OCC task, is a cumbersome and computationally expensive procedure. To cope with the mentioned challenges, we present a simple but effective method to solve the irregularity detection as a binary classification task in order to make the implementation easier along with improving the detection performance. We learn two deep neural networks (generator and discriminator) in a GAN-style setting on merely the normal samples. During training, the generator gradually becomes an expert to generate samples which are similar to the normal ones. In the training phase, when the generator fails to produce normal data (in the early stages of learning and also prior to the complete convergence), it can be considered as an irregularity generator. In this way, we simultaneously generate the irregular samples. Afterward, we train a binary classifier on the generated anomalous samples along with the normal instances in order to be capable of detecting irregularities. The proposed framework applies to different related applications of outlier and anomaly detection in images and videos, respectively. The results confirm that our proposed method is superior to the baseline and state-of-the-art solutions.},
+  isbn = {978-1-66540-477-8},
+  langid = {english},
+  keywords = {baselines},
+  file = {/Users/paul/Zotero/storage/DALL4FE9/Pourreza et al. - 2021 - G2D Generate to Detect Anomaly.pdf}
+}
+
+@inproceedings{sipple_interpretable_2020,
+  title = {Interpretable, {{Multidimensional}}, {{Multimodal Anomaly Detection}} with {{Negative Sampling}} for {{Detection}} of {{Device Failure}}},
+  booktitle = {Proceedings of the 37th {{International Conference}} on {{Machine Learning}}},
+  author = {Sipple, John},
+  year = {2020},
+  month = nov,
+  pages = {9016--9025},
+  publisher = {{PMLR}},
+  issn = {2640-3498},
+  url = {https://proceedings.mlr.press/v119/sipple20a.html},
+  urldate = {2022-02-24},
+  abstract = {In this paper we propose a scalable, unsupervised approach for detecting anomalies in the Internet of Things (IoT). Complex devices are connected daily and eagerly generate vast streams of multidimensional telemetry. These devices often operate in distinct modes based on external conditions (day/night, occupied/vacant, etc.), and to prevent complete or partial system outage, we would like to recognize as early as possible when these devices begin to operate outside the normal modes. We propose an unsupervised anomaly detection method that creates a negative sample from the positive, observed sample, and trains a classifier to distinguish between positive and negative samples. Using the Concentration Phenomenon, we explain why such a classifier ought to establish suitable decision boundaries between normal and anomalous regions, and show how Integrated Gradients can attribute the anomaly to specific dimensions within the anomalous state vector. We have demonstrated that negative sampling with random forest or neural network classifiers yield significantly higher AUC scores compared to state-of-the-art approaches against benchmark anomaly detection datasets, and a multidimensional, multimodal dataset from real climate control devices. Finally, we describe how negative sampling with neural network classifiers have been successfully deployed at large scale to predict failures in real time in over 15,000 climate-control and power meter devices in 145 office buildings within the California Bay Area.},
+  langid = {english},
+  keywords = {baselines},
+  file = {/Users/paul/Zotero/storage/EM66HQAS/Sipple - 2020 - Interpretable, Multidimensional, Multimodal Anomal.pdf}
+}
+
+@inproceedings{
+fort_exploring_2021,
+title={Exploring the Limits of Out-of-Distribution Detection},
+author={Stanislav Fort and Jie Ren and Balaji Lakshminarayanan},
+booktitle={Advances in Neural Information Processing Systems},
+editor={A. Beygelzimer and Y. Dauphin and P. Liang and J. Wortman Vaughan},
+year={2021},
+url={https://openreview.net/forum?id=j5NrN8ffXC}
+}
+
+@article{hendrycks_deep_2019,
+  title = {Deep {{Anomaly Detection}} with {{Outlier Exposure}}},
+  author = {Hendrycks, Dan and Mazeika, Mantas and Dietterich, Thomas},
+  year = {2019},
+  month = jan,
+  journal = {arXiv:1812.04606 [cs, stat]},
+  eprint = {1812.04606},
+  eprinttype = {arxiv},
+  primaryclass = {cs, stat},
+  url = {http://arxiv.org/abs/1812.04606},
+  urldate = {2022-03-29},
+  abstract = {It is important to detect anomalous inputs when deploying machine learning systems. The use of larger and more complex inputs in deep learning magnifies the difficulty of distinguishing between anomalous and in-distribution examples. At the same time, diverse image and text data are available in enormous quantities. We propose leveraging these data to improve deep anomaly detection by training anomaly detectors against an auxiliary dataset of outliers, an approach we call Outlier Exposure (OE). This enables anomaly detectors to generalize and detect unseen anomalies. In extensive experiments on natural language processing and small- and large-scale vision tasks, we find that Outlier Exposure significantly improves detection performance. We also observe that cutting-edge generative models trained on CIFAR-10 may assign higher likelihoods to SVHN images than to CIFAR-10 images; we use OE to mitigate this issue. We also analyze the flexibility and robustness of Outlier Exposure, and identify characteristics of the auxiliary dataset that improve performance.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Computation and Language,Computer Science - Computer Vision and Pattern Recognition,Computer Science - Machine Learning,posthoc,Statistics - Machine Learning},
+  file = {/Users/paul/Zotero/storage/SRQ5SHGC/Hendrycks et al. - 2019 - Deep Anomaly Detection with Outlier Exposure.pdf;/Users/paul/Zotero/storage/GDJ49AGL/1812.html}
+}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%% ROBUSTNESS IN OOD %%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+@inproceedings{hendrycks_benchmarking_2019,
+  title={Benchmarking Neural Network Robustness to Common Corruptions and Perturbations},
+  author={Hendrycks, Dan and Dietterich, Thomas},
+  booktitle={International Conference on Learning Representations},
+  year={2019}
+}
+
+@inproceedings{bitterwolf_certifiably_2020,
+  title = {Certifiably {{Adversarially Robust Detection}} of {{Out-of-Distribution Data}}},
+  booktitle = {Advances in {{Neural Information Processing Systems}}},
+  author = {Bitterwolf, Julian and Meinke, Alexander and Hein, Matthias},
+  year = {2020},
+  volume = {33},
+  pages = {16085--16095},
+  publisher = {{Curran Associates, Inc.}},
+  url = {https://proceedings.neurips.cc/paper/2020/hash/b90c46963248e6d7aab1e0f429743ca0-Abstract.html},
+  urldate = {2022-11-09},
+  file = {/Users/paul/Zotero/storage/FVBPCXJI/Bitterwolf et al. - 2020 - Certifiably Adversarially Robust Detection of Out-.pdf}
+}
+
+@article{lo_adversarially_2022,
+  title={Adversarially Robust One-class Novelty Detection},
+  author={Lo, Shao-Yuan and Oza, Poojan and Patel, Vishal M},
+  journal={IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  year={2022},
+  publisher={IEEE}
+}
+
+@inproceedings{sabokrou2018adversarially,
+  title={Adversarially learned one-class classifier for novelty detection},
+  author={Sabokrou, Mohammad and Khalooei, Mohammad and Fathy, Mahmood and Adeli, Ehsan},
+  booktitle={Proceedings of the IEEE conference on computer vision and pattern recognition},
+  pages={3379--3388},
+  year={2018}
+}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%% LIPSCHITZ %%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+@inproceedings{tanielian2021approximating,
+  title={Approximating Lipschitz continuous functions with GroupSort neural networks},
+  author={Tanielian, Ugo and Biau, Gerard},
+  booktitle={International Conference on Artificial Intelligence and Statistics},
+  pages={442--450},
+  year={2021},
+  organization={PMLR}
+}
+
+@inproceedings{rousson2002shape,
+  title={Shape priors for level set representations},
+  author={Rousson, Mikael and Paragios, Nikos},
+  booktitle={European Conference on Computer Vision},
+  pages={78--92},
+  year={2002},
+  organization={Springer}
+}
+
+@inproceedings{bethune2022pay,
+  year = {2022},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  title = {Pay attention to your loss: understanding misconceptions about 1-Lipschitz neural networks},
+  author = {Béthune, Louis and Boissin, Thibaut and Serrurier, Mathieu and Mamalet, Franck and Friedrich, Corentin and González-Sanz, Alberto},
+}
+
+@inproceedings{serrurier2021achieving,
+  title={Achieving robustness in classification using optimal transport with hinge regularization},
+  author={Serrurier, Mathieu and Mamalet, Franck and Gonz{\'a}lez-Sanz, Alberto and Boissin, Thibaut and Loubes, Jean-Michel and Del Barrio, Eustasio},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={505--514},
+  year={2021}
+}
+
+@inproceedings{anil2019sorting,
+  title={Sorting out lipschitz function approximation},
+  author={Anil, Cem and Lucas, James and Grosse, Roger},
+  booktitle={International Conference on Machine Learning},
+  pages={291--301},
+  year={2019},
+  organization={PMLR}
+}
+
+@inproceedings{stasiak2006fast,
+  title={Fast orthogonal neural networks},
+  author={Stasiak, Bart{\l}omiej and Yatsymirskyy, Mykhaylo},
+  booktitle={International Conference on Artificial Intelligence and Soft Computing},
+  pages={142--149},
+  year={2006},
+  organization={Springer}
+}
+
+@inproceedings{su2021scaling,
+  title={Scaling-up diverse orthogonal convolutional networks by a paraunitary framework},
+  author={Su, Jiahao and Byeon, Wonmin and Huang, Furong},
+  booktitle={International Conference on Machine Learning},
+  pages={20546--20579},
+  year={2022},
+  organization={PMLR}
+}
+
+@article{li2019orthogonal,
+  title={Orthogonal deep neural networks},
+  author={Li, Shuai and Jia, Kui and Wen, Yuxin and Liu, Tongliang and Tao, Dacheng},
+  journal={IEEE transactions on pattern analysis and machine intelligence},
+  volume={43},
+  number={4},
+  pages={1352--1368},
+  year={2019},
+  publisher={IEEE}
+}
+
+@inproceedings{li2019preventing,
+  volume = {32},
+  year = {2019},
+  address = {Cambridge, MA},
+  publisher = {MIT Press},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  title = {Preventing Gradient Attenuation in Lipschitz Constrained Convolutional Networks},
+  author = {Li, Qiyang and Haque, Saminul and Anil, Cem and Lucas, James and Grosse, Roger B and Jacobsen, J{\"o}rn-Henrik},
+}
+
+@article{bartlett2019nearly,
+  title={Nearly-tight VC-dimension and Pseudodimension Bounds for Piecewise Linear Neural Networks.},
+  author={Bartlett, Peter L and Harvey, Nick and Liaw, Christopher and Mehrabian, Abbas},
+  journal={Journal of Machine Learning Research},
+  volume={20},
+  pages={63--1},
+  year={2019}
+}
+
+@inproceedings{gayer2020convolutional,
+  title={Convolutional neural network weights regularization via orthogonalization},
+  author={Gayer, Alexander V and Sheshkus, Alexander V},
+  booktitle={Twelfth International Conference on Machine Vision (ICMV 2019)},
+  volume={11433},
+  pages={1143326},
+  year={2020},
+  organization={International Society for Optics and Photonics}
+}
+
+@inproceedings{wang2020orthogonal,
+  title={Orthogonal convolutional neural networks},
+  author={Wang, Jiayun and Chen, Yubei and Chakraborty, Rudrasis and Yu, Stella X},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={11505--11515},
+  year={2020}
+}
+
+@article{liu2021convolutional,
+  title={Convolutional normalization: Improving deep convolutional network robustness and training},
+  author={Liu, Sheng and Li, Xiao and Zhai, Yuexiang and You, Chong and Zhu, Zhihui and Fernandez-Granda, Carlos and Qu, Qing},
+  journal={Advances in Neural Information Processing Systems},
+  volume={34},
+  pages={28919--28928},
+  year={2021}
+}
+
+
+@inproceedings{trockman2021orthogonalizing,
+title={Orthogonalizing Convolutional Layers with the Cayley Transform},
+author={Asher Trockman and J Zico Kolter},
+booktitle={International Conference on Learning Representations},
+year={2021},
+url={https://openreview.net/forum?id=Pbj8H_jEHYv}
+}
+
+
+@article{achour2021existence,
+  author  = {El Mehdi Achour and François Malgouyres and Franck Mamalet},
+  title   = {Existence, Stability and Scalability of Orthogonal Convolutional Neural Networks},
+  journal = {Journal of Machine Learning Research},
+  year    = {2022},
+  volume  = {23},
+  number  = {347},
+  pages   = {1--56},
+  url     = {http://jmlr.org/papers/v23/22-0026.html}
+}
+
+@inproceedings{singla2021skew,
+  title={Skew orthogonal convolutions},
+  author={Singla, Sahil and Feizi, Soheil},
+  booktitle={International Conference on Machine Learning},
+  pages={9756--9766},
+  year={2021},
+  organization={PMLR}
+}
+
+@article{serrurier2022adversarial,
+  title={When adversarial attacks become interpretable counterfactual explanations},
+  author={Serrurier, Mathieu and Mamalet, Franck and Fel, Thomas and B{\'e}thune, Louis and Boissin, Thibaut},
+  journal={arXiv preprint arXiv:2206.06854},
+  year={2022}
+}
+
+@inproceedings{arjovsky2017wasserstein,
+  title={Wasserstein generative adversarial networks},
+  author={Arjovsky, Martin and Chintala, Soumith and Bottou, L{\'e}on},
+  booktitle={International conference on machine learning},
+  pages={214--223},
+  year={2017},
+  organization={PMLR}
+}
+
+@inproceedings{NEURIPS2018_48584348,
+ author = {Tsuzuku, Yusuke and Sato, Issei and Sugiyama, Masashi},
+ booktitle = {Advances in Neural Information Processing Systems},
+ pages = {6541--6550},
+ publisher = {Curran Associates, Inc.},
+ title = {Lipschitz-Margin Training: Scalable Certification of Perturbation Invariance for Deep Neural Networks},
+ volume = {31},
+ year = {2018}
+}
+
+@article{brau2022robust,
+  title={Robust-by-Design Classification via Unitary-Gradient Neural Networks},
+  author={Brau, Fabio and Rossolini, Giulio and Biondi, Alessandro and Buttazzo, Giorgio},
+  journal={Proceedings of the AAAI Conference on Artificial Intelligence},
+  year={2023}
+}
+
+@inproceedings{simonyan2013deep,
+  edition = {},
+  number = {},
+  booktitle = {Proceedings of the International Conference on Learning Representations (ICLR)},
+  journal = {Proceedings of the International Conference on Learning Representations (ICLR)},
+  pages = {1-8},
+  publisher = {ICLR},
+  school = {},
+  title = {Deep inside convolutional networks: visualising image classification models and saliency maps},
+  volume = {},
+  author = {Simonyan, K and Vedaldi, A and Zisserman, A},
+  editor = {},
+  year = {2014},
+  organizer = {},
+  series = {}
+}
+
+@inproceedings{madry2017towards,
+title={Towards Deep Learning Models Resistant to Adversarial Attacks},
+author={Aleksander Madry and Aleksandar Makelov and Ludwig Schmidt and Dimitris Tsipras and Adrian Vladu},
+journal={Proceedings of the International Conference on Learning Representations (ICLR)},
+booktitle={Proceedings of the International Conference on Learning Representations (ICLR)},
+year={2018},
+}
+
+@article{jordan2020exactly,
+  title={Exactly computing the local lipschitz constant of relu networks},
+  author={Jordan, Matt and Dimakis, Alexandros G},
+  journal={Advances in Neural Information Processing Systems},
+  volume={33},
+  pages={7344--7353},
+  year={2020}
+}
+
+@article{pedregosa2011scikit,
+  title={Scikit-learn: Machine learning in Python},
+  author={Pedregosa, Fabian and Varoquaux, Ga{\"e}l and Gramfort, Alexandre and Michel, Vincent and Thirion, Bertrand and Grisel, Olivier and Blondel, Mathieu and Prettenhofer, Peter and Weiss, Ron and Dubourg, Vincent and others},
+  journal={the Journal of machine Learning research},
+  volume={12},
+  pages={2825--2830},
+  year={2011},
+  publisher={JMLR. org}
+}
+
+@article{olah2017feature,
+  author = {Olah, Chris and Mordvintsev, Alexander and Schubert, Ludwig},
+  title = {Feature Visualization},
+  journal = {Distill},
+  year = {2017},
+  note = {https://distill.pub/2017/feature-visualization},
+  doi = {10.23915/distill.00007}
+}
+
+@article{kuzina2022alleviating,
+  title={Alleviating Adversarial Attacks on Variational Autoencoders with MCMC},
+  author={Kuzina, Anna and Welling, Max and Tomczak, Jakub M},
+  journal={36th Conference on Neural Information Processing Systems (NeurIPS 2022)},
+  year={2022}
+}
+
+@inproceedings{boutin2020iterative,
+  title={Iterative VAE as a predictive brain model for out-of-distribution generalization},
+  author={Boutin, Victor and Zerroug, Aimen and Jung, Minju and Serre, Thomas},
+  year = {2020},
+  booktitle = {NeurIPS 2020 Workshop},
+}
+
+@article{scholkopf2001estimating,
+  title={Estimating the support of a high-dimensional distribution},
+  author={Sch{\"o}lkopf, Bernhard and Platt, John C and Shawe-Taylor, John and Smola, Alex J and Williamson, Robert C},
+  journal={Neural computation},
+  volume={13},
+  number={7},
+  pages={1443--1471},
+  year={2001},
+  publisher={MIT Press One Rogers Street, Cambridge, MA 02142-1209, USA journals-info~…}
+}
+
+
+@book{villani2008optimal,
+  title={Optimal transport: old and new},
+  author={Villani, C{\'e}dric},
+  volume={338},
+  year={2008},
+  publisher={Springer Science \& Business Media}
+}
+
+
+@article{ho2020denoising,
+  title={Denoising diffusion probabilistic models},
+  author={Ho, Jonathan and Jain, Ajay and Abbeel, Pieter},
+  journal={Advances in Neural Information Processing Systems},
+  volume={33},
+  pages={6840--6851},
+  year={2020}
+}
+
+@article{bjorck1971iterative,
+  title={An iterative algorithm for computing the best estimate of an orthogonal matrix},
+  author={Bj{\"o}rck, {\AA}ke and Bowie, Clazett},
+  journal={SIAM Journal on Numerical Analysis},
+  volume={8},
+  number={2},
+  pages={358--364},
+  year={1971},
+  publisher={SIAM}
+}
+
+
+
+@InProceedings{szegedy2013,
+  author    = {Christian Szegedy and Wojciech Zaremba and Ilya Sutskever and Joan Bruna and Dumitru Erhan and Ian Goodfellow and Rob Fergus},
+  title     = {Intriguing properties of neural networks},
+  booktitle = {International Conference on Learning Representations},
+  year      = {2014},
+  url       = {http://arxiv.org/abs/1312.6199},
+}
+
+
+@InProceedings{carlini2017towards,
+  author       = {Carlini, Nicholas and Wagner, David},
+  booktitle    = {2017 ieee symposium on security and privacy (sp)},
+  title        = {Towards evaluating the robustness of neural networks},
+  year         = {2017},
+  organization = {IEEE},
+  pages        = {39--57},
+  groups       = {[serrurie:]},
+}
+
+@Article{Madry2017,
+  author      = {Aleksander Madry and Aleksandar Makelov and Ludwig Schmidt and Dimitris Tsipras and Adrian Vladu},
+  journal     = {ArXiv},
+  title       = {Towards Deep Learning Models Resistant to Adversarial Attacks},
+  year        = {2017},
+  abstract    = {Recent work has demonstrated that deep neural networks are vulnerable to adversarial examples---inputs that are almost indistinguishable from natural data and yet classified incorrectly by the network. In fact, some of the latest findings suggest that the existence of adversarial attacks may be an inherent weakness of deep learning models. To address this problem, we study the adversarial robustness of neural networks through the lens of robust optimization. This approach provides us with a broad and unifying view on much of the prior work on this topic. Its principled nature also enables us to identify methods for both training and attacking neural networks that are reliable and, in a certain sense, universal. In particular, they specify a concrete security guarantee that would protect against any adversary. These methods let us train networks with significantly improved resistance to a wide range of adversarial attacks. They also suggest the notion of security against a first-order adversary as a natural and broad security guarantee. We believe that robustness against such well-defined classes of adversaries is an important stepping stone towards fully resistant deep learning models. Code and pre-trained models are available at https://github.com/MadryLab/mnist_challenge and https://github.com/MadryLab/cifar10_challenge.},
+  date        = {2017-06-19},
+  eprint      = {1706.06083v4},
+  eprintclass = {stat.ML},
+  eprinttype  = {arXiv},
+  file        = {online:http\://arxiv.org/pdf/1706.06083v4:PDF},
+  groups      = {serrurie:6},
+  keywords    = {stat.ML, cs.LG, cs.NE},
+}
+
+@Article{Goodfellow2014a,
+  author        = {Ian J. Goodfellow and Jonathon Shlens and Christian Szegedy},
+  journal       = {arXiv:1412.6572 [stat.ML]},
+  title         = {Explaining and Harnessing Adversarial Examples},
+  year          = {2014},
+  month         = dec,
+  abstract      = {Several machine learning models, including neural networks, consistently misclassify adversarial examples---inputs formed by applying small but intentionally worst-case perturbations to examples from the dataset, such that the perturbed input results in the model outputting an incorrect answer with high confidence. Early attempts at explaining this phenomenon focused on nonlinearity and overfitting. We argue instead that the primary cause of neural networks' vulnerability to adversarial perturbation is their linear nature. This explanation is supported by new quantitative results while giving the first explanation of the most intriguing fact about them: their generalization across architectures and training sets. Moreover, this view yields a simple and fast method of generating adversarial examples. Using this approach to provide examples for adversarial training, we reduce the test set error of a maxout network on the MNIST dataset.},
+  archiveprefix = {arXiv},
+  eprint        = {1412.6572},
+  file          = {:http\://arxiv.org/pdf/1412.6572v3:PDF},
+  keywords      = {stat.ML, cs.LG},
+  primaryclass  = {stat.ML},
+}
+
+@InProceedings{Brendel2018,
+  author    = {Wieland Brendel and Jonas Rauber and Matthias Bethge},
+  booktitle = {6th International Conference on Learning Representations, {ICLR} 2018, Vancouver, BC, Canada, April 30 - May 3, 2018, Conference Track Proceedings},
+  title     = {Decision-Based Adversarial Attacks: Reliable Attacks Against Black-Box Machine Learning Models},
+  year      = {2018},
+  publisher = {OpenReview.net},
+  bibsource = {dblp computer science bibliography, https://dblp.org},
+  biburl    = {https://dblp.org/rec/conf/iclr/BrendelRB18.bib},
+  url       = {https://openreview.net/forum?id=SyZI0GWCZ},
+}
+
+@Article{Schott2018,
+  author        = {Lukas Schott and Jonas Rauber and Matthias Bethge and Wieland Brendel},
+  title         = {Towards the first adversarially robust neural network model on MNIST},
+  year          = {2018},
+  month         = may,
+  abstract      = {},
+  archiveprefix = {arXiv},
+  eprint        = {1805.09190},
+  file          = {:http\://arxiv.org/pdf/1805.09190v3:PDF},
+  keywords      = {cs.CV},
+  primaryclass  = {cs.CV},
+}
+
+@article{zhao2019pyod,
+    author  = {Zhao, Yue and Nasrullah, Zain and Li, Zheng},
+    title   = {PyOD: A Python Toolbox for Scalable Outlier Detection},
+    journal = {Journal of Machine Learning Research},
+    year    = {2019},
+    volume  = {20},
+    number  = {96},
+    pages   = {1-7},
+    url     = {http://jmlr.org/papers/v20/19-011.html}
+}
+
+@inproceedings{park2019deepsdf,
+  title={Deepsdf: Learning continuous signed distance functions for shape representation},
+  author={Park, Jeong Joon and Florence, Peter and Straub, Julian and Newcombe, Richard and Lovegrove, Steven},
+  booktitle={Proceedings of the IEEE/CVF conference on computer vision and pattern recognition},
+  pages={165--174},
+  year={2019}
+}
+
+@article{rauber2017foolboxnative,
+  doi = {10.21105/joss.02607},
+  url = {https://doi.org/10.21105/joss.02607},
+  year = {2020},
+  publisher = {The Open Journal},
+  volume = {5},
+  number = {53},
+  pages = {2607},
+  author = {Jonas Rauber and Roland Zimmermann and Matthias Bethge and Wieland Brendel},
+  title = {Foolbox Native: Fast adversarial attacks to benchmark the robustness of machine learning models in PyTorch, TensorFlow, and JAX},
+  journal = {Journal of Open Source Software}
+}
+
+@inproceedings{wu20153d,
+  title={3d shapenets: A deep representation for volumetric shapes},
+  author={Wu, Zhirong and Song, Shuran and Khosla, Aditya and Yu, Fisher and Zhang, Linguang and Tang, Xiaoou and Xiao, Jianxiong},
+  booktitle={Proceedings of the IEEE conference on computer vision and pattern recognition},
+  pages={1912--1920},
+  year={2015}
+}
+
+@article{lewiner2003efficient,
+  title={Efficient implementation of marching cubes' cases with topological guarantees},
+  author={Lewiner, Thomas and Lopes, H{\'e}lio and Vieira, Ant{\^o}nio Wilson and Tavares, Geovan},
+  journal={Journal of graphics tools},
+  volume={8},
+  number={2},
+  pages={1--15},
+  year={2003},
+  publisher={Taylor \& Francis}
+}
+
+@article{van2014scikit,
+  title={scikit-image: image processing in Python},
+  author={Van der Walt, Stefan and Sch{\"o}nberger, Johannes L and Nunez-Iglesias, Juan and Boulogne, Fran{\c{c}}ois and Warner, Joshua D and Yager, Neil and Gouillart, Emmanuelle and Yu, Tony},
+  journal={PeerJ},
+  volume={2},
+  pages={e453},
+  year={2014},
+  publisher={PeerJ Inc.}
+}
+
+@Misc{trimesh,
+    author = {{Dawson-Haggerty et al.}},
+    title = {trimesh},
+    url = {https://trimsh.org/},
+    version = {3.2.0},
+    year={2019}
+}
+
+@article{shafahi2019adversarial,
+  title={Adversarial training for free!},
+  author={Shafahi, Ali and Najibi, Mahyar and Ghiasi, Mohammad Amin and Xu, Zheng and Dickerson, John and Studer, Christoph and Davis, Larry S and Taylor, Gavin and Goldstein, Tom},
+  journal={Advances in Neural Information Processing Systems},
+  volume={32},
+  year={2019}
+}
+
+@inproceedings{zhang2019theoretically, 
+	author = {Hongyang Zhang and Yaodong Yu and Jiantao Jiao and Eric P. Xing and Laurent El Ghaoui and Michael I. Jordan}, 
+	title = {Theoretically Principled Trade-off between Robustness and Accuracy}, 
+	booktitle = {International Conference on Machine Learning},
+	year = {2019}
+}
+
+@inproceedings{cohen2019certified,
+  title={Certified adversarial robustness via randomized smoothing},
+  author={Cohen, Jeremy and Rosenfeld, Elan and Kolter, Zico},
+  booktitle={International Conference on Machine Learning},
+  pages={1310--1320},
+  year={2019},
+  organization={PMLR}
+}
+
+@inproceedings{carlini2022certified,
+  title={(Certified!!) Adversarial Robustness for Free!},
+  author={Carlini, Nicholas and Tramer, Florian and Kolter, J Zico and others},
+  booktitle={International Conference on Learning Representations},
+  year={2023}
+}
+
+@misc{Rayana:2016,
+author = {Shebuti Rayana},
+year = {2016},
+title = {{ODDS} Library},
+url = {http://odds.cs.stonybrook.edu},
+institution = {Stony Brook University, Department of Computer Sciences}}
+
+@inproceedings{
+shenkar2022anomaly,
+title={Anomaly Detection for Tabular Data with Internal Contrastive Learning},
+author={Tom Shenkar and Lior Wolf},
+booktitle={International Conference on Learning Representations},
+year={2022},
+url={https://openreview.net/forum?id=_hszZbt46bT}
+}
+
+@misc{graphite,
+author = {Bruno Levy},
+year = {2022},
+title = {Graphite v3-1.8.2},
+url = {https://github.com/BrunoLevy/GraphiteThree},
+institution = {ALICE Inria}}
+
+@inproceedings{maneewongvatana1999analysis,
+  title={Analysis of Approximate Nearest Neighbor Searching with Clustered Point Sets},
+  author={Maneewongvatana, Songrit and Mount, David M},
+  booktitle={ALENEX 99},
+  year={1999}
+}
+
+@book{meagher1980octree,
+  title={Octree encoding: A new technique for the representation, manipulation and display of arbitrary 3-d objects by computer},
+  author={Meagher, Donald JR},
+  year={1980},
+  publisher={Electrical and Systems Engineering Department Rensseiaer Polytechnic~…}
+}
+
+@article{hu2020hrn,
+  title={HRN: A holistic approach to one class learning},
+  author={Hu, Wenpeng and Wang, Mengyu and Qin, Qi and Ma, Jinwen and Liu, Bing},
+  journal={Advances in Neural Information Processing Systems},
+  volume={33},
+  pages={19111--19124},
+  year={2020}
+}
+
+@article{grenander1994representations,
+  title={Representations of knowledge in complex systems},
+  author={Grenander, Ulf and Miller, Michael I},
+  journal={Journal of the Royal Statistical Society: Series B (Methodological)},
+  volume={56},
+  number={4},
+  pages={549--581},
+  year={1994},
+  publisher={Wiley Online Library}
+}
+
+@inproceedings{ijcai2021p591,
+  title     = {Recent Advances in Adversarial Training for Adversarial Robustness},
+  author    = {Bai, Tao and Luo, Jinqi and Zhao, Jun and Wen, Bihan and Wang, Qian},
+  booktitle = {Proceedings of the Thirtieth International Joint Conference on
+               Artificial Intelligence, {IJCAI-21}},
+  publisher = {International Joint Conferences on Artificial Intelligence Organization},
+  editor    = {Zhi-Hua Zhou},
+  pages     = {4312--4321},
+  year      = {2021},
+  month     = {8},
+  note      = {Survey Track},
+  doi       = {10.24963/ijcai.2021/591},
+  url       = {https://doi.org/10.24963/ijcai.2021/591},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%  SDF IN GRAPHICS %%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+@misc{achlioptasLearningRepresentationsGenerative2018,
+  title = {Learning {{Representations}} and {{Generative Models}} for {{3D Point Clouds}}},
+  author = {Achlioptas, Panos and Diamanti, Olga and Mitliagkas, Ioannis and Guibas, Leonidas},
+  year = {2018},
+  month = jun,
+  number = {arXiv:1707.02392},
+  eprint = {1707.02392},
+  eprinttype = {arxiv},
+  primaryclass = {cs},
+  publisher = {{arXiv}},
+  doi = {10.48550/arXiv.1707.02392},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Computer Vision and Pattern Recognition,Computer Science - Machine Learning},
+  file = {/home/guillaume/snap/zotero-snap/common/Zotero/storage/KALHWQQG/Achlioptas et al. - 2018 - Learning Representations and Generative Models for.pdf;/home/guillaume/snap/zotero-snap/common/Zotero/storage/BFGRFYP4/1707.html}
+}
+
+@misc{atzmonSALSignAgnostic2020,
+  title = {{{SAL}}: {{Sign Agnostic Learning}} of {{Shapes}} from {{Raw Data}}},
+  shorttitle = {{{SAL}}},
+  author = {Atzmon, Matan and Lipman, Yaron},
+  year = {2020},
+  month = mar,
+  number = {arXiv:1911.10414},
+  eprint = {1911.10414},
+  eprinttype = {arxiv},
+  primaryclass = {cs},
+  publisher = {{arXiv}},
+  doi = {10.48550/arXiv.1911.10414},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Computer Vision and Pattern Recognition,Computer Science - Graphics,Computer Science - Machine Learning},
+  file = {/home/guillaume/snap/zotero-snap/common/Zotero/storage/FFFAH3JG/Atzmon et Lipman - 2020 - SAL Sign Agnostic Learning of Shapes from Raw Dat.pdf;/home/guillaume/snap/zotero-snap/common/Zotero/storage/VM5AS7MG/1911.html}
+}
+
+@misc{chouGenSDFTwoStageLearning2022,
+  title = {{{GenSDF}}: {{Two-Stage Learning}} of {{Generalizable Signed Distance Functions}}},
+  shorttitle = {{{GenSDF}}},
+  author = {Chou, Gene and Chugunov, Ilya and Heide, Felix},
+  year = {2022},
+  month = oct,
+  number = {arXiv:2206.02780},
+  eprint = {2206.02780},
+  eprinttype = {arxiv},
+  primaryclass = {cs},
+  publisher = {{arXiv}},
+  doi = {10.48550/arXiv.2206.02780},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Computer Vision and Pattern Recognition,Computer Science - Graphics,Computer Science - Machine Learning},
+  file = {/home/guillaume/snap/zotero-snap/common/Zotero/storage/J2LYEV4D/Chou et al. - 2022 - GenSDF Two-Stage Learning of Generalizable Signed.pdf}
+}
+
+@misc{daviesEffectivenessWeightEncodedNeural2021,
+  title = {On the {{Effectiveness}} of {{Weight-Encoded Neural Implicit 3D Shapes}}},
+  author = {Davies, Thomas and Nowrouzezahrai, Derek and Jacobson, Alec},
+  year = {2021},
+  month = jan,
+  number = {arXiv:2009.09808},
+  eprint = {2009.09808},
+  eprinttype = {arxiv},
+  primaryclass = {cs},
+  publisher = {{arXiv}},
+  doi = {10.48550/arXiv.2009.09808},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Computational Geometry,Computer Science - Computer Vision and Pattern Recognition,Computer Science - Graphics},
+  file = {/home/guillaume/snap/zotero-snap/common/Zotero/storage/BXPLCWYG/Davies et al. - 2021 - On the Effectiveness of Weight-Encoded Neural Impl.pdf;/home/guillaume/snap/zotero-snap/common/Zotero/storage/P995QZPR/2009.html}
+}
+
+@misc{groueixAtlasNetPapierMAch2018,
+  title = {{{AtlasNet}}: {{A Papier-M}}\textbackslash\^ach\textbackslash 'e {{Approach}} to {{Learning 3D Surface Generation}}},
+  shorttitle = {{{AtlasNet}}},
+  author = {Groueix, Thibault and Fisher, Matthew and Kim, Vladimir G. and Russell, Bryan C. and Aubry, Mathieu},
+  year = {2018},
+  month = jul,
+  number = {arXiv:1802.05384},
+  eprint = {1802.05384},
+  eprinttype = {arxiv},
+  primaryclass = {cs},
+  publisher = {{arXiv}},
+  doi = {10.48550/arXiv.1802.05384},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Computer Vision and Pattern Recognition},
+  file = {/home/guillaume/snap/zotero-snap/common/Zotero/storage/GMU8IGYR/Groueix et al. - 2018 - AtlasNet A Papier-M^ach'e Approach to Learning .pdf;/home/guillaume/snap/zotero-snap/common/Zotero/storage/NTI24L9U/1802.html}
+}
+
+@misc{novelloExploringDifferentialGeometry2022,
+  title = {Exploring {{Differential Geometry}} in {{Neural Implicits}}},
+  author = {Novello, Tiago and Schardong, Guilherme and Schirmer, Luiz and {da Silva}, Vinicius and Lopes, Helio and Velho, Luiz},
+  year = {2022},
+  month = aug,
+  number = {arXiv:2201.09263},
+  eprint = {2201.09263},
+  eprinttype = {arxiv},
+  primaryclass = {cs},
+  publisher = {{arXiv}},
+  abstract = {We introduce a neural implicit framework that exploits the differentiable properties of neural networks and the discrete geometry of point-sampled surfaces to approximate them as the level sets of neural implicit functions.},
+  archiveprefix = {arXiv},
+  langid = {english},
+  keywords = {Computer Science - Graphics,Computer Science - Machine Learning},
+  file = {/home/guillaume/snap/zotero-snap/common/Zotero/storage/KDJZUP4R/Novello et al. - 2022 - Exploring Differential Geometry in Neural Implicit.pdf}
+}
+
+@misc{parkDeepSDFLearningContinuous2019,
+  title = {{{DeepSDF}}: {{Learning Continuous Signed Distance Functions}} for {{Shape Representation}}},
+  shorttitle = {{{DeepSDF}}},
+  author = {Park, Jeong Joon and Florence, Peter and Straub, Julian and Newcombe, Richard and Lovegrove, Steven},
+  year = {2019},
+  month = jan,
+  number = {arXiv:1901.05103},
+  eprint = {1901.05103},
+  eprinttype = {arxiv},
+  primaryclass = {cs},
+  publisher = {{arXiv}},
+  doi = {10.48550/arXiv.1901.05103},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Computer Vision and Pattern Recognition},
+  file = {/home/guillaume/snap/zotero-snap/common/Zotero/storage/UH8KSWLZ/Park et al. - 2019 - DeepSDF Learning Continuous Signed Distance Funct.pdf;/home/guillaume/snap/zotero-snap/common/Zotero/storage/9CMIEH3P/1901.html}
+}
+
+@article{sharpSpelunkingDeepGuaranteed2022,
+  title = {Spelunking the Deep: Guaranteed Queries on General Neural Implicit Surfaces via Range Analysis},
+  shorttitle = {Spelunking the Deep},
+  author = {Sharp, Nicholas and Jacobson, Alec},
+  year = {2022},
+  month = jul,
+  journal = {ACM Transactions on Graphics},
+  volume = {41},
+  number = {4},
+  pages = {1--16},
+  issn = {0730-0301, 1557-7368},
+  doi = {10.1145/3528223.3530155},
+  langid = {english},
+  file = {/home/guillaume/snap/zotero-snap/common/Zotero/storage/UVTTY37S/Sharp et Jacobson - 2022 - Spelunking the deep guaranteed queries on general.pdf}
+}
+
+@misc{williamsDeepGeometricPrior2019,
+  title = {Deep {{Geometric Prior}} for {{Surface Reconstruction}}},
+  author = {Williams, Francis and Schneider, Teseo and Silva, Claudio and Zorin, Denis and Bruna, Joan and Panozzo, Daniele},
+  year = {2019},
+  month = apr,
+  number = {arXiv:1811.10943},
+  eprint = {1811.10943},
+  eprinttype = {arxiv},
+  primaryclass = {cs},
+  publisher = {{arXiv}},
+  archiveprefix = {arXiv},
+  langid = {english},
+  keywords = {Computer Science - Computer Vision and Pattern Recognition,Computer Science - Graphics,Computer Science - Machine Learning},
+  file = {/home/guillaume/snap/zotero-snap/common/Zotero/storage/TPPRFEYF/Williams et al. - 2019 - Deep Geometric Prior for Surface Reconstruction.pdf}
+}
+
+@article{ben-hamuMultichartGenerativeSurface2018,
+  title = {Multi-Chart {{Generative Surface Modeling}}},
+  author = {{Ben-Hamu}, Heli and Maron, Haggai and Kezurer, Itay and Avineri, Gal and Lipman, Yaron},
+  year = {2018},
+  month = dec,
+  journal = {ACM Transactions on Graphics},
+  volume = {37},
+  number = {6},
+  eprint = {1806.02143},
+  eprinttype = {arxiv},
+  primaryclass = {cs},
+  pages = {1--15},
+  issn = {0730-0301, 1557-7368},
+  doi = {10.1145/3272127.3275052},
+  archiveprefix = {arXiv},
+  langid = {english},
+  keywords = {Computer Science - Computer Vision and Pattern Recognition},
+  file = {/home/guillaume/snap/zotero-snap/common/Zotero/storage/CR6EX8G7/Ben-Hamu et al. - 2018 - Multi-chart Generative Surface Modeling.pdf}
+}
+
+@article{hartSphereTracingGeometric1995,
+  title = {Sphere {{Tracing}}: {{A Geometric Method}} for the {{Antialiased Ray Tracing}} of {{Implicit Surfaces}}},
+  shorttitle = {Sphere {{Tracing}}},
+  author = {Hart, John},
+  year = {1995},
+  month = jun,
+  journal = {The Visual Computer},
+  volume = {12},
+  doi = {10.1007/s003710050084},
+  file = {/home/guillaume/snap/zotero-snap/common/Zotero/storage/DDDB8ZHM/Hart - 1995 - Sphere Tracing A Geometric Method for the Antiali.pdf}
+}
+
+@article{boltcheva2017surface,
+  title={Surface reconstruction by computing restricted Voronoi cells in parallel},
+  author={Boltcheva, Dobrina and L{\'e}vy, Bruno},
+  journal={Computer-Aided Design},
+  volume={90},
+  pages={123--134},
+  year={2017},
+  publisher={Elsevier}
+}
+
+@book{bogachev2007measure,
+  title={Measure theory},
+  author={Bogachev, Vladimir Igorevich and Ruas, Maria Aparecida Soares},
+  volume={1},
+  year={2007},
+  publisher={Springer}
+}
+
+
+@techreport{boltchevaSimpleScalableSurface2016a,
+  TITLE = {{Simple and Scalable Surface Reconstruction}},
+  AUTHOR = {Boltcheva, Dobrina and L{\'e}vy, Bruno},
+  URL = {https://hal.science/hal-01349023},
+  TYPE = {Research Report},
+  INSTITUTION = {{LORIA - Universit{\'e} de Lorraine ; INRIA Nancy}},
+  YEAR = {2016},
+  MONTH = Jul,
+  PDF = {https://hal.science/hal-01349023v2/file/SSSR.pdf},
+  HAL_ID = {hal-01349023},
+  HAL_VERSION = {v2},
+}
+
+@inproceedings{singlaimproved2022,
+  title={Improved techniques for deterministic l2 robustness},
+  author={Singla, Sahil and Feizi, Soheil},
+  booktitle={Advances in Neural Information Processing Systems},
+  year={2022}
+}
+
+@inproceedings{xulot2022,
+  title={LOT: Layer-wise Orthogonal Training on Improving l2 Certified Robustness},
+  author={Xu, Xiaojun and Li, Linyi and Li, Bo},
+  booktitle={Advances in Neural Information Processing Systems},
+  year={2022}
+}
+
+@inproceedings{tjengevaluating2019,
+  title={Evaluating Robustness of Neural Networks with Mixed Integer Programming},
+  author={Tjeng, Vincent and Xiao, Kai Y and Tedrake, Russ},
+  booktitle={International Conference on Learning Representations},
+  year={2019}
+}
+
+@article{wang2021beta,
+  title={Beta-crown: Efficient bound propagation with per-neuron split constraints for neural network robustness verification},
+  author={Wang, Shiqi and Zhang, Huan and Xu, Kaidi and Lin, Xue and Jana, Suman and Hsieh, Cho-Jui and Kolter, J Zico},
+  journal={Advances in Neural Information Processing Systems},
+  volume={34},
+  pages={29909--29921},
+  year={2021}
+}

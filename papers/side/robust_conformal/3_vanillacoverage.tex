@@ -1,0 +1,96 @@
+\section{Certifiable Coverage Bounds for Vanilla CP Under Attack}
+\label{sec:vanillacoverage}
+
+In this section, we address the robustness of CP methods to adversarial attacks from a different angle than in Sections~\ref{sec:robustCP-relatedworks} and~\ref{sec:relatedWorks}. Instead of enlarging vanilla CP's prediction sets to make them robust by design, we provide tools to reliably evaluate by how much the nominal $1-\alpha$ coverage of vanilla CP for clean data is impacted under attack. This can be useful when prediction sets of small size are desired, yet knowledge of certifiable coverage guarantees under bounded perturbations are still required. 
+The question of auditing vanilla CP under attacks was already raised earlier \cite{rscp, cas}. We provide a rigorous answer below. As a benefit, our guarantee holds simultaneously for all perturbation budgets $\epsilon>0$.
+
+We show in Section~\ref{sec:efficient_robust_sets} how to \emph{efficiently} implement methods from both approaches (Section~\ref{sec:robustCP-relatedworks} and this section) when working with Lipschitz-bounded neural networks.
+
+
+\subsection{Setting: Vanilla CP Under Attack}
+
+Let $h$ be any function that constructs an adversarial example $h(x,\epsilon) \in \bouleps(x)$ from any input $x \in \mathcal{X}$, with an attack budget at most of $\epsilon$, i.e., $\Vert h(x,\epsilon) - x \Vert \leq \epsilon$. We define the \emph{coverage under attack} by
+\begin{align}
+    \cov_h(\epsilon)=\Prtes{Y_\mathrm{test} \in \predset(h(X_\mathrm{test},\epsilon)}\;,
+\end{align}
+where the probability is taken with respect to the random pair $(X_\mathrm{test},Y_\mathrm{test})$. In more mathematical terms, the probability is conditional to $\CalDataset$; all statements in this section are valid for any realization of $\CalDataset$.
+Note that here, contrary to robust CP, we consider the vanilla CP set $C_\alpha$.
+
+In the sequel, we show how to provide bounds on $\cov_h(\epsilon)$. Since the attack $h$ is unknown, we introduce two functions $\covmin$ and $\covmax$ that can be reliably approximated, and for which $\covmin(\epsilon) \leq \cov_h(\epsilon) \leq \covmax(\epsilon)$. To that end, we define both conservative and restrictive prediction sets as follows; $\unionmetaset(x)$ is a tight version of \eqref{eq:defconservativeset}, while $\intermetaset(x)$ is new.
+
+\begin{definition}[Conservative/Restrictive Prediction Set]
+    Consider the two scores
+    \begin{align}
+        \underline{s}(x,y) = \inf_{\Tilde{x} \in \bouleps(x)} s(\Tilde{x},y) \\
+        \Bar{s}(x,y) = \sup_{\Tilde{x} \in \bouleps(x)} s(\Tilde{x},y) \;.
+    \end{align}
+    For any $x \in \inputspace$, we define the \textit{conservative prediction set} by $\unionmetaset(x) = \{ y \in \mathcal{Y} : \underline{s}(x,y) \leq \calthreshold\}$, and the \textit{restrictive prediction set} by $\intermetaset(x) = \{y \in \mathcal{Y}: \Bar{s}(x,y) \leq \calthreshold\}$.
+\label{def:union-inter-metaset}
+\end{definition}
+
+When $x \mapsto s(x,y)$ is Lipschitz, both sets can be efficiently (and provably) approximated, as shown in Section~\ref{sec:efficient_robust_sets}.
+
+We are now ready to introduce the two functions $\covmin$ and $\covmax$, defined for all $\epsilon \geq 0$ by
+%
+\begin{align}
+    \covmin(\epsilon) = \Prtes{Y_\mathrm{test} \in \intermetaset(X_\mathrm{test})} \\
+    \covmax(\epsilon) = \Prtes{Y_\mathrm{test} \in \unionmetaset(X_\mathrm{test})}
+\end{align}
+%
+Noting that $\underline{s}(x,y) \leq s(h(x,\epsilon),y) \leq \Bar{s}(x,y)$ and therefore $\intermetaset(\cdot)\subseteq C_\alpha(h(\cdot, \epsilon)) \subseteq \unionmetaset(\cdot)$, we can see that $\covmin(\epsilon) \leq \cov_h(\epsilon) \leq \covmax(\epsilon)$ for all $\epsilon \geq 0$. Therefore, though not used by vanilla CP, the sets $\intermetaset(X_\mathrm{test})$ and $\unionmetaset(X_\mathrm{test})$ are instrumental in controlling the coverage under attack.
+
+\subsection{A Provable and Tight Control on $\covmin$ and $\covmax$}
+
+The question of bounding $\covmin(\epsilon)$ from below, i.e., guaranteeing a minimal coverage of vanilla CP under attack, already appeared in Theorem~2 by \citet{rscp}. We however realized that a subtle mathematical mistake (of an overfitting flavor) was unfortunately left aside, which impacts the correctness of their guarantee; see Appendix~\ref{app:GendlerMistake} for details. The same mistake was reproduced in the second part of Proposition~5.1 by \citet{cas}.
+
+
+To overcome this overfitting-type issue, we work with an additional dataset $\HoldoutDataset$ of $m$ data points drawn i.i.d. from the same distribution but independently from $\CalDataset$. Denote these points by $(X_i,Y_i)_{1 \leq i \leq m}$.
+
+Let $\mathds{1}$ denote the indicator function. We define empirical counterparts (based on $\HoldoutDataset$) of $\covmin(\epsilon)$ and $\covmax(\epsilon)$ as follows: for all $\epsilon \geq 0$,
+\begin{align}
+    \covmaxm(\epsilon) &= \frac{1}{m} \sum_{i=1}^{m} \mathds{1}\{Y_i \in \unionmetaset(X_i)\}\label{eq:covmaxm}\\
+    \covminm(\epsilon) &= \frac{1}{m} \sum_{i=1}^{m} \mathds{1}\{Y_i \in \intermetaset(X_i)\} \label{eq:covminm}
+\end{align}
+
+
+To account for statistical deviations, next we work with slightly corrected estimators studied earlier, e.g., by  \citet{langford2005tutorial}. For $m \geq 1$, $p \in [0,1]$, and $0 \leq k \leq m$, we write $F_{m,p}(k) = \sum_{j=0}^k {m \choose j} p^j (1-p)^j$ for the cumulative distribution function of the $\textrm{Binomial}(m,p)$ distribution. For any attack budget $\epsilon \geq 0$ and any risk level $\delta \in (0,1)$, we define
+\begin{align}
+    \covmaxmp(\epsilon,\delta) &= \max \Bigl\{p \in [0,1] : F_{m,p}\bigl(m\covmaxm(\epsilon)\bigr)\geq \delta \Bigr\} \label{eq:covmaxmp}\\
+    \covminmm(\epsilon,\delta) &= 1\! -\! \max\Bigl\{p \in [0,1]\!:\!F_{m,p}\bigl(m(1\!-\! \covminm\!(\epsilon))\bigr) \! \geq \delta\Bigr\}\label{eq:covminmm}
+\end{align}
+Though technical at first sight, these estimators are tailored for the binomial distribution and thus tighter than, e.g., high-probability bounds obtained from Hoeffding's bound. Given $\covmaxm(\epsilon)$ and $\covminm(\epsilon)$, they can be efficiently computed with a binary search (by monotonicity of $p \mapsto F_{m,p}(k)$).
+
+Next we work under the following mild assumptions on the input space $\mathcal{X}$ and the non-conformity score $s(x,y)$.
+
+\begin{assumption} 
+\label{assum:X-s}
+\ \\[-0.7cm]
+\begin{enumerate}[label=(A\arabic*)]
+    \item $\mathcal{X} \subset \R^d$ is convex and closed (for some $d \geq 1$);
+    \item $x \in \mathcal{X} \mapsto s(x, y)$ is continuous for all $y\in\mathcal{Y}$.
+\end{enumerate}    
+\end{assumption}
+
+The first condition (A1) is satisfied, e.g., for classical vector spaces used to represent images (such as $\R^{H \cdot W \cdot 3}$, with $H$ and $W$ respectively the height and width of the images). Importantly, the assumption is on the underlying space $\mathcal{X}$ and not on the probability distribution over it. Therefore, in our application setting, it holds true even if the distribution of images has a nonconvex support. The second condition (A2) is satisfied whenever the score is of the form $s(x,y)=\psi(f(x),y)$, for a continuous model $f$ and some continuous  function $u \mapsto \psi(u,y)$. In our setting, the assumption always holds true, due to both $f$ and $s(\cdot, y)$ being Lipschitz-continuous.\footnote{Note that, in this section, we do not assume that $x \mapsto s(x,y)$ is smooth (beyond continuity), contrary to scores obtained after randomized smoothing.}
+
+
+The main result of this section is the following. 
+
+\begin{theorem}
+\label{thm:robustcoverageuniform}
+Suppose that Assumption~\ref{assum:X-s} holds true. Assume also that $\CalDataset, \HoldoutDataset, \TestDataset$ are made of i.i.d. pairs $(X_i,Y_i)$. Let $q_\alpha$ be the empirical quantile computed by vanilla CP using $\CalDataset$, and let $m \geq 2$ be the number of points in $\HoldoutDataset$.
+
+Let $\delta \in (0,1)$ and set $\delta' = \delta/(2m - 2)$. Then, for any attack function $h$ and almost every $\CalDataset$,
+\begin{equation}
+	\Prhol{\forall \epsilon > 0, \ \covminmm(\epsilon,\delta') \leq \cov_h (\epsilon) \leq \covmaxmp(\epsilon,\delta')}\geq 1-\delta,
+\end{equation}
+where the probability is over the random draw of $\HoldoutDataset$.\footnote{In more formal terms, the probability $\Prhol{\cdot}$ is conditional to $\CalDataset$, and our inequality holds almost surely.}
+\end{theorem}
+
+The proof follows by combining $\covmin(\epsilon) \leq \cov_h(\epsilon) \leq \covmax(\epsilon)$ with Theorems~\ref{thm:appendix-thm-1} and~\ref{thm:appendix-thm-2} in Appendix~\ref{app:new-proof} (applied with the risk level $\delta/2$), followed by a union bound. These theorems are similar in spirit to the DKW inequality \citep{dvoretzky1956asymptotic,massart90tightConstantDKW} or variants \citep{vapnik1974theoryPatternRecognition,anthony1993resultVapnikapplications}, which are useful concentration inequalities to estimate an unknown cumulative distribution function based on i.i.d. samples. In particular, we borrow arguments from \citet[Theorem~1]{ducoffe2020high}, combined with a careful treatment of discontinuity points of $\covmin$ and $\covmax$.
+
+
+\paragraph{Interpretation}
+Our result provides a probabilistic guarantee for robustness under adversarial attacks of arbitrary budgets. Specifically, for \emph{any} calibration set $\CalDataset$ and \emph{any} attack function $h$ (regardless of the norm), the coverage under attack $\cov_h$ is bounded by $\covminmm$ and $\covmaxmp$ with probability $1-\delta$ over the randomness in the holdout set $\HoldoutDataset$, simultaneously for all perturbation budgets $\epsilon > 0$.
+This simultaneity strengthens the practical utility of the bounds, as no prior assumptions about the adversary’s strategy are required.
+Moreover, this result holds not only for the exact sets $\intermetaset$ and $\unionmetaset$, but also for any  $\intermetaset^\prime$ and $\unionmetaset^\prime$ verifying $\intermetaset^\prime \subseteq \intermetaset$ and $\unionmetaset \subseteq \unionmetaset^\prime$. This allows to use approximate sets from common robustness approaches, such as that of Section~\ref{sec:efficient_robust_sets}. Naturally, the informativeness of the bound is directly linked to the tightness of the estimate.

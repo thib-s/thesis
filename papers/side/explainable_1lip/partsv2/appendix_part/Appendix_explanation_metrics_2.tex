@@ -1,0 +1,147 @@
+
+\subsubsection{Explanation attribution  methods}
+An attribution method provides an importance score for each input variables $x_i$ in the output $f(x)$. The library used to generate the attribution maps is Xplique~\cite{fel2021xplique}.
+
+For a full description of attribution methods, we advise to read~\cite{eva}, Appendix B.   We will only remind here the equations of
+\begin{itemize}
+    \item Saliency:  $g(\x) = |\nabla_{\x} f(\x)| $
+    \item SmoothGrad:  $ g(\x) = \underset{\mathbf{\delta} \sim \mathcal{N}(0, \mathbf{I}\sigma)}{\mathbb{E}}( \nabla f(\x + \mathbf{\delta}))$
+\end{itemize}
+
+SmoothGrad is evaluated on $N=50$ samples on a normal distribution of standard deviation $\sigma=0.2$ around $x$. Integrated Gradient~\cite{Sundararajan2017}, noted IG, is also evaluated on $N=50$ samples at regular intervals. Grad-CAM~\cite{Selvaraju_2019}, noted GC, is classically applied on the last convolutional layer. %And RISE black-box method~\cite{petsiuk18Rise} is evaluated on $N=4000$ samples.
+\subsubsection{XAI metrics}
+
+For the experiments we use four fidelity metrics, evaluated on 1000 samples of test datasets: %The following descriptions of these metrics are inspired by~\cite{eva} Appendix C:
+\begin{itemize}
+    \item Deletion ~\cite{petsiuk18Rise}: it consists in measuring the drop of the score when the important variables are set to a baseline state. Formally, at step $k$, with $u$ the $k$ most important variables according to an attribution method, the Deletion$^{(k)}$ score is given by:
+
+$$
+\text{Deletion}^{(k)} = f(\x_{[\x_{u} = \x_0]})
+$$
+The AUC of the Deletion scores is then measured to compare the attribution methods ($\downarrow$ is better). The baseline $x_0$ can either be a zero value (\textit{Deletion-zero}), or a uniform random value (\textit{Deletion-uniform}).
+\item Insertion ~\cite{petsiuk18Rise}: this metric is the inverse of Deletion, starting with an image in a baseline state and then progressively adding the most important variables. Formally, at step $k$, with $u$ the most important variables according to an attribution method, the Insertion$^{(k)}$ score is given by:
+$$
+\text{Insertion}^{(k)} = f(\x_{[\x_{\overline{u}} = \x_0]})
+$$
+The AUC is also measured to compare attribution methods ($\uparrow$ is better). The baseline is the same as for Deletion.
+\item $\mu$Fidelity~\cite{Bhatt20muFidelity}: this metric measures the correlation between the fall of the score when variables are put at a baseline state and the importance of these variables. Formally:
+$$
+\mu\text{Fidelity} = \underset{u \subseteq \{1, ..., d\} \atop |u| = k}{\operatorname{Corr}}\left( \sum_{i \in u} g(\x)_i  , f(\x) - f(\x_{[\x_{u} = \x_0]})\right)
+$$
+For all experiments, $k$ is equal to 20\% of the total number of variables, and cutting the image in a grid of $20\times 20$ ($9\times 9$ for cat vs dog and imagenet). The baseline is the same as the one used by Deletion. Being a correlation score, we can either compare attribution methods, or different neural networks on the same attribution method ($\uparrow$ is better).
+\item Robustness-Sr~\cite{HsiehYLRKKH21}: this metric evaluate the average adversarial distance when the attack is done only on the most relevant features.  Formally, given the $u$ most important variables:
+$$
+\text{Robustness-Sr}=\left\{\underset{\delta}{min ||\delta||} s.t. argmax(f(\x+\delta)) \neq argmax(f(\x)), \delta_{\overline{u}}=0 \right\}
+$$
+where $\delta_{\overline{u}}=0$ indicates that adversarial attack is authorized only on the set $u$. The AUC is measured to compare attribution methods ($\downarrow$ is better). Note this metric cannot be used to compare different networks, since it depends on the robustness of the network.
+\end{itemize}
+%have been chosen. For the whole set of metrics, $\pred(\vx)$ score is the score after softmax of the models.
+
+We use also several other metrics:
+\begin{itemize}
+    \item Distances between explanations: to compare two explanation $f(x)$, we use either $L_2$ distance, or $1-\rho$ where $\rho$ is the Spearman rank correlation~\cite{Adebayo18Sanity,felHowGood22,tomsett2019sanity} ($\downarrow$ is better).
+    \item Explanation complexity: we use the JPEG compression size as a proxy of the Kolmogorov complexity ($\downarrow$ is better).
+    \item Stability: As proposed in~\cite{Yeh19InfidelityExplain}, the Stability is evaluated by the average distance of explanations provided for random samples drawn in a ball of radius $0.3$ ($0.15$ for cat vs dog and imagenet) around $x$. As before, the distance can be either $L_2$ or $1-\rho$ ($\downarrow$ is better).
+    \item Accuracy: To assess the relevance of explanation~\cite{Harshay2021} use a semi-real dataset, called BlockMNIST, having a random \it{null} block and evaluate the proportion of top-k feature attribution values within the \it{null} block.
+\end{itemize}
+
+\subsubsection{Supplementary metric results}
+In this section we present several experiments and metrics that we were not able to insert in the core of the paper.
+
+Deletion-zero and Insertion-zero are evaluated on CelebA and FashionMNIST dataset. It is known that the baseline value can be a bias for these metrics, and we are convinced that it has a higher influence with \onlyonelip~networks.
+%in particular when lots of pixels are already at zero such as in FashionMNIST dataset. 
+Even if results for Deletion-zero and Insertion-zero are less obvious than for Deletion and Insertion Uniform, we can see in Table~\ref{tab:ins_del_metric_ap}, that for these metrics, the rank of Saliency is most of the time higher for \otnn.
+
+\begin{table}[h]
+  \caption{Insertion and Deletion metrics evaluation; GC: GradCam, GI: Gradient.Input, IG: Integrated Gradient, Saliency Rk : Rank (comparison by line only : in bold best score)}
+  \label{tab:ins_del_metric_ap}
+  \centering
+  \begin{tabular}{lc|cccccc}
+    \toprule
+Dataset& Network&  \multicolumn{6}{c}{Deletion-Zero ($\downarrow$ is better)}  \\
+& & GC & GI & IG & Rise& Saliency& SmoothGrad\\
+ \midrule
+& & \multicolumn{6}{c}{Deletion-Zero} \\
+CelebA& \otnn& 8.01& 7.04& 7.05& 7.09& 6.98 (Rk2) & \textbf{6.96} \\
+& Unconstrained& 5.77& 4.56& 4.38& 5.07& \textbf{4.13} (Rk1) & 4.51\\
+Fashion-& \otnn& 0.24& 0.16& \textbf{0.15} & 0.26& 0.20 (Rk4) & 0.19\\
+MNIST& Unconstrained& 0.33& 0.28& 0.23& \textbf{0.16} & 0.38 (Rk5) & 0.39\\
+ \midrule
+& & \multicolumn{6}{c}{Insertion-zero ($\uparrow$ is better)} \\
+CelebA& \otnn& 10.26& 11.63& 11.58& \textbf{15.50} & 10.06 (Rk6) & 10.10\\
+& Unconstrained& 14.24& 11.71& 12.37& \textbf{15.70} & 6.67 (Rk6) & 7.65\\
+Fashion-& \otnn& 0.31& 0.46& \textbf{0.47} & 0.36& 0.36 (Rk4) & 0.39\\
+MNIST& Unconstrained& 0.53& 0.59& 0.68& \textbf{0.73} & 0.45 (Rk6)& 0.46\\
+    \bottomrule
+    \end{tabular}
+\end{table}
+
+%Results for Deletion-zero and Insertion-zero are less clear than for Deletion and Insertion Uniform, we mainly think it is due to the bias of the reference value, and has a greater influence on \otnn.
+
+To leverage the bias of the baseline value, as proposed in~\cite{HsiehYLRKKH21} we evaluated the Robustness-SR metric, Saliency map on \otnn~achieves  top-ranking scores. One might argue that scores for unconstrained networks are lower, but this is directly linked to the higher intrinsic robustness of \otnn and thus cannot be compared.
+ 
+\begin{table}[h]
+  \caption{Robustness-SR metrics evaluation; GC: GradCam, GI: Gradient.Input, IG: Integrated Gradient, Saliency Rk : Rank  (comparison by line only : in bold best score)} 
+  \label{tab:robustness_sr}
+  \centering
+  \begin{tabular}{lc|cccccc}
+    \toprule
+Dataset& Network&  \multicolumn{6}{c}{Robustness-SR ($\downarrow$ is better)}  \\
+& & GC & GI & IG & Rise& Saliency& SmoothGrad\\
+ \midrule
+CelebA& \otnn& 28.54& 14.01& 13.28& 30.54& \textbf{11.64} (Rk1) & 12.65\\
+& Unconstrained& 11.11& 9.19& 10.00& 15.15& 7.38 (Rk2) & \textbf{7.20}\\
+Fashion-& \otnn& \textbf{1.69} &		3.31 &	3.36 &		3.27 &	2.29 (Rk3) &	2.01\\
+MNIST& Unconstrained& 1.17	&	1.36&	1.17&		\textbf{1.15}&	1.21 (Rk4) &	1.25\\
+
+
+
+    \bottomrule
+    \end{tabular}
+\end{table}
+
+
+
+The full results for the explanation complexity is given on Table~\ref{tab:complexity_of_saliency}. The complexity is still lower for \otnn~on FashionMNIST, even if the gap with Unconstrained networks is narrower than for CelebA.
+
+\begin{table}[h]
+  \caption{Complexity of Saliency map by JPEG compression (kB): lower is better}
+  \label{tab:complexity_of_saliency}
+  \centering
+  \begin{tabular}{l|cc}
+    \toprule
+    & CelebA& FashionMNIST\\
+ \midrule
+\otnn& 9.48& 0.92\\
+Unconstrained& 16.84& 0.94\\
+\bottomrule
+    \end{tabular}
+\end{table}
+
+Accuracy was also assessed by learning an OTNN (MLP architecture) on BlockMNIST dataset~\cite{Harshay2021}, and evaluating the proportion of top-k saliency map values that fall in the \textit{null} block. Fig~\ref{fig:blockMNIST_expe} presents several samples of input images and saliency maps of BlockMNIST dataset, to be compared to Fig.1 in~\cite{Harshay2021}. It shows that OTNN gradients are almost only on the signal block (digit). And Table~\ref{tab:blockMNIS} evaluates the proxy metric proposed in~\cite{Harshay2021}, and confirms that OTNNs saliency maps top-k values point even more on discriminative features than those of adversarial trained networks.
+
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.98\linewidth]{img/blockMNIST_expe.pdf}
+  \caption{blockMNIST experiments using the  proposed OTNN framework (10 blockMNIST images and their respective OTNN gradients). \textit{null} marks are almost invisible in the gradients}
+\label{fig:blockMNIST_expe}
+\end{figure}  
+
+\begin{table}[h]
+  \caption{Comparison of Proxy metric on
+BlockMNIST (0 vs. 1) data for OTNNs, standard and robust models (values for the two last are directly extracted from~\cite{Harshay2021})}
+  \label{tab:blockMNIS}
+  \centering
+  \begin{tabular}{l|ccccccc}
+    \toprule
+    Unmasking fraction k &  2.5 & 5 & 10 & 15 & 20 & 25 & 30\\
+ \midrule
+  Type of NN & \multicolumn{7}{c}{Fraction of top-k pixels in null block} \\
+ \midrule
+Unconstrained~\cite{Harshay2021}& 43.8	&42.5	&44.8&	46.5&	47.5&	48.1&	48.4\\
+Adversarial~\cite{Harshay2021}& \textbf{$<1$}	&\textbf{$<1$} &	2.3	&7.9	&\textbf{16.7}&	\textbf{24.2}&	\textbf{29.9}\\
+\otnn & \textbf{$<1$}	&\textbf{$<1$}	&\textbf{1.8}	&\textbf{6.6}&	16.8	&26.0	&32.9\\
+\bottomrule
+    \end{tabular}
+\end{table}

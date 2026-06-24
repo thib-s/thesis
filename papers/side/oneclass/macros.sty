@@ -1,0 +1,59 @@
+% Theorems
+\newtheorem{corollary}{Corollary}
+\newtheorem{example}{Example}
+\newtheorem{lemma}{Lemma}
+\newtheorem{property}{Property}
+\newtheorem{proposition}{Proposition}
+\newtheorem*{remark}{Remark}
+\newtheoremstyle{break}
+  {\topsep}{\topsep}%
+  {\itshape}{}%
+  {\bfseries}{}%
+  {\newline}{}%
+\theoremstyle{break}
+\newtheorem{theorem}{Theorem}
+\newtheorem{definition}{Definition}
+\newtheorem{assumption}{Assumption}
+
+% Math Macros
+\newcommand{\X}{\bm{X}}
+\newcommand{\support}{\mathcal{X}}
+\newcommand*\interior[1]{\mathring{#1}}
+\newcommand*\closure[1]{\overline{#1}} % (or \bar{#1})
+\newcommand{\Reals}{\mathbb{R}}
+\newcommand{\Rational}{\mathbb{Q}}
+\newcommand{\Natural}{\mathbb{N}}
+\newcommand{\Risk}{\mathcal{R}}
+\newcommand{\Ball}{\mathfrak{B}}
+\newcommand{\Prob}{\mathbb{P}} 
+\newcommand{\Expect}{\mathbb{E}}
+\newcommand{\Loss}{\mathcal{L}}
+\newcommand{\Empirical}{\mathcal{E}}
+\newcommand{\Hypothesis}{\mathcal{H}}
+\newcommand{\Uniform}{\mathcal{U}}
+\newcommand{\Sdf}{\mathcal{S}}
+\newcommand{\Lip}{\text{Lip}_1(\Reals^d,\Reals)}
+\newcommand{\Params}{\theta}
+\newcommand{\Labels}{\mathcal{Y}}
+\newcommand{\Level}{\mathbb{L}}
+\newcommand{\Classifiers}{\mathcal{C}}
+\newcommand{\BigO}{\mathcal{O}}
+\newcommand{\sign}{\text{sign}}
+\newcommand{\Jacobian}{J}
+\newcommand{\indicator}{\mathds{1}}
+\newcommand{\diam}[1]{\text{diam }#1}
+\newcommand{\Wasserstein}{\mathcal{W}}
+\newcommand{\supp}[1]{\text{supp }#1}
+\newcommand{\LipCl}{\text{LipNet1 }}
+\newcommand{\LipInf}{\text{AllNet }}
+\newcommand{\bedd}{\stackrel{B,\epsilon}{\sim}}
+\newcommand{\hkr}{\Loss^{\text{hkr}}_{m,\lambda}}
+\newcommand{\defeq}{\vcentcolon=}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argsupp}{arg\,supp}
+\DeclareMathOperator*{\arginf}{arg\,inf}
+\newcommand{\veryshortarrow}[1][3pt]{\mathrel{%
+   \vcenter{\hbox{\rule[-.5\fontdimen8\textfont3]{#1}{\fontdimen8\textfont3}}}%
+   \mkern-4mu\hbox{\usefont{U}{lasy}{m}{n}\symbol{41}}}}
+\newcommand{\Hquad}{\hspace{0.5em}} 

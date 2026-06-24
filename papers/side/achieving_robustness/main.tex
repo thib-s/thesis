@@ -1,0 +1,125 @@
+\documentclass{article}
+
+
+
+\usepackage{arxiv_parts/arxiv}
+
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+%\usepackage{breqn}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{amsthm}
+\usepackage{enumerate}
+%\usepackage{multicol}
+%\usepackage{blindtext, subfig}
+%\usepackage{dblfloatfix} % fix for bottom-placement of figure
+%\usepackage{natbib}
+\usepackage{dsfont}
+\usepackage{siunitx}
+%multi-row
+\usepackage{multirow}
+\usepackage{bbm}
+\usepackage{bm}
+\makeatletter
+\newcommand{\Spvek}[2][r]{%
+  \gdef\@VORNE{1}
+  \left(\hskip-\arraycolsep%
+    \begin{array}{#1}\vekSp@lten{#2}\end{array}%
+  \hskip-\arraycolsep\right)}
+
+\def\vekSp@lten#1{\xvekSp@lten#1;vekL@stLine;}
+\def\vekL@stLine{vekL@stLine}
+\def\xvekSp@lten#1;{\def\temp{#1}%
+  \ifx\temp\vekL@stLine
+  \else
+    \ifnum\@VORNE=1\gdef\@VORNE{0}
+    \else\@arraycr\fi%
+    #1%
+    \expandafter\xvekSp@lten
+  \fi}
+\makeatother
+
+
+ 
+\newtheorem{Theorem}{Theorem}
+\newtheorem{Proposition}{Proposition}
+
+\newcommand{\W}{\mathcal{W}}
+%\newcommand{\Deellip}{\textit{DEEL.LIP}\footnote{https://github.com/deel-ai/deel-lip to be %published soon}
+%}
+\newcommand{\Deellip}{\textit{DEEL.LIP}\footnote{https://github.com/deel-ai/deel-lip}}
+\renewcommand{\arraystretch}{1.3}
+\setlength{\tabcolsep}{4pt}
+\usepackage[pagebackref=true,breaklinks=true,colorlinks,bookmarks=false]{hyperref}
+
+\begin{document}
+
+%\title{hinge regularized optimal transportation for robust classification}
+\title{Achieving robustness in classification using optimal transport with hinge regularization}
+\author{%
+  Mathieu Serrurier\\
+  IRIT\\
+  Université Paul Sabatier Toulouse
+  \And
+  Franck Mamalet\\
+  IRT Saint-Exupery
+  \And
+  Alberto González-Sanz\\
+  IMT\\
+  Université Paul Sabatier Toulouse
+  \And
+  Thibaut Boissin\\
+  IRT Saint-Exupery
+  \And
+  Jean-Michel Loubes \\
+  IMT\\
+  Université Paul Sabatier Toulouse
+  \And
+  Eustasio del Barrio \\
+  Dpto. de Estadística e Investigación Operativa\\
+  Universidad de Valladolid
+  
+}
+\maketitle
+\begin{abstract}
+\input{cvpr_parts/abstract_cvpr}
+\end{abstract}
+
+
+% keywords can be removed
+%\keywords{First keyword \and Second keyword \and More}
+\section{Introduction}
+\label{sec:intro}
+\input{cvpr_parts/intro_cvpr}
+
+
+\section{Wasserstein distance and Kantorovich-Rubinstein classifier}
+\label{sec:wass_distance}
+\input{arxiv_parts/wass_distance_arxiv}
+
+
+\section{Hinge regularized Kantorovich-Rubinstein classifier }
+\label{sec:kr_hinge}
+\input{arxiv_parts/hkr_arxiv}
+
+\section{Architecture}
+\label{sec:lip_const}
+\input{arxiv_parts/lipschitz_arxiv}
+
+\section{Experiments}
+\label{sec:experimentation}
+\input{cvpr_parts/cvpr_experimentation}
+
+\section{Conclusion and future works}
+\label{sec:conclusion}
+\input{cvpr_parts/conclusion_cvpr}
+
+\bibliographystyle{plain}
+\bibliography{biblio} 
+\newpage
+\input{cvpr_parts/appendix_cvpr}
+\end{document}

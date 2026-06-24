@@ -1,0 +1,297 @@
+This section contains the proofs of results that are either informally presented in the main paper, either formally defined in section~\ref{app:method}.  
+
+\subsection{Variance of the gradient}\label{app:vargrad}
+    The result mentionned in section~\ref{sec:lossgradclip} is based on the following result, directly adapted from a classical result on concentration inequalities.  
+      
+    \begin{restatable}{corollary}{concentrationgradient}{\normalfont\textbf{Concentration of stochastic gradient around its mean.}}\label{concentrationgradient}
+        Assume the samples $(x,y)$ are i.i.d and sampled from an arbitrary distribution $\D$. We introduce the R.V $g=\nabla_{\theta}\Loss(x,y)$ which is a function of the sample $(x,y)$, and its expectation $\bar g=\Expect_{(x,y)\sim\D}[\nabla_{\theta}\Loss(x,y)]$. Then for all $u\geq \frac{2}{\sqrt{b}}$ the following inequality hold:
+        \begin{equation}
+            \Prob(\|\frac{1}{b}\sum_{i=1}^b g_i-\bar g\|>uK)\leq\exp{\left(-\frac{\sqrt{b}}{8}(u-\frac{2}{\sqrt{b}})^2\right)}.
+        \end{equation}
+    \end{restatable}
+    \begin{proof}
+    The result is an immediate consequence of Example~6.3 p167 in~\cite{boucheron2013concentration}.
+    We apply the theorem with the centered variable $X_i=\frac{1}{b}(g_i-\bar g)$ that fulfills condition $\|X_i\|\leq \frac{c_i}{2}$ with $c_i=\frac{4K}{b}$ since $\|g_i\|\leq K$.  
+        Then for every $t\geq \frac{2K}{\sqrt{b}}$ we have:
+        \begin{equation}
+            \Prob(\|\frac{1}{b}\sum_{i=1}^b g_i-\bar g\|>t)\leq\exp{\left(-\frac{\sqrt{b}}{8K^2}(t-\frac{2K}{\sqrt{b}})^2\right)}.
+        \end{equation}
+        We conclude with the change of variables $u=\frac{t}{K}$.  
+    \end{proof}
+
+\subsection{Background for main result}
+
+    The informal Theorem~\ref{infthm:nablalossgrad} requires some tools that we introduce below.
+
+    \textbf{Additionnal hypothesis for GNP networks. } We introduce convenient assumptions for the purpose of obtaining tight bounds in Algorithm~\ref{alg:noclipDP-SGDlocal}.
+    
+    \begin{assumption}[Bounded biases]\label{ass:boundedb}
+        We assume there exists $B>0$ such that that for all biases $b_d$ we have $\|b_d\|\leq B$. Observe that the ball $\{\|b\|_2\leq B\}$ of radius $B$ is a \textbf{convex} set.  
+    \end{assumption}
+    
+    \begin{assumption}[Zero preserving activation]\label{ass:zeropreserve}
+        We assume that the activation fulfills $\sigma(\bf 0)=\bf 0$. When $\sigma$ is $S$-Lipschitz this implies $\|\sigma(x)\|\leq S\|x\|$ for all $x$. Examples of activations fulfilling this constraints are ReLU, Groupsort, GeLU, ELU, tanh. However it does not work with sigmoid or softplus.  
+    \end{assumption}
+    
+    We also propose the assumption~\ref{ass:boundedactivation} for convenience and exhaustivity.
+    
+    \begin{assumption}[Bounded activation]\label{ass:boundedactivation}
+        We assume it exists $G>0$ such that for every $x\in\X$ and every $1\leq d\leq D+1$ we have:
+        \begin{equation}
+            \|h_d\|\leq G\quad\text{and}\quad\|z_d\|\leq G.
+        \end{equation}
+        Note that this assumption is implied by requirement~\ref{req:boundedx}, assumption~\ref{ass:boundedb}-\ref{ass:zeropreserve}, as illustrated in proposition~\ref{prop:boundedactivation}.  
+    \end{assumption}
+
+In practice assumption~\ref{ass:boundedactivation} can be fulfilled with the use of input clipping and bias clipping, bounded activation functions, or layer normalization. This assumption can be used as a ``shortcut'' in the proof of the main theorem, to avoid the ``propagation of input bounds'' step.
+
+\subsection{Main result}\label{app:mainresult}
+
+    We rephrase in a rigorous manner the informal theorem of section~\ref{sec:gnp}. The proofs are given in section~\ref{app:proofs}.
+    In order to simplify the notations, we use $X\defeq X_0$ in the following.  
+
+    \begin{restatable}{proposition}{boundedactivation}{\normalfont\textbf{Norm of intermediate activations.}}\label{prop:boundedactivation}
+        Under requirement~\ref{req:boundedx}, assumptions~\ref{ass:boundedb}-\ref{ass:zeropreserve} we have:
+            \begin{equation}
+                \|h_t\|\leq S\|z_t\|\leq \begin{cases*}
+                                             (US)^t\left(X-\frac{SB}{1-SU}\right)+\frac{SB}{1-SU} & if $US\neq 1$,\\
+                                             SX+tSB & otherwise.
+                                            \end{cases*}
+            \end{equation}
+        In particular if there are no biases, i.e if $B=0$, then $\|h_t\|\leq S\|z_t\|\leq SX$ .
+    \end{restatable}
+
+    Proposition~\ref{prop:boundedactivation} can be used to replace assumption~\ref{ass:boundedactivation}.
+
+    \begin{restatable}{proposition}{boundedfgrad}{\normalfont\textbf{Lipschitz constant of dense Lipschitz networks with respect to parameters.}}\label{prop:boundedfgrad}
+        Let $f(\cdot,\cdot)$ be a Lipschitz neural network. Under requirement~\ref{req:boundedx}, assumptions~\ref{ass:boundedb}-\ref{ass:zeropreserve} we have for every $1\leq t\leq T+1$:
+        \begin{align}
+            \|\Jac{f(\theta,x)}{b_t}\|_2 &\leq (SU)^{T+1-t},\\
+            \|\Jac{f(\theta,x)}{W_t}\|_2 &\leq (SU)^{T+1-t}\|h_{t-1}\|.
+        \end{align}
+        In particular, for every $x\in\X$, the function $\theta\mapsto f(\theta,x)$ is Lipschitz bounded.  
+        \end{restatable}
+    
+    Proposition~\ref{prop:boundedfgrad} suggests that the scale of the activation $\|h_t\|$ must be kept under control for the gradient scales to distribute evenly along the computation graph. It can be easily extended to a general result on the \textit{per sample} gradient of the loss, in theorem~\ref{thm:boundedlossgrad}.   
+    
+    \begin{restatable}{theorem}{boundedlossgrad}{\normalfont\textbf{Bounded loss gradient for dense Lipschitz networks.}}\label{thm:boundedlossgrad}
+    Assume the predictions are given by a Lipschitz neural network $f$:
+    \begin{equation}
+        \yhat\defeq f(\theta,x).
+    \end{equation}
+    Under requirements~\ref{req:boundednablal}-\ref{req:boundedx}, assumptions~\ref{ass:boundedb}-\ref{ass:zeropreserve}, there exists a $K>0$ for all $(x,y,\theta)\in\X\times\Y\times\Theta$ the loss gradient is bounded:
+    \begin{equation}
+        \|\nabla_{\theta}\Loss(\yhat,y)\|_2\leq K.
+    \end{equation}
+    Let $\alpha=SU$ be the maximum spectral norm of the Jacobian between two consecutive layers.  
+      
+    \paragraph{If $\alpha=1$ then we have:}
+    \begin{equation}
+        K=\BigO\left(LX+L\sqrt{T}+LSX\sqrt{T}+L\sqrt{BX}ST+LBST^{\sfrac{3}{2}}\right).
+    \end{equation}
+    The case $S=1$ is of particular interest since it covers most activation function (i.e ReLU, GroupSort):
+    \begin{equation}
+        K=\BigO\left(L\sqrt{T}+LX\sqrt{T}+L\sqrt{BX}T+LBT^{\sfrac{3}{2}}\right).
+    \end{equation}
+    Further simplification is possible if we assume $B=0$, i.e a network without biases:
+    \begin{equation}
+        K=\BigO\left(L\sqrt{T}(1+X)\right).
+    \end{equation}
+    
+    \paragraph{If $\alpha>1$ then we have:}
+    \begin{align}
+        \|\nabla_{\theta}\Loss(\yhat,y)\|_2 &=\BigO\left(L\frac{\alpha^T}{\alpha-1}\left(\sqrt{T}(\alpha X+SB)+\frac{\alpha(SB+\alpha)}{\sqrt{\alpha^2-1}}\right)\right).
+    \end{align}
+    Once again $B=0$ (network with no bias) leads to useful simplifications:
+    \begin{align}
+        \|\nabla_{\theta}\Loss(\yhat,y)\|_2 &=\BigO\left(L\frac{\alpha^{T+1}}{\alpha-1}\left(\sqrt{T} X+\frac{\alpha}{\sqrt{\alpha^2-1}}\right)\right).
+    \end{align}
+    We notice that when $\alpha\gg 1$ there is an \textbf{exploding gradient} phenomenon where the upper bound become vacuous.
+    
+    \paragraph{If $\alpha<1$ then we have:}
+    \begin{align}
+        \|\nabla_{\theta}\Loss(\yhat,y)\|_2 &=\BigO\left(L\alpha^T\left(X\sqrt{T}+\frac{1}{(1-\alpha^2)}\left(\sqrt{\frac{XSB}{\alpha^T}}+\frac{SB}{\sqrt{(1-\alpha)}}\right)\right)+\frac{L}{(1-\alpha)\sqrt{1-\alpha}}\right).
+    \end{align}
+    For network without biases we get:
+    \begin{align}
+        \|\nabla_{\theta}\Loss(\yhat,y)\|_2 &=\BigO\left(L\alpha^TX\sqrt{T}+\frac{L}{\sqrt{(1-\alpha)^3}}\right).
+    \end{align}
+    
+     The case $\alpha\ll 1$ is a \textbf{vanishing gradient} phenomenon where $\|\nabla_{\theta}\Loss(\yhat,y)\|_2$ is now independent of the depth $T$ and of the input scale $X$.
+    \end{restatable}
+    \begin{proof}
+
+    The control of gradient implicitly depend on the scale of the output of the network at every layer, hence it is crucial to control the norm of each activation.
+    
+    \begin{lemma}[Bounded activations]\label{thm:boundedactivations}
+    If $US\neq 1$ for every $1\leq t\leq T+1$ we have:
+        \begin{equation}
+        \|z_t\|\leq U^tS^{t-1}\left(X-\frac{SB}{1-SU}\right)+\frac{B}{1-SU}.
+        \end{equation}
+    If $US=1$ we have:
+        \begin{equation}
+        \|z_t\|\leq X+tB.
+        \end{equation}
+    In every case we have $\|h_t\|\leq S\|z_t\|$.
+    \end{lemma}
+    \begin{subproof}[Lemma proof.]
+    From assumption~\ref{ass:zeropreserve}, if we assume that $\sigma$ is $S$-Lipschitz, we have:
+    \begin{equation}
+        \|h_t\|=\|\sigma(z_t)\|=\|\sigma(z_t)-\sigma(\bf {0})\|\leq S\|z_t\|.
+    \end{equation}
+    Now, observe that:
+    \begin{equation}
+        \|z_{t+1}\|=\|W_{t+1}h_t+b_{t+1}\|\leq \|W_{t+1}\|\|h_t\|+\|b_{t+1}\|\leq US\|z_t\|+B.
+    \end{equation}
+        Let $u_1=UX+B$ and $u_{t+1}=SUu_t+B$ be a linear recurrence relation.  
+        The translated sequence $u_t-\frac{B}{1-SU}$ is a geometric progression of ratio $SU$, hence $u_t=(SU)^{t-1}(UX+B-\frac{B}{1-SU})+\frac{B}{1-SU}$.  
+        Finally we conclude that by construction $\|z_t\|\leq u_t$.  
+    \end{subproof}
+    
+    
+    The activation jacobians can be bounded by applying the chainrule. The recurrence relation obtained is the one automatically computed with back-propagation.  
+    
+    
+    \begin{lemma}[Bounded activation derivatives]\label{thm:boundedactivationderivatives}
+        For every $T+1\geq s\geq t\geq 1$ we have:
+        \begin{equation}
+            \|\Jac{z_s}{z_t}\|\leq (SU)^{s-t}.
+        \end{equation}
+    \end{lemma}
+    \begin{subproof}[Lemma proof.]
+        The chain rule expands as:
+            \begin{equation}
+                \Jac{z_s}{z_t}=\Jac{z_s}{h_{s-1}}\Jac{h_{s-1}}{z_{s-1}}\Jac{z_{s-1}}{z_t}.
+            \end{equation}
+        From Cauchy-Schwartz inequality we get:
+            \begin{equation}
+                \|\Jac{z_s}{z_t}\|\leq\|\Jac{z_s}{h_{s-1}}\|\cdot\|\Jac{h_{s-1}}{z_{s-1}}\|\cdot\|\Jac{z_{s-1}}{z_t}\|.
+            \end{equation}
+        Since $\sigma$ is $S$-Lipschitz, and $\|W_s\|\leq U$, and by observing that $\|\Jac{z_t}{z_t}\|=1$ we obtain by induction that:
+            \begin{equation}
+                \|\Jac{h_s}{h_t}\|\leq (SU)^{s-t}.
+            \end{equation}
+    \end{subproof}
+    
+    
+    The derivatives of the biases are a textbook application of the chainrule.
+    
+    
+    \begin{lemma}[Bounded bias derivatives]\label{thm:boundedbiasderivatives}
+        For every $t$ we have:
+        \begin{equation}
+            \|\nabla_{b_t}\Loss(\yhat,y)\|\leq L(SU)^{T+1-t}.
+        \end{equation}
+    \end{lemma}
+    \begin{subproof}[Lemma proof.]
+    The chain rule yields:
+        \begin{equation}
+            \nabla_{b_t}\Loss(\yhat,y)=(\nabla_{\yhat}\Loss(\yhat,y))\Jac{z_{T+1}}{z_t}\Jac{z_t}{b_t}.
+        \end{equation}
+    Hence we have:
+        \begin{equation}
+            \|\nabla_{b_t}\Loss(\yhat,y)\|=\|\nabla_{\yhat}\Loss(\yhat,y)\|\cdot\|\Jac{z_{T+1}}{z_t}\|\cdot\|\Jac{z_t}{b_t}\|.
+        \end{equation}
+    We conclude with Lemma~\ref{thm:boundedactivationderivatives} that states $\|\Jac{z_{T+1}}{z_t}\|\leq (US)^{T+1-t}$, with requirement~\ref{req:boundednablal} that states $\|\nabla_{\yhat}\Loss(\yhat,y)\|\leq L$ and by observaing that $\|\Jac{z_t}{b_t}\|=1$.  
+    \end{subproof}
+    
+    We can now bound the derivative of the affine weights:
+    
+    
+    \begin{lemma}[Bounded weight derivatives]\label{thm:boundedweightderivatives}
+        For every $T+1\geq t\geq 2$ we have:
+        \begin{align}
+            \|\nabla_{W_t}\Loss(\yhat,y)\|&\leq L(SU)^T\left(X-\frac{SB}{1-SU}\right)+L(SU)^{T+1-t}\frac{SB}{1-SU}\text{ when }SU\neq 1,\\
+            \|\nabla_{W_t}\Loss(\yhat,y)\|&\leq LS\left(X+(t-1)B\right)\text{ when }SU= 1.\\
+        \end{align}
+        In every case:
+        \begin{equation}
+            \|\nabla_{W_1}\Loss(\yhat,y)\|\leq L(SU)^TX.
+        \end{equation}    
+    \end{lemma}
+    \begin{subproof}[Lemma proof.]
+    We proceed like in the proof of Lemma~\ref{thm:boundedbiasderivatives} and we get:
+        \begin{equation}
+            \|\nabla_{W_t}\Loss(\yhat,y)\|\leq \|\nabla_{\yhat}\Loss(\yhat,y)\|\cdot\|\Jac{z_{T+1}}{z_t}\|\cdot\|\Jac{z_t}{W_t}\|.
+        \end{equation}
+    Which then yields:
+        \begin{equation}
+            \|\nabla_{W_t}\Loss(\yhat,y)\|\leq L(SU)^{T+1-t}\cdot\|\Jac{z_t}{W_t}\|.
+        \end{equation}
+    Now, for $T+1\geq t\geq 1$, according to Lemma~\ref{thm:boundedactivations} we either have:
+    \begin{equation}
+        \|\Jac{z_t}{W_t}\|\leq \|h_{t-1}\|\leq S\|z_{t-1}\|=(SU)^{t-1}\left(X-\frac{SB}{1-SU}\right)+\frac{SB}{1-SU},
+    \end{equation}
+    or, when $US=1$:
+    \begin{align}
+        \|\Jac{z_t}{W_t}\|&\leq \|h_{t-1}\|=S\|z_{t-1}\|=SX+(t-1)SB\text{ if }t\geq 2,\\
+        \|\Jac{z_t}{W_t}\|&\leq X\text{ otherwise}.
+    \end{align}  
+    \end{subproof}
+    
+    Now, the derivatives of the loss with respect to each type of parameter (i.e $W_t$ or $b_t$) are know, and they can be combined to retrieve the overall gradient vector.  
+    
+    \begin{equation}
+        \theta=\{(W_1,b_1), (W_2, b_2),\ldots (W_{T+1},b_{T+1})\}.
+    \end{equation}
+    
+    We introduce $\alpha=SU$.  
+    
+    \paragraph{Case $\alpha=1$.}
+    The resulting norm is given by the series:
+    \begin{align}
+        \|\nabla_{\theta}\Loss(\yhat,y)\|^2_2&= \sum_{t=1}^{T+1}\|\nabla_{b_t}\Loss(\yhat,y)\|^2_2+\|\nabla_{W_t}\Loss(\yhat,y)\|^2_2\\
+                      &\leq L^2\left((1+X^2)+\sum_{t=2}^{T+1}(1+(SX+(t-1)SB)^2)\right)\\
+                      &\leq L^2\left(1+X^2+\sum_{u=1}^{T}(1+(SX+uSB)^2)\right)\\
+                      &\leq L^2\left(1+X^2+\sum_{u=1}^{T}(1+S^2(X^2++2uBX+u^2B^2))\right)\\
+                      &\leq L^2\left(1+X^2+T(1+S^2X^2)+S^2BXT(T+1)+S^2B^2\frac{T(T+1)(2T+1)}{6}\right).
+    \end{align}
+    Finally:
+    \begin{align}
+        \|\nabla_{\theta}\Loss(\yhat,y)\|_2 &= \BigO(L\sqrt{X^2+T+TS^2X^2+BS^2XT^2+B^2S^2T^3})\\
+        &= \BigO\left(LX+L\sqrt{T}+LSX\sqrt{T}+L\sqrt{BX}ST+LBST^{\sfrac{3}{2}}\right).
+    \end{align}
+    This upper bound depends (asymptotically) linearly of $L,X,S,B,T^{\sfrac{3}{2}}$, when other factors are kept fixed to non zero value.  
+    
+    \paragraph{Case $\alpha\neq 1$.} We introduce $\beta=\frac{SB}{1-\alpha}$.
+    \begin{align}
+        \|\nabla_{\theta}\Loss(\yhat,y)\|^2_2&= \sum_{t=1}^{T+1}\|\nabla_{b_t}\Loss(\yhat,y)\|^2_2+\|\nabla_{W_t}\Loss(\yhat,y)\|^2_2\\
+                      &\leq L^2\left(\alpha^{2T}\sum_{t=1}^{T+1}(((X-\beta)+\alpha^{1-t}\beta)^2+\alpha^{2-2t})\right)\\
+                      &\leq L^2\alpha^{2T}\left(\sum_{u=0}^{T}(((X-\beta)^2+2(X-\beta)\alpha^{-u}\beta+\alpha^{-2u}\beta^2)+\alpha^{-2u})\right)\\
+                      &\leq L^2\alpha^{2T}\left((T+1)(X-\beta)^2+2(X-\beta)\beta\sum_{u=0}^{T}\alpha^{-u}+(\beta^2+1)\sum_{u=0}^{T}\alpha^{-2u}\right)\\
+                      &\leq L^2\alpha^{2T}\left((T+1)(X-\beta)^2+2(X-\beta)\beta\frac{\alpha-(\frac{1}{\alpha})^T}{\alpha-1}+(\beta^2+1)\frac{\alpha^2-(\frac{1}{\alpha^2})^T}{\alpha^2-1}\right).
+    \end{align}
+    Finally:
+    \begin{align}
+        \|\nabla_{\theta}\Loss(\yhat,y)\|_2 &\leq L\alpha^T\sqrt{(T+1)(X-\beta)^2+2(X-\beta)\beta\frac{\alpha-(\frac{1}{\alpha})^T}{\alpha-1}+(\beta^2+1)\frac{\alpha^2-(\frac{1}{\alpha^2})^T}{\alpha^2-1}}.
+    \end{align}
+    Now, the situation is a bit different for $\alpha<1$ and $\alpha>1$. One case corresponds to exploding gradient, and the other to vanishing gradient.  
+      
+    When $\alpha<1$ we necessarily have $\beta>0$, hence we obtain a crude upper-bound:
+    \begin{align}
+        \|\nabla_{\theta}\Loss(\yhat,y)\|_2 &=\BigO\left(L\alpha^T\left(X\sqrt{T}+\frac{1}{(1-\alpha^2)}\left(\sqrt{\frac{XSB}{\alpha^T}}+\frac{SB}{\sqrt{(1-\alpha)}}\right)\right)+\frac{L}{(1-\alpha)\sqrt{1-\alpha}}\right).
+    \end{align}
+    Once again $B=0$ (network with no bias) leads to useful simplifications:
+    \begin{align}
+        \|\nabla_{\theta}\Loss(\yhat,y)\|_2 &=\BigO\left(L\alpha^TX\sqrt{T}+\frac{L}{\sqrt{(1-\alpha)^3}}\right).
+    \end{align}
+    This is a typical case of vanishing gradient since when $T\gg 1$ the upper bound does not depend on the input scale $X$ anymore.  
+
+    Similarly, we can perform the analysis for $\alpha>1$, which implies $\beta<0$, yielding another bound:
+    \begin{align}
+        \|\nabla_{\theta}\Loss(\yhat,y)\|_2 &=\BigO\left(L\frac{\alpha^T}{\alpha-1}\left(\sqrt{T}(\alpha X+SB)+\frac{\alpha(SB+\alpha)}{\sqrt{\alpha^2-1}}\right)\right).
+    \end{align}
+    Without biases we get:
+    \begin{align}
+        \|\nabla_{\theta}\Loss(\yhat,y)\|_2 &=\BigO\left(L\frac{\alpha^{T+1}}{\alpha-1}\left(\sqrt{T} X+\frac{\alpha}{\sqrt{\alpha^2-1}}\right)\right).
+    \end{align}
+    We recognize an exploding gradient phenomenon due to the $\alpha^T$ term.
+    \end{proof}
+
+    Propositions~\ref{prop:boundedactivation} and~\ref{prop:boundedfgrad} were introduced for clarity. They are a simple consequence of the Lemmas~\ref{thm:boundedactivations}-\ref{thm:boundedbiasderivatives}-\ref{thm:boundedweightderivatives} used in the proof of Theorem~\ref{thm:boundedlossgrad}.
+
+
+    The informal theorem of section~\ref{sec:gnp} is based on the bounds of theorem~\ref{thm:boundedlossgrad}, that have been simplified. Note that the definition of network differs slightly: in definition~\ref{def:feedforwardlipnet} the activations and the affines layers are considered independent and indexed differently, while the theoretical framework merge them into $z_t$ and $h_t$ respectively, sharing the same index $t$. This is without consequences once we realize that if $K=U=S$ and $2T=D$ then $(US)^2= \alpha^2=K^2$ leads to $\alpha^{2T}=K^D$. The leading constant factors based on $\alpha$ value have been replaced by $1$ since they do not affect the asymptotic behavior.  
+
+
+

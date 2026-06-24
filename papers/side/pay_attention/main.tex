@@ -1,0 +1,221 @@
+\documentclass{article}
+% if you need to pass options to natbib, use, e.g.:
+%     \PassOptionsToPackage{numbers, compress}{natbib}
+% before loading neurips_2021
+
+% ready for submission
+%\usepackage[preprint,nonatbib]{neurips_2022}
+\usepackage[final,nonatbib]{neurips_2022}
+
+% to compile a preprint version, e.g., for submission to arXiv, add add the
+% [preprint] option:
+%     \usepackage[preprint]{neurips_2021}
+
+% to compile a camera-ready version, add the [final] option, e.g.:
+%     \usepackage[final]{neurips_2021}
+
+% to avoid loading the natbib package, add option nonatbib:
+% \usepackage[nonatbib]{neurips_2022}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage[dvipsnames]{xcolor}         % colors
+\usepackage{todonotes}
+
+\usepackage{array}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow, rotating}
+\usepackage[flushleft]{threeparttable}
+\usepackage{pifont}
+
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+
+% Math packages
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{dsfont}
+\usepackage{mathtools}
+\usepackage{bbm}
+\newcommand{\der}{\operatorname{d\!}{}}
+\usepackage{enumitem}
+\usepackage{thmtools,thm-restate}
+
+% Theorems
+\newtheorem{corollary}{Corollary}
+\newtheorem{example}{Example}
+\newtheorem{lemma}{Lemma}
+\newtheorem{property}{Property}
+\newtheorem{proposition}{Proposition}
+\newtheorem*{remark}{Remark}
+\newtheoremstyle{break}
+  {\topsep}{\topsep}%
+  {\itshape}{}%
+  {\bfseries}{}%
+  {\newline}{}%
+\theoremstyle{break}
+\newtheorem{theorem}{Theorem}
+\newtheorem{definition}{Definition}
+
+\usepackage{wrapfig}
+
+
+% Math Macros
+\newcommand{\Reals}{\mathbb{R}}
+\newcommand{\Rational}{\mathbb{Q}}
+\newcommand{\Natural}{\mathbb{N}}
+\newcommand{\Risk}{\mathcal{R}}
+\newcommand{\Ball}{\mathfrak{B}}
+\newcommand{\Prob}{\mathbb{P}}
+\newcommand{\Expect}{\mathbb{E}}
+\newcommand{\Loss}{\mathcal{L}}
+\newcommand{\Empirical}{\mathcal{E}}
+\newcommand{\Hypothesis}{\mathcal{H}}
+\newcommand{\Lip}{\text{Lip}_1(\Reals^n,\Reals)}
+\newcommand{\Params}{\theta}
+\newcommand{\Znc}{\mathcal{Z}}
+\newcommand{\Xsub}{\mathcal{X}}
+\newcommand{\Labels}{\mathcal{Y}}
+\newcommand{\Classifiers}{\mathcal{C}}
+\newcommand{\BigO}{\mathcal{O}}
+\newcommand{\sign}{\text{sign}}
+\newcommand{\Jacobian}{J}
+\newcommand{\indicator}{\mathds{1}}
+\newcommand{\diam}[1]{\text{diam }#1}
+\newcommand{\Wasserstein}{\mathcal{W}}
+\newcommand{\supp}[1]{\text{supp }#1}
+\newcommand*\interior[1]{\mathring{#1}}
+\newcommand*\closure[1]{\overline{#1}} % (or \bar{#1})
+\newcommand{\LipCl}{\text{LipNet1 }}
+\newcommand{\LipInf}{\text{AllNet }}
+\newcommand{\GNP}{\text{LipGradNet(1)} }
+\newcommand{\veryshortarrow}[1][3pt]{\mathrel{%
+   \vcenter{\hbox{\rule[-.5\fontdimen8\textfont3]{#1}{\fontdimen8\textfont3}}}%
+   \mkern-4mu\hbox{\usefont{U}{lasy}{m}{n}\symbol{41}}}}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+\let\oldemptyset\emptyset
+\let\emptyset\varnothing
+\newcommand{\defeq}{\vcentcolon=}
+
+\newcommand{\thib}[1]{\textcolor{blue}{#1}}
+\newcommand{\louis}[1]{\textcolor{green}{#1}}
+\newcommand{\yes}[1]{\textcolor{OliveGreen}{#1}}
+\newcommand{\no}[1]{\textcolor{BrickRed}{#1}}
+
+% Include other packages here, before hyperref.
+
+% If you comment hyperref and then uncomment it, you should delete
+% egpaper.aux before re-running latex.  (Or just hit 'q' on the first latex
+% run, let it finish, and you should be clear).
+\usepackage[breaklinks=true,bookmarks=false]{hyperref}
+
+%\iccvfinalcopy % *** Uncomment this line for the final submission
+
+%\def\iccvPaperID{****} % *** Enter the ICCV Paper ID here
+%\def\httilde{\mbox{\tt\raisebox{-.5ex}{\symbol{126}}}}
+
+% Pages are numbered in submission mode, and unnumbered in camera-ready
+%\ificcvfinal\pagestyle{empty}\fi
+
+% \title{The Many Faces of 1-Lipschitz Neural Networks}
+\title{Pay attention to your loss: understanding misconceptions about 1-Lipschitz neural networks}
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to LaTeX to determine where to break the
+% lines. Using \AND forces a line break at that point. So, if LaTeX puts 3 of 4
+% authors names on the first line, and the last on the second line, try using
+% \AND instead of \And before the third author name.
+
+\author{Louis Béthune, \footnotemark[2]\\
+IRIT, Université Paul-Sabatier\\
+Toulouse, France
+\And Thibaut Boissin, \footnotemark[2]\\
+IRT Saint-Exupéry\\
+Toulouse, France
+\And Mathieu Serrurier\\
+IRIT, Université Paul-Sabatier\\
+Toulouse, France
+\And Franck Mamalet\\
+IRT Saint-Exupéry\\
+Toulouse, France
+\And Corentin Friedrich\\
+IRT Saint-Exupéry\\
+Toulouse, France
+\And Alberto Gonz\'alez-Sanz\\
+IMT, Université Paul-Sabatier\\
+Toulouse, France
+}
+
+\begin{document}
+
+\maketitle
+%\footnotetext{\footnotemark[2] Denotes equal contribution.}
+
+\begin{abstract}
+
+    \input{00_abstract}
+    
+\end{abstract}
+
+\section{Introduction}\label{sec:intro}
+    \input{01_introduction}
+\vspace{-2mm}
+\section{Notations and experimental setting}\label{sec:notations}
+\vspace{-2mm}
+    \input{02_notations}
+\section{1-Lipschitz classifiers are expressive}\label{sec:classificationpower}
+    \input{03_lipschitz_expressivity}
+\section{1-Lipschitz classifiers are certifiably robust}\label{sec:robustness}
+    \input{04_robustness}
+\vspace{-2mm}
+\section{1-Lipschitz classifiers have generalization guarantees}\label{sec:generalize}
+    \input{05_generalization}
+\vspace{-2mm}
+\section{Related work}
+    \input{06_related_work}
+\vspace{-2mm}
+\section{Conclusions}
+     \input{07_conclusions}
+\vspace{-2mm}
+\begin{ack}
+We thank S\'ebastien Gerchinovitz for critical proof checking, Jean-Michel Loubes for useful discussions, and Etienne de Montbrun, Thomas Fel and Antonin Poch\'e for their read-checking. A special thank to Agustin Picard for his useful advice and thorough reading of the paper. This work has benefited from the AI Interdisciplinary Institute ANITI, which is funded by the French ``Investing for the Future – PIA3'' program under the Grant agreement ANR-19-P3IA-0004. The authors gratefully acknowledge the support of the DEEL project.\footnote{\url{https://www.deel.ai/}}  
+\end{ack}
+
+{
+    \small
+    \bibliographystyle{unsrt}
+    \bibliography{main}
+}
+
+\newpage
+\input{10_checklist}
+%\newpage
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+\appendix
+
+
+  
+    \input{99_appendix}
+
+\end{document}

@@ -1,0 +1,179 @@
+\documentclass{article}
+
+% if you need to pass options to natbib, use, e.g.:
+%     \PassOptionsToPackage{numbers, compress}{natbib}
+% before loading neurips_2022
+
+
+% ready for submission
+\usepackage{iclr2024_conference}
+\usepackage{times}
+%\usepackage[preprint,nonatbib]{neurips_2023}
+
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+%\usepackage[dvipsnames]{xcolor}         % colors
+% \usepackage{todonotes}
+
+\usepackage{array}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{paralist}
+\usepackage{multirow, rotating}
+\usepackage{makecell}
+\usepackage[flushleft]{threeparttable}
+\usepackage{pifont}
+\usepackage{wrapfig}
+
+\usepackage{algorithm,algorithmicx,algpseudocode}
+
+\algnewcommand{\algorithmicforeach}{\textbf{for each}}
+\algdef{SE}[FOR]{ForEach}{EndForEach}[1]
+  {\algorithmicforeach\ #1\ \algorithmicdo}% \ForEach{#1}
+  {\algorithmicend\ \algorithmicforeach}% \EndForEach
+
+% Math packages
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage{caption}
+\usepackage{listings}
+\usepackage{subcaption}
+\usepackage{dsfont}
+\usepackage{xfrac}
+\usepackage{mathtools}
+\usepackage{bbm}
+\usepackage{thmtools,thm-restate}
+
+\usepackage{macros}
+
+\usepackage[breaklinks=true,bookmarks=false]{hyperref}
+
+\iclrfinalcopy
+
+\title{DP-SGD Without Clipping:\\ The Lipschitz Neural Network Way}
+
+
+\author{
+\and
+Louis B\'ethune\thanks{Equal contribution.}~\thanks{IRIT, Universit\'e Paul Sabatier, Toulouse.}\\
+\and
+Thomas Mass\'ena\footnotemark[1]~\thanks{IRT Saint Exup\'ery, Toulouse.}\\
+\and
+Thibaut Boissin\footnotemark[1]~\footnotemark[3]\\
+\and
+Aur\'elien Bellet \thanks{Inria, Universit\'e de Montpellier.}\\
+\and
+Franck Mamalet \footnotemark[3]\\
+\and
+Yannick Prudent \footnotemark[3]\\
+\and
+Corentin Friedrich \footnotemark[3]\\
+\and
+Mathieu Serrurier \footnotemark[2]\\
+\and
+David Vigouroux \footnotemark[3]\\
+}
+
+\begin{document}
+
+\maketitle
+
+
+
+
+\if\enablecommments
+    \begin{figure}[t]
+        \centering
+        \includegraphics[width=\linewidth]{figures/logo_speeeed.png}
+    \end{figure}
+\fi
+
+\input{paper/00_abstract}
+
+\section{Introduction}
+
+    \input{paper/01_intro}
+
+\section{Clipless DP-SGD with $\ell$-Lipschitz networks}\label{sec:framework}
+
+   \input{paper/02_method}
+
+\section{Signal-to-noise ratio analysis}%\label{sec:gnp}
+
+    \input{paper/03_gnp_networks}
+
+\section{Experimental results}\label{sec:experiments}
+
+    \input{paper/04_experiments}
+
+% \section{Concluding remarks and broader impact}
+% section's title has been put in .tex file
+
+    \input{paper/05_conclusion}
+  
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%% DE-COMMENT ONE OF THE LINES BELOW %%%%%%%%
+%%%%%%%%%%% TO PLOT APPENDIX %%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%% OR THE PAPER ONLY %%%%%%%%%%%%%%%%%%%
+\newcommand*{\PAPER}{}%
+\newcommand*{\APPENDIX}{}%
+\newcommand*{\THANKS}{}%
+
+\ifdefined\THANKS
+\subsubsection*{Contributions}
+
+The design and the theoretical analysis has been conducted by Louis Béthune and Thomas Masséna. The lip-dp package has been created by Louis Bethune, Thomas Masséna, and Thibaut Boissin. The experiments have been run by Louis Béthune, Thomas Masséna, Thibaut Boissin, Yannick Prudent, and Corentin Friedrich. Proofreading, writing, and feedback are a joint contribution of all authors.  
+
+\subsubsection*{Acknowledgments}
+Louis thanks Fabian Pedregosa for its detailed feedback. The authors thank Agustin Picard for its proofreading.
+  
+This work has benefited from the AI Interdisciplinary Institute ANITI, which is funded by the French ``Investing for the Future – PIA3'' program under the Grant agreement ANR-19-P3IA-0004. The authors gratefully acknowledge the support of the DEEL project.\footnote{\url{https://www.deel.ai/}} 
+  
+This work was supported by grant ANR-20-CE23-0015 (Project PRIDE) and the ANR 22-PECY-0002 IPOP (Interdisciplinary Project on Privacy) project of the Cybersecurity PEPR.  
+\fi
+
+
+\ifdefined\PAPER
+\newpage
+{
+    \bibliography{biblio}
+    \bibliographystyle{iclr2024_conference}
+}
+\fi
+
+
+
+\ifdefined\APPENDIX
+\newpage
+\appendix
+
+\tableofcontents
+\newpage
+
+\section{Definitions and methods}
+    \input{appendix/01_definitions}\label{app:method}
+
+\section{Lipdp tutorial}\label{app:proofs}
+    \input{appendix/02_illustration_code}
+
+\section{Computing sensitivity bounds}
+    \input{appendix/03_bounds}
+
+\section{Experimental setup}\label{app:experiments}
+    \input{appendix/04_experiment_setup}
+
+\section{Proofs of general results}
+    \input{appendix/05_proofs}
+\fi
+
+\end{document}

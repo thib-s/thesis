@@ -1,0 +1,41 @@
+The core of the paper mainly deal with  binary classification over $\Reals^n$ with label set $\Labels=\{-1,+1\}$. Let $(X,Y)$ be a random variable taking values on $\Xsub\times\Labels$, where $\Xsub\subset\Reals^n$ is assumed to be a compact set. Such a pair follows the joint distribution $\Prob_{XY}$, defined on the space of probability measures $\mathcal{P}(\Xsub\times\Labels)$. The marginal distribution of $X$ is denoted by $\Prob_X\in\mathcal{P}(\Xsub)$ and its support by $\supp \Prob_X$. We suppose the observation of a sample $(x_1,y_1), \dots, (x_p,y_p)$ i.i.d. with common law $\Prob_{XY}$, and the goal is to learn a classifier $c:\Xsub\rightarrow\Labels$ modeling the optimal Bayes classifier $\argmax_{y\in\Labels}\Prob_{Y|X}(y|x)$. $P$ (resp. $Q$) denotes the input distribution of label $+1$ (resp. $-1$).  
+  
+The Lipschitz constant $\text{Lip}(f)$ of a function $f:\Reals^n\rightarrow\Reals^K$ is defined as the smallest $L\geq 0$ such that for all $x,z\in\Reals^n$ we have $\|f(x)-f(z)\|\leq L\|x-z\|$. In the rest of the paper, we focus on euclidean norm $\|\cdot\|$ for vectors and spectral norm $\|\cdot\|_2$ for matrices. The set of $L$-Lipschitz functions over $\Xsub\subset\Reals
+^n$ with image in $\Reals^K$ is denoted $\text{Lip}_L(\Xsub,\Reals^K)$. % The gradient of $f$ w.r.t $x$ will be written $(\nabla_x f)$.  
+  
+\begin{definition}[Class of \LipInf networks]
+\LipInf denotes the set of unconstrained neural networks. It includes any feed-forward network of fixed depth (without recurrent mechanisms) using affine layers (including convolutions and batch normalization) with weight matrices $W_1,W_2,\ldots W_d$ % biases $b_1,b_2,\ldots W=b_d$,
+and Lipschitz activation function $\sigma$ (such as ReLU, sigmoid, tanh, etc). No constraint is enforced on their Lipschitz constant during training.  
+\end{definition}
+%Perhaps confusingly, any network of \LipInf has a finite Lipschitz constant, but computing it is NP-hard~\cite{scaman2018lipschitz}. Hence this problem is usually intractable, and only a loose upper bound can be cheaply estimated: $\text{Lip}(f)\leq \text{Lip}(\sigma)^d\Pi_{i=1}^d \|W_i\|_2$ using the property that $\text{Lip}(f_d\circ f_{d-1}\circ\ldots \circ f_1)\leq\Pi_{i=1}^d\text{Lip}(f_i)$. In practice this bound is often too high to provide meaningful certificates, since \LipInf networks have usually very small robustness radius~\cite{szegedy2013intriguing}.  
+
+\begin{definition}[Class of \LipCl networks]
+\LipCl denotes the set of feed-forward neural networks $f$ defined as in Theorem 3 of Anil et al.~\cite{anil2019sorting}: $\|W_1\|_{2\rightarrow\infty}\leq 1$ (see~\cite{cape2019two} for details on the mixed norm $\|\cdot\|_{2\rightarrow\infty}$) and $\|W_i\|_{\infty}\leq 1$ for $i\geq 2$, and GroupSort2 activation function. They fulfill $\text{Lip}(f)\leq 1$.  
+%$f$ with constraints on the weights (by bounding $\|\cdot\|_{2\veryshortarrow\infty}$, $\|\cdot\|_{\infty}$ or $\|\cdot\|_2$ norms appropriately) and GroupSort2 activation function, to ensure that their Lipschitz constant is smaller than one: $\text{Lip}(f)\leq 1$. They benefit from universal approximation theorem in $\text{Lip}_1(\Xsub,\Reals)$ wrt uniform convergence thanks to.
+\end{definition}  
+ \begin{remark}
+ \LipInf networks benefit from universal approximation theorem in $C(\Xsub,\Reals^K)$, a classical result of literature~\cite{hassoun1995fundamentals}. \LipCl networks also benefit from an universal approximation theorem in $\text{Lip}_1(\Xsub,\Reals)$ with respect to uniform convergence~\cite{anil2019sorting}. Note that $\text{Lip}_L(\Xsub,\Reals^K)=\{Lf\mid f\in\text{Lip}_1(\Xsub,\Reals^K)\}$ so \LipCl can be used to approximate functions in $\text{Lip}_L(\Xsub,\Reals^K)$.
+ \end{remark}
+  
+In practice authors of~\cite{anil2019sorting} noticed that using orthogonal weight matrices (i.e $W_i^TW=I$) yielded the best results. All our experiments use the Deel.Lip\footnote{\url{https://github.com/deel-ai/deel-lip} distributed under MIT License (MIT).} library~\cite{serrurier2020achieving}, following ideas of~\cite{anil2019sorting}. The networks use 1) orthogonal weight matrices and 2) GroupSort2 activations~\cite{anil2019sorting}. Orthogonalization is enforced using Spectral normalization~\cite{miyato2018spectral} and Bj{\"o}rck algorithm~\cite{bjorck1971iterative}. %We have for all $i$: $$\text{GroupSort2}(x)_{2i,2i+1}=[\min{(x_{2i},x_{2i+1})},\max{(x_{2i},x_{2i+1})}]$$
+These networks belong to \LipCl by construction (see Appendix~\ref{ap:deellip} for our choice of architecture and relevant related work).   
+  
+  \LipCl networks provide robustness radius certificates against adversarial attacks~\cite{NEURIPS2018_48584348}. Computing these certificates is straightforward and does not increase runtime, contrary to methods based on bounding boxes or abstract interpretation~\cite{latorre2019lipschitz,weng2018towards,weng2018evaluating,zhang2021towards}. There is no need for adversarial training~\cite{madry2018towards} that fails to produce guarantees, or for randomized smoothing~\cite{pmlr-v97-cohen19c} which is costly.  % \thib{Mettre en related works ?}  
+    
+  Confusingly, any network of \LipInf has a finite Lipschitz constant, but computing it is NP-hard~\cite{scaman2018lipschitz}. Only a loose upper bound can be cheaply estimated: $\text{Lip}(f)\leq \text{Lip}(\sigma)^d\Pi_{i=1}^d \|W_i\|_2$ using the property that $\text{Lip}(f_d\circ f_{d-1}\circ\ldots \circ f_1)\leq\Pi_{i=1}^d\text{Lip}(f_i)$. In practice, this bound is often too high to provide meaningful certificates and besides, \LipInf networks have usually very small robustness radius~\cite{szegedy2013intriguing}.  
+      
+    \begin{definition}[Adversarial Attack] %\todo{move to notations}
+        For any classifier $c:\Xsub\rightarrow\Labels$, any $x\in\Reals^n$, consider the following optimization problem:
+        \begin{equation}
+            \epsilon=\min_{\delta\in\Reals^n} \|\delta\|\text{ such that }c(x+\delta)\neq c(x).
+        \end{equation}  
+        $\delta$ is an \textit{adversarial attack}, $x+\delta$ is an \textit{adversarial example}, and $\epsilon$ is the \textit{robustness radius} of $x$. %The smallest $\|\delta\|$ achievable by $x\in\Xsub$ is the \textbf{minimum robustness radius} of $c$.  
+    \end{definition}  
+      
+    \begin{property}[Local Robustness Certificates~\cite{NEURIPS2018_48584348}]\label{thm:certificates}
+        For any $f\in\LipCl$ the robustness radius $\epsilon$ of binary classifier $\sign\circ f$ at example $x$ verifies $\epsilon\geq|f(x)|$.
+    \end{property} % \footnote{A similar definition in multi-class setting is provided in appendix \ref{def:multiclasshkr}}
+  
+\paragraph{Losses:} The Binary Cross-Entropy (BCE) loss (also called logloss) is among the most popular choices of loss within the deep learning community. Let $f:\Reals^n\rightarrow\Reals$ a neural network. For an example $x\in\Reals^n$ with label $y\in\Labels$, and $\sigma(x)=\frac{1}{1+\exp{(-x)}}$ the logistic function mapping logits to probabilities, the BCE is written $\Loss^{bce}_{\tau}(f(x),y)=-\log{\sigma(y\tau f(x))}$, with temperature scaling parameter $\tau>0$. This hyper-parameter of the loss defaults to $\tau=1$ in most frameworks such as Tensorflow or Pytorch. Note that $\Loss^{bce}_{\tau}(f(x),y)=\Loss^{bce}_{1}(\tau f(x),y)$ so we can equivalently tune $\tau$ or the Lipschitz constant $L$. We show in Section~\ref{sec:consistency} that \textbf{for \LipCl the temperature $\tau$ allow to control the generalization gap}. We also consider the Hinge loss $\Loss^{H}_{m}(f(x),y)=\max{(0, m-yf(x))}$ with margin $m>0$, as used in~\cite{li2019preventing} for \LipCl networks training.
+
+We focus on binary classification for readability and clarity purposes; however, we prove in Appendices~\ref{app:mutliclassexpressive} and~\ref{app:multiclasshkr} that \textbf{the following theoretical results generalize to the multi-class case}, as done in experiments. The proofs of all propositions can be found in the appendix. %Although theoretical results are presented in the context of binary classification, these are also proved for multi-class classification.}

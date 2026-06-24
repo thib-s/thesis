@@ -1,0 +1,6 @@
+%\vspace{-0.2cm}
+\section{Conclusion and future work}
+%\vspace{-0.1cm}
+We proposed a new approach to One-Class Classification, OCSDF, based on the parametrization of the Signed Distance Function to the boundary of the known distribution using a 1-Lipschitz neural net. OCSDF comes with robustness guarantees and naturally tackles the lack of negative data inherent to OCC. Finally, this new method extends OCC beyond Out-of-Distribution detection and allows applying it to surface parametrization from point clouds and generative visualization.  
+
+OCSDF relies on the appropriate sampling of a complementary distribution. It can be improved by integrating proper priors (e.g steps in Fourrier space, Perlin noise prior or negative data augmentation), rather than random uniform, as long as Definition~\ref{def:beddinformal} is fulfilled. This perspective is very relevant and will be investigated in future works. 

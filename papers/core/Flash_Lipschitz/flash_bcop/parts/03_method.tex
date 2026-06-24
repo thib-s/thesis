@@ -1,0 +1,88 @@
+
+As mentioned previously, existing methods for explicit orthogonal convolution construction face several challenges that hinder their scalability in modern CNNs. Frequency-domain approaches, for instance, require computing the FFT on input images, which becomes prohibitive for large image resolutions (e.g., 224×224 in ImageNet-1K). Methods like SOC, LOT, ECO, and Cayley~\cite{singla_skew_2021,xu_lot_2023,yu_constructing_2021,trockman_orthogonalizing_2021} handle cases where $ c_i \neq c_o $ through inefficient padding or channel dropping, further limiting their practicality. Most of these methods also emulate striding, using a channel reshaping method called InvertibleDownSampling, significantly increasing the computational cost compared to native striding (see \cref{sec:stride}). Beyond inefficiency, these limitations prevent the adoption of essential modern convolutional features such as strides, transposition, groups, and dilation. Since these features were specifically designed to enhance the efficiency of modern neural network architectures, emulation is not a viable option for computationally demanding scenarios.
+\paragraph{The strategy of AOC.}  The core idea of our method is to combine several convolution kernels with an efficient implementation of the \Bconv{} $\mathbconv$ to build any type of orthogonal convolution. We mainly build upon two type of kernels: one that guarantees orthogonality for any kernel size (when \( s=1 \)) and another that guarantees orthogonality for any stride \( s \). BCOP and SC-Fac \cite{li_preventing_2019, su_scaling-up_2021}, by leveraging \Bconv{} $\mathbconv$, are effective for the first kernel, whereas other methods lack control over the kernel size. For the second kernel, RKO \cite{serrurier_achieving_2021} is the only viable option, as all other methods depend on stride emulation.
+
+\paragraph{Standard Orthogonal Convolution}\label{sec:standard}  
+    For standard orthogonal convolutions with a fixed kernel size, we rely on three main works \cite{xiao_dynamical_2018}, \cite{li_preventing_2019}, and \cite{su_scaling-up_2021}. In \cref{ap:BCOP_detail}, we unify these works within a consistent notation framework, highlighting similarities and differences among their approaches to constructing standard orthogonal convolutions (i.e., without stride, transposition, grouping, or dilation). These methods primarily rely on constructing elementary blocks ($1 \times 1$, $1 \times 2$, and $2 \times 1$ orthogonal convolutions) and assembling these blocks to create orthogonal convolutions of the desired size and shape. 
+    Briefly, both methods construct symmetric projectors (matrices such that $N = N^2 = N^T \quad \text{and} \quad (I - N) = (I - N)^2 = (I - N)^T$). This property allows to construct orthogonal convolution whose kernel size is $1\times 2$ (resp. $2\times 1$).
+
+    \cite{li_preventing_2019, xiao_dynamical_2018} chose to compose $(k_1-1)$ $2 \times 1$ kernels $\kernel{P_i}$ with $(k_2-1)$ $1 \times 2$ kernels $\kernel{Q_i}$ and a $1 \times 1$ kernel $\kernel{M}$ to form a $k_1 \times k_2$ kernel:
+    \[
+        \kernel{K}_{\text{\tiny{BCOP}}} = \underbrace{(\kernel{P_{k-1}} \mathbconv \kernel{Q_{k-1}})}_{\text{pairs of 1x2 and 2x1 kernels}} \mathbconv \dots \mathbconv (\kernel{P_1} \mathbconv \kernel{Q_1}) \mathbconv \underbrace{\kernel{M}}_{\text{1x1}}
+    \] 
+     A detailed description of the BCOP method is provided in \cref{fig:method_bigpic}, with additional details in  \cref{ap:BCOP_detail,sec:ap_1x2_ortho} for the proof of orthogonality.
+    It is also worth noting that both approaches have the same number of parameters, which is lower than the number of parameters required to span all orthogonal convolutions. This is further discussed in  \cref{sec:ap_incomplete}.
+
+
+\paragraph{Native Striding for Orthogonal Convolutions}\label{sec:stride}
+
+     Classical convolutional networks use strided convolutions. However, most existing work on orthogonal convolutions does not support stride directly, instead emulating striding via a reshaping operation~\cite{shi2016real}: transforming the $c_i \times I_h \times I_w$ tensor into a $c_i s^2 \times \frac{I_h}{s} \times \frac{I_w}{s}$ tensor, followed by a non-strided convolution. Unlike native striding, emulation increases the number of parameters of the convolution ($s^2$ times more parameters), which means constraining larger matrices. Since algorithms used for this tasks have cubic time complexity in the number of channels \cite{prach_1-lipschitz_2023}, emulation induces a prohibitive cost for strided convolutions ($s^6$ times slower). Beyond this limitation, emulated striding also prevents native implementation of transposed convolutions with stride (see \cref{sec:transpose}). In this section, we propose a method to construct orthogonal kernels that support native striding.
+
+    To our knowledge, only two works \cite{serrurier_achieving_2021,serrurier_explainable_nodate} claim to use native stride. These rely on a method referred to by \cite{li_preventing_2019} as Reshaped Kernel Orthogonalization (RKO). This method involves reshaping the kernel $\kernel{K}_{\text{RKO}} \in \RR^{c_o \times c_i \times k_1 \times k_2}$ into a matrix $K' \in \RR^{c_o \times c_i k_1 k_2}$ and orthogonalizing it. In general, with the adequate multiplicative factor, the resulting convolution is 1-Lipschitz but not orthogonal. 
+    In this work, we prove that no additional factor is required when $k=s$ to obtain an orthogonal convolution. This result can be carefully combined with BCOP (\cref{sec:standard}) to provide orthogonal convolutions of desired kernel size and stride.
+    \begin{proposition}[RKO gives an orthogonal kernel\label{prop:rko_ortho} when $k_1 = k_2 = s$]
+        When $K' \in \RR^{c_o \times c_i k k}$ is orthogonal, the convolution with the reshaped kernel $\kernel{K}_{\text{RKO}} \in \RR^{c_o \times c_i \times k \times k}$ and a stride $s=k$ is orthogonal.
+    \end{proposition}
+
+    The proof of \cref{prop:rko_ortho} relies on the introduction of a permutation matrix on the inputs, and is given in \cref{sec:ap_proof_rko}.
+    The proposed method, called AOC, combines the BCOP and RKO methods to construct a Strided Convolution with Arbitrary Kernel Size:
+    \begin{align}
+        \kernel{K}_{AOC}= \kernel{K}_{\text{RKO}} \mathbconv \kernel{K}_{\text{BCOP}} \label{def:AOC_kernel}
+    \end{align}
+    As shown in \cref{fig:method_bigpic}, by choosing specific sizes for $\kernel{K}_{\text{BCOP}} \in \RR^{c \times c_i \times (k_1+1-s) \times (k_2+1-s)}$ and $\kernel{K}_{\text{RKO}} \in \RR^{c_o \times c \times s \times s}$, the fusion results in an orthogonal convolution of kernel size $k_1 \times k_2$ and stride $s$. 
+    
+    While the formulation (\cref{def:AOC_kernel}) may seem straightforward, the order of composition and the choice of the internal channel size $c$ are crucial to preserve orthogonality.
+% \vspace{10mm}
+    \begin{proposition}
+        [Orthogonality of strided AOC]\label{prop:ortho_stride}
+        The composition  of two kernels $\kernel{K}_{\text{BCOP}} \in \RR^{c \times c_i \times (k_1+1-s) \times (k_2+1-s)}$ and $\kernel{K}_{\text{RKO}} \in \RR^{c_o \times c \times s \times s}$ (\cref{def:AOC_kernel}) with an internal channel size $c = \text{max}(c_i, \lfloor\frac{c_o}{s^2}\rfloor)$ yields an orthogonal convolution with stride. %\sout{\textcolor{red}{The complete proof can be found in  \cref{sec:ap_proof_aoc_ortho}.}}
+    \end{proposition}
+    
+    The proof of \cref{prop:ortho_stride},  relies on  \cref{prop:composition_ortho} which holds for strided convolutions applied to $\toepstride{s} \toep{K}_{\text{RKO}}$, is detailed in \cref{sec:ap_proof_aoc_ortho} .
+    %The proof relies on  \cref{prop:composition_ortho} which holds for strided convolutions applied to $\toepstride{s} \toep{K}_{\text{RKO}}$. 
+    We prove that when $\text{min}(c_i, \frac{c_o}{s^2})\leq c \leq \text{max}(c_i, \frac{c_o}{s^2})$, the two matrices $\toep{K}_{\text{BCOP}}$ and $\toepstride{s} \toep{K}_{\text{RKO}}$ are either both row-orthogonal or both column-orthogonal. The choice of $c = \text{max}(c_i, \lfloor\frac{c_o}{s^2}\rfloor)$ maximizes the expressiveness of the parametrization while ensuring that the resulting convolution is orthogonal. 
+    Note that the size of the $\kernel{K}_{\text{BCOP}}$ imposes the condition $k+1-s \geq 0$. However, according to \cite{achour2023existencestabilityscalabilityorthogonal}, no orthogonal kernel exists when $s > k$. Therefore, our approach encompasses all valid configurations of orthogonal convolutions.
+
+\input{flash_bcop/parts/bigfigs/bigfig_implem}
+    
+\paragraph{Native Transposed Orthogonal Convolutions}\label{sec:transpose}
+
+    In addition to the practical verification of orthogonality in  \cref{def:orthogonal}, transposed convolutions are mostly used as learnable upscaling layers in architectures such as U-Net~\cite{ronneberger2015u} or VAEs~\cite{kingma2013auto,van2017neural}. Even though some methods in \cref{tab:big_picture} can provide transposition for standard convolution, none are applicable to strided convolutions due to their use of emulation via reshaping, as described in \cref{sec:stride}. Thus, AOC is the first method to support transposed orthogonal convolutions with upscaling.
+    
+    For a given convolution with stride defined by  \cref{def_convtoep}, the transposed convolution corresponds to the application of the transposed matrix $(\toepstride{s} \toep{K})^T$, inverting the role of $c_i$ and $c_o$. 
+    The resulting operation can be defined by the three notations:
+    \begin{definition}[Transposed Convolution]\label{def_transpose}
+        A transposed convolution is defined as follows:
+        \begin{align}
+            y = \kernel{K}^T \convker{\frac{1}{s}} x \label{def_transposeker}\\
+            \toepvec{y} = (\toepstride{s} \toep{K})^T \toepvec{x} = \toep{K}^T \toepstride{s}^T \toepvec{x} \label{def_transposetoep} \\
+            y = \convtrcode{K}{x}{s} \label{def_transposecode}
+        \end{align}
+    \end{definition}
+        The code notation (\cref{def_transposecode}) corresponds to the implementation in PyTorch parametrized by the original kernel $\kernel{K}$. The \cref{def_transposetoep} corresponds to the transposition of the underlying Toeplitz matrix. %( \cref{def_transposetoep}).
+        The kernel notation (\cref{def_transposeker}) can be viewed as a standard convolution with a transposed kernel and fractional striding. The kernel $\kernel{K}^T \in \RR^{c_i \times c_o \times k_1 \times k_2}$ is obtained by transposing the channel dimensions (the first ones) and reversing the kernel ones (the last two). 
+    By using an orthogonal direct convolution $\kernel{K}_{AOC}$, this construction results in an orthogonal transposed convolution. Although the definition and proof are straightforward, the practical application requires the explicit construction of a strided orthogonal convolution kernel (as detailed in \cref{def:AOC_kernel}).
+
+    \begin{proposition}[Transposed Orthogonal Convolution]\label{prop:transpose}
+        The transposition of a row orthogonal convolution is a column orthogonal convolution, and vice versa.  
+        %\sout{\textcolor{red}{The proof is given in \cref{sec:ap_proof_transposed}.}}
+    \end{proposition}
+
+    The proof is straightforward with the Toeplitz matrix notation, but is given for completeness in \cref{sec:ap_proof_transposed}.
+    It is worth noting that, despite its apparent simplicity, \cref{prop:transpose} has important implications for practical implementation—particularly concerning the direct use of \texttt{torch.nn.conv\_transpose2d}. Moreover, it raises considerations related to the preservation of orthogonality under conditions such as stride, groups, and dilation. For instance, transposed strided convolutions can be effectively utilized in the upsampling layers of U-Net architectures~\cite{ronneberger2015u}.
+    They can also be employed to design invertible neural networks for Normalizing Flows (see \cref{ap:invert}).
+    %\thib{Todo: add note about invertibility}
+
+\paragraph{Native Grouped Orthogonal Convolutions:}\label{sec:group}
+    Most modern CNNs use grouped convolutions \cite{howard2017mobilenets, xie2017aggregated, liu2022convnet}. Beyond its advantages in terms of parameters and computational efficiency, it makes AOC more efficient as its parametrization can be parallelized, similarly as \cite{gorbunov2024group,liuparameter}.
+    Given a group number $g$, the kernel of a grouped convolution $\kernel{K} \in \RR^{c_o \times \frac{c_i}{g} \times k \times k}$ can be viewed as a stack of $g$ kernels $\kernel{K_i} \in \RR^{\frac{c_o}{g} \times \frac{c_i}{g} \times k \times k}$, each constructed independently. Note that $c_o$ and $c_i$ must be multiple of $g$. 
+    \begin{proposition}[Grouped Orthogonal Convolution]\label{lemma:grouped_conv}
+        A grouped convolution composed of $g$ kernels $(\kernel{K_i})_g$ is orthogonal if and only if each individual convolution of kernel $\kernel{K_i}$ is orthogonal. %\sout{\textcolor{red}{The proof is given in \cref{sec:ap_proof_grouped}.}} 
+    \end{proposition}
+    
+    The proof of \cref{lemma:grouped_conv} is provided in \cref{sec:ap_proof_grouped} and relies on the fact that the Toeplitz matrix of a grouped convolution is block diagonal.
+    \noindent Note that when $g = c_i = c_o$, each kernel $\kernel{K}_i$ has a single channel $c_i=c_o=1$ that cannot be built with BCOP which requires $c\geq 2$.
+
+\paragraph{Native Orthogonal Convolutions with Dilation:}
+
+    Introduced by \cite{yu2015multi}, Dilation is an effective means to increase the receptive field of a convolution without increasing its number of parameters or its computational cost. In  \cite{su_scaling-up_2021}, the authors stated in an appendix that "any filter bank that is orthogonal for a standard convolution is also orthogonal for a dilated convolution and vice versa." While this is mathematically accurate, it is essential to note that circular padding must be adjusted accordingly to remain within the scope of their theorem. Our method thus also supports orthogonal convolution with dilation. A description is given in \cref{sec:ap_proof_dilated}.

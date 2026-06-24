@@ -1,0 +1,26 @@
+e conduct experiments networks learnt on FashionMNIST~\cite{Xiao2017FashionMNIST}, and 22 binary labels of CelebA~\cite{liu2015faceattributes} datasets\commentgreen{, and Imagenet~\cite{imagenet}}. Note that labels in CelebA are very unbalanced (see~Table~\ref{tab:celebA_stats} in Appendix~\ref{ann:complementary_results}, with for instance less than $5\%$ samples for \textit{Mustache} or \textit{Wearing\_Hat}).% or \textit{Wearing\_Hat}). 
+
+\sout{A VGG-like architecture~\cite{Parkhi15VGG} is used, with equivalent linear layer sizes for \otnn s~and unconstrained networks (same number of layers and neurons).}\commentgreen{Architectures used for \otnn s~and unconstrained networks are similar (same number of layers and neurons).} Unconstrained networks use batchnorm and ReLU layers for activation, whereas \otnn s~only use GroupSort2~\cite{pmlr-v97-anil19a,serrurier2021achieving} activation. \otnn s~are built using the \Deellip library.
+%*Loss
+The loss functions are cross-entropy for unconstrained networks (categorical for multiclass, and sigmoid for multilabel settings), and hKR \losshkr~(and the proposed variants) for \otnn s. We train all networks with ADAM optimizer~\cite{Diederik14Adam}. Details on architectures and parameters are given in Appendix~\ref{ann:parameters}.
+
+
+\textbf{Classification performance:} \otnn~models achieve comparable results to  unconstrained ones, confirming claims of~\cite{bethunelip}: they reach 88.5\%
+%\commentgreen{@Mathieu merci de remplir}
+average accuracy on FashionMNIST
+(Table~\ref{tab:fashion_results}), and 81\% (resp. 82\%) average Sensitivity (resp. Specificity) over labels on CelebA (Table~\ref{tab:celebA_results} in Appendix~\ref{ann:complementary_results}). We use  Sensitivity and Specificity for CelebA to take into consideration the unbalanced labels. \commentgreen{Concerning Imagenet, \otnn~performances ......}
+
+
+
+
+
+
+\subsection{Quantitative evaluation of explanations metrics}
+\input{parts/explanations_metrics}
+%Reseau normal: Grad => metriques nulles; comparer avec autre methode d'explication
+%Reseau hKR: Grad => metriques++; eventuellement comparer autres explications 
+%Metriques: robustnes-Sr; stability; .... (voir avec thomas les autres potentiellement deja dans xplique qu'on pourrait tester )
+%\subsection{adult} explaination show unfairness
+
+\subsection{Qualitative results}
+\input{parts/qualitative_results}

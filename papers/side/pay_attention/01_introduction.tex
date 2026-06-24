@@ -1,0 +1,51 @@
+1-Lipschitz neural networks have drawn great attention in the last decade, with motivation ranging from adversarial robustness to Wasserstein distance computation. In the following, we denote by \textbf{\LipCl} the class of 1-Lipschitz neural networks, by \textbf{\LipInf} the class of neural networks without constraints on their Lipschitz constant, i.e conventional neural networks.% They are defined more in details in Section~\ref{sec:notations}.  %\todo{c'est cool les todos!}
+
+Roughly speaking, the Lipschitz constant of neural networks quantifies how much their outputs can change when inputs are perturbed. When this constant is high, as it is often the case for neural networks of \LipInf, they become vulnerable to adversarial attacks (see~\cite{szegedy2013intriguing,yuan2019adversarial} and references therein): a carefully chosen small noise added to the inputs, usually imperceptible, can change the class prediction. One possible defense against adversarial attacks is to constrain the network to be 1-Lipschitz~(in \LipCl)~\cite{li2019preventing}, which provides provable robustness guarantees, together with an improvement of generalization~\cite{Sokolic_2017} and interpretability of the model~\cite{tsipras2019robustness}. \LipCl networks are also used to estimate Wasserstein distance, thanks to Kantorovich-Rubinstein duality in the seminal work of WGAN~\cite{arjovsky2017wasserstein}.  
+
+% Despite their competitiveness with networks of \LipInf on medium scale problems~\cite{cisse2017parseval,serrurier2020achieving}  they still suffer from misconceptions. A belief commonly invoked against networks of \LipCl is that they are much more difficult to train and far less expressive: ``Lipschitz-based approaches suffer from some representational limitations that may prevent them from achieving higher levels of performance and being applicable to more complicated problems''~\cite{huster2018limitations}.\thib{Attention la citation dit le contraire de ce que l'on dit dans le papier = on attaque frontalement ce papier}
+%\louis{(j'ai repris ton texte Thibaut et j'ai fusioné avec ce qu'il y avait avant)  }
+  
+Despite their competitiveness with networks of \LipInf on medium scale problems~\cite{cisse2017parseval,serrurier2020achieving}, they still suffer from misconceptions. A belief commonly invoked against networks of \LipCl is that they are less expressive: ``Lipschitz-based approaches suffer from some representational limitations that may prevent them from achieving higher levels of performance and being applicable to more complicated problems''~\cite{huster2018limitations}.%\footnote{Some reviews of the early draft of this paper contained similar criticism, showing that this belief is firmly rooted in the community.}
+
+% Although this claim is obviously true for regression, this intuition fades when it come to classification. The link between lipschitz constant and expressiveness is non trivial. 
+Although this claim seems rational at first glance, the link between Lipschitz constant and expressiveness is not trivial. While there is an obvious lack of expressiveness for regression tasks, this intuition fades when it comes to classification. Indeed, every \LipInf network $g:\Reals^n\rightarrow\Reals^K$ is $L$-Lipschitz for some (generally unknown) $L>0$. Then $f=\frac{1}{L}g$ is a \mbox{1-Lipschitz} neural network with the same decision boundary, since prediction $\argmax_k g_k$ is invariant by positive rescaling of the logits. In particular, $f$ has the same accuracy and also the same robustness to adversarial attacks as $g$. We illustrate this empirically by \textbf{training a \LipCl network until it reaches 99.96\% accuracy on CIFAR-100 with random labels} (see Appendix~\ref{section:cifar100_random}).  
+
+% Our goal is to demonstrate that, despite being  empirically  harder  to  train, \LipCl networks are theoretically better grounded than \LipInf networks when it comes to classification. 
+
+We demonstrate that \LipCl networks are theoretically better grounded than \LipInf networks when it comes to classification, through our threefold contribution on Expressiveness (Section~\ref{sec:classificationpower}), Robustness (Section~\ref{sec:robustness}) and Generalization (Section~\ref{sec:generalize}).  
+
+\textbf{First, in Section~\ref{sec:classificationpower}}  we confirm that \LipCl are as expressive as \LipInf networks for classification, and can learn arbitrary complex decision boundary. We show that hyper-parameters of the loss are of crucial importance, and control the ability to fit properly the train set.  
+  
+%\vspace{-0.5cm}
+\textbf{Then, in Section~\ref{sec:robustness}} we show that accuracy and robustness are often antipodal objectives. We characterize the robustness of the highest accuracy \LipCl classifier: it is achieved by the Signed Distance Function~(Definition~\ref{def:nlctwoclasses} in Appendix \ref{app:classificationpower}). We also characterize the classifier of highest certifiable robustness, and we show it corresponds to the dual potential of Wasserstein-1 distance (i.e the discriminator of a WGAN~\cite{arjovsky2017wasserstein}).  % Interestingly, combining Wasserstein objective with hinge regularization yields the Hinge-Kantorovich-Rubinstein (HKR) loss based on optimal transport, that maximizes robustness certificates for a targeted accuracy.  
+  
+%\vspace{-0.5cm}  
+\textbf{Finally, in Section~\ref{sec:generalize}} we show that \LipCl benefit from several generalization guarantees. They are consistent estimators: contrary to \LipInf, we prove that their train loss will converge to test loss as the size of the train set increases. Moreover, we show that \LipCl classifiers with margin are PAC-learnable~\cite{valiant1984theory}: it provides bounds on the number of train examples required to reach a targeted test accuracy. Interestingly, this bound is independent of the architecture size, which allows to train enormous \LipCl networks without risking overfitting.  
+
+% We show in all three sections that tuning of losses hyper-parameters is crucial to control the tradeoff between train accuracy, certifiable robustness, and generalization gap. 
+
+% This raises a new question: if constraining the Lipschitz constant does not prevent high accuracy, why is it difficult to train these \LipCl networks?
+  
+% We answer the question through the prism of the loss function.  We outline that the minimization of the popular cross-entropy (as it is done frequently in classification) is an ill posed problem for \LipInf networks that may lead to catastrophic divergence of the weights, whereas it is well posed for networks of \LipCl networks but fails to yield good test accuracy.
+  
+% The second contribution of the paper is to explore the statistical and optimization properties of \LipCl networks and to prove the assumption of~\cite{gouk2021regularisation} that ``adjusting the Lipschitz constant of a feed-forward neural network controls how well the model will generalise to new data''. 
+
+
+% The main contributions of the paper are to propose a general view of the multiple interest of \LipCl in classification, gathering known results, and demonstrating new ones. The first section is devoted to the related work. Then we show the caveat of softmax-cross-entropy for training neural networks: even on toy examples, networks of \LipInf can diverge during training whereas networks of \LipCl severely underfit. In the third section, we show that networks of \LipCl can nonetheless fit arbitrary complex decision frontiers, and we outline the disturbing links between certifiable robustness and optimal transport.
+  
+% Each premise come in three part: a theorem, an illustrative example and an experiment that shows practical implications. % All proofs in appendix are original work; for other results appropriate credit is given.  
+  
+% \begin{figure}[t]
+% % \begin{subfigure}[b]{0.48\textwidth}
+% %     \includegraphics[width=\textwidth]{images/groundtruth.png}
+% %     \caption{SDF (see Proposition~\ref{thm:lippowerbinary}) in the case $\Xsub\subset\Reals^2$. The frontier $\delta$ is defined by the fourth iteration of Von Koch Snowflake: highly complex and irregular. The support of class $-1$ is the interior ring, while the center and the exterior corresponds to class $+1$. }
+% %     \label{fig:groundtruth}
+% %   \end{subfigure}
+%   \begin{subfigure}[b]{0.48\textwidth}\label{fig:signeddistancefunction}
+%     \includegraphics[width=\textwidth]{images/vonkoch.png}
+%     \caption{Level sets of \LipCl network trained with MSE to fit the discretized ground truth (160 000 pixels). The green strip corresponds to $|f(x)|\leq 0.5$. With a MAE inferior to 1 the function learned is barely distinguishable from its ground truth.}
+%     \label{fig:sdf}
+%   \end{subfigure}
+%   \hspace{0.04\textwidth}
+%   \caption{}
+% \end{figure}  

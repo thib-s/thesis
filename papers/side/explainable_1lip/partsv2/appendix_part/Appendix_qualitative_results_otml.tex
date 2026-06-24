@@ -1,0 +1,34 @@
+In this section, we provide more samples of  qualitative results and couterfactual exlanations for \otnn, based on the gradient, i.e. $\x-t*\hat{f}(\x)\nabla_x \hat{f}(\x)$ for $t>1$.
+\subsubsection{FashionMNIST}
+Fig.~\ref{fig:fashion_otnn_2} gives more results on FashionMNIST.
+
+
+%\textit{Bald},\textit{Black\_Hair}, \textit{Blond\_Hair}, \textit{Blurry}, \textit{Brown\_Hair}, \textit{Eyeglasses}, \textit{Gray\_Hair}, \textit{Heavy\_Makeup}, \textit{Mouth\_Slightly\_Open}, \textit{Mustache}, \textit{Receding\_Hairline}, \textit{Rosy\_Cheeks}, \textit{Sideburns}, \textit{Smiling}, \textit{Wearing\_Earrings}, \textit{Wearing\_Hat}, \textit{Wearing\_Lipstick}, \textit{Wearing\_Necktie}, \textit{Young}. 
+
+
+%The first three sub sections give more results on the same three CelebA labels as in the core of the paper.   
+%\textbf{CelebA counterfcatual explanations:} %Using the learnt \otnn~on multilabels, according to Thm.~\ref{}, we build for random samples images in direction of the transport plan $x-tf(x)\nable_x f(x)$ adapting $t$ to limit the saturation artefacts.  
+%\subsubsection{Fashion MNIST}
+\begin{figure}[h]
+  \centering
+\begin{tabular}{ccc}
+\multicolumn{3}{c}{\includegraphics[width=1.0\linewidth]{img/fashion-otnn.pdf}}\\
+  \multicolumn{3}{c}{\includegraphics[width=0.98\linewidth]{img/fashion_otnn_2.pdf}}
+\end{tabular}
+  \caption{FashionMNIST samples}
+\label{fig:fashion_otnn_2}
+\end{figure}  
+%\subsubsection{CelebA: Mouth Slightly Open}
+
+
+\subsubsection{CelebA}
+We presents results for other labels of CelebA. For ethic concerns we have hidden labels that can be subject to misinterpretation, such as \textit{Attractive}, \textit{Male}, \textit{Big\_Nose}.
+Fig.~\ref{fig:celebA_mouth} to \ref{fig:celebA_young} present more results on the labels presented in the core of the paper, \textit{Mouth\_Slightly\_Open}, \textit{Mustache},\textit{Wearing\_Hat}.
+\input{partsv2/appendix_part/counter_celeba}
+
+\subsubsection{Cat vs Dog}
+We present some supplementary comparison of Saliency Maps and counterfactual examples for cat vs dog(Fig.~\ref{fig:cat_vs_dog_saliency} and \ref{fig:cat_vs_dog_counter}).
+\input{partsv2/appendix_part/cat_vs_dog_qualitative}
+\subsubsection{Imagenet}
+We present some supplementary comparison of Saliency Maps Imagenet (Fig.~\ref{fig:imagenet_saliency}). As pointed out previously, our model doesn't produce significant counterfacutal explanations on Imagenet.
+\input{partsv2/appendix_part/imagenet_qualitative}

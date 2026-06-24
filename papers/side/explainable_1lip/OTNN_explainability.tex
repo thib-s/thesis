@@ -1,0 +1,258 @@
+\documentclass{article}
+
+
+% if you need to pass options to natbib, use, e.g.:
+%     \PassOptionsToPackage{numbers, compress}{natbib}
+% before loading neurips_2022
+\PassOptionsToPackage{numbers, compress}{natbib}
+
+% ready for submission
+\usepackage[final]{neurips_2023}
+
+
+% to compile a preprint version, e.g., for submission to arXiv, add add the
+%[preprint] option:
+%\usepackage[preprint]{neurips_2022}
+
+
+% to compile a camera-ready version, add the [final] option, e.g.:
+%     \usepackage[final]{neurips_2022}
+
+
+% to avoid loading the natbib package, add option nonatbib:
+%    \usepackage[nonatbib]{neurips_2022}
+
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}% hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+%\usepackage{xcolor}         % colors
+\usepackage{bbold}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{bm}
+
+%\usepackage{unicode-math}
+\usepackage{bbm}
+\usepackage[normalem]{ulem}
+%\usepackage{sout}
+\usepackage{multirow}
+
+\usepackage{cleveref}
+\usepackage[table,xcdraw]{xcolor}
+\newcommand{\Deellip}{
+    \textit{DEEL.LIP}\footnote{\url{https://github.com/deel-ai/deel-lip} distributed under MIT License (MIT)}
+}
+
+\usepackage{graphicx}
+%\usepackage{xcolor}
+
+\newcommand{\W}{\mathcal{W}}
+\newcommand{\x}{\bm{x}}
+\newcommand{\X}{X}
+\newcommand{\Y}{Y}
+\newcommand{\y}{y}
+\newcommand{\z}{\bm{z}}
+\newcommand{\f}{\bm{f}}
+\newcommand{\tr}{\bm{\gamma}}
+
+\newcommand{\inp}{\mathcal{X}}
+\newcommand{\boundary}{\partial \inp}
+
+% probability distributions
+%\newcommand{\dpos}{\mathcal{P}}
+%\newcommand{\dneg}{\mathcal{Q}}
+\newcommand{\dpos}{\mu}
+\newcommand{\dneg}{\nu}
+\newcommand{\dx}{P_{\x}}
+\newcommand{\dy}{P_{\y}}
+\newcommand{\djoint}{P}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\sign}{sign}
+
+\newcommand{\commentgreen}[1]{
+    \textcolor{green}{ #1 }
+}
+\newcommand{\commentblue}[1]{
+    \textcolor{blue}{Mathieu : #1 }
+}
+
+\definecolor{greenish}{RGB}{55, 157, 143}
+\newcommand{\fel}[1]{{\color{greenish}[fel]: #1}}
+\newcommand{\mathieu}[1]{{\color{blue}[Mathieu]: #1}}
+\newcommand{\losshkr}{$\mathcal{L}^{hKR}_{\lambda,m}$}
+\newcommand{\lossreg}{$\mathcal{L}^{hKR}_{\lambda,\alpha}$}
+
+\newcommand{\onlyonelip}{1-Lipschitz}
+\newcommand{\otnn}{OTNN}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+
+\newcommand{\BlackBox}{\rule{1.5ex}{1.5ex}}  % end of proof
+\newenvironment{proof}{\par\noindent{\bf Proof\ }}{\hfill\BlackBox\\[2mm]}
+
+%\newcommand{\fel}[1]{{\color{purple}[fel]: #1}} 
+\newcommand{\louis}[1]{\textcolor{green}{#1}}
+
+
+\newcommand{\AddAnnex}{0}
+
+%\title{Optimal transport, robustness and explainability for classification}
+\title{On the explainable properties of 1-Lipschitz Neural Networks: An Optimal Transport Perspective}
+%\title{An Optimal Transport Perspective on the Explainable Properties of 1-Lipschitz Networks}
+%\title{On the explainable properties of 1-Lipschitz Neural Networks: An Optimal Transport Perspective}
+
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to LaTeX to determine where to break the
+% lines. Using \AND forces a line break at that point. So, if LaTeX puts 3 of 4
+% authors names on the first line, and the last on the second line, try using
+% \AND instead of \And before the third author name.
+
+\author{
+Mathieu Serrurier$^1$ \And Franck Mamalet$^2$ \And Thomas Fel$^{3,4}$ \And Louis Béthune$^1$ \And Thibaut Boissin$^2$\\
+\\
+$^1$Université Paul-Sabatier, IRIT, Toulouse, France\\
+$^2$Institut de Recherche Technologique Saint-Exupéry, Toulouse, France\\
+$^3$Carney Institute for Brain Science,Brown University, USA \\
+$^4$Innovation \& Research Division, SNCF, France
+}
+
+%\author{
+%Mathieu Serrurier\\
+%Université Paul-Sabatier, IRIT\\
+%Toulouse, France
+%\And Franck Mamalet\\
+%IRT Saint-Exupéry\\
+%Toulouse, France
+%\And Thomas Fel\\
+%Carney Institute for Brain Science, \\ Brown University, USA \\
+%Brown University\\
+%\And Louis Béthune\\
+%Université Paul-Sabatier, IRIT\\
+%Toulouse, France
+%\And Thibaut Boissin, \\
+%IRT Saint-Exupéry\\
+%Toulouse, France
+%}
+
+%  Mathieu Serrurier. \\
+%  IRIT\\
+%  \texttt{mathieu.serrurier@irit.fr} \\
+  % examples of more authors
+%  \And%
+%  .... \\
+%  \\
+%  \texttt{.@..fr} \\
+  % Coauthor \\
+  % Affiliation \\
+  % Address \\
+  % \texttt{email} \\
+  % \AND
+  % Coauthor \\
+  % Affiliation \\
+  % Address \\
+  % \texttt{email} \\
+  % \And
+  % Coauthor \\
+  % Affiliation \\
+  % Address \\
+  % \texttt{email} \\
+  % \And
+  % Coauthor \\
+  % Affiliation \\
+  % Address \\
+  % \texttt{email} \\
+
+
+
+\begin{document}
+
+
+\maketitle
+
+
+\begin{abstract}
+%Since \commentgreen{for classical neural networks}, the gradients of input features form the basis of most adversarial attack algorithms, Saliency Maps, which represent these gradients, \commentgreen{are noisy and } typically do not offer significant insights for Explainable AI (XAI). 
+%In this paper, we demonstrate that while learning a 1-Lipschitz neural network with the dual loss of an optimal transportation problem, the vanilla Saliency Map of these models exhibits desirable XAI properties. 
+%Moreover, they also exhibit remarkably high alignment with human explanations on ImageNet.
+%These modifications are encoded by the Saliency Map. 
+
+
+
+Input gradients have a pivotal role in a variety of applications, including adversarial attack algorithms for evaluating model robustness, explainable AI techniques for generating Saliency Maps, and counterfactual explanations.
+However, Saliency Maps generated by traditional neural networks are often noisy and provide limited insights. 
+In this paper, we demonstrate that, on the contrary, the Saliency Maps of 1-Lipschitz neural networks, learned with the dual loss of an optimal transportation problem, exhibit desirable XAI properties:
+They are highly concentrated on the essential parts of the image with low noise, significantly outperforming state-of-the-art explanation approaches across various models and metrics. 
+We also prove that these maps align unprecedentedly well with human explanations on ImageNet.
+To explain the particularly beneficial properties of the Saliency Map for such models, we prove this gradient encodes both the direction of the transportation plan and the direction towards the nearest adversarial attack. Following the gradient down to the decision boundary is no longer considered an adversarial attack, but rather a counterfactual explanation that explicitly transports the input from one class to another. 
+Thus, Learning with such a loss jointly optimizes the classification objective and the alignment of the gradient, i.e. the Saliency Map, to the transportation plan direction.
+These networks were previously known to be certifiably robust by design, and we demonstrate that they scale well for large problems and models, and are tailored for explainability using a fast and straightforward method.
+
+
+%In this paper, we demonstrate that while learning a 1-Lipschitz neural network with the dual loss of an optimal transportation problem, the model's gradient serves as both the direction of the transportation plan and the direction to the nearest adversarial attack. Following the gradient to the decision boundary is no longer considered an adversarial attack, but rather a counterfactual explanation that explicitly transports the input from one class to another. We conducted extensive experiments on XAI metrics and found that the simple Saliency Map method, when applied to such networks, is either equivalent or superior to more complex XAI methods. Moreover, our method outperforms the state-of-the-art explanation approaches on all types of models, exhibiting remarkable higher alignment to human explanations on imagenet. Our proposed networks were previously known to be certifiably robust by design, and we prove that they are tailored for explainability. using a fast and straightforward method. \commentblue{Ajouter qu'on est le premier en 1-Lip sur de grand réseaux ?}
+
+\end{abstract}
+
+
+\section{Introduction}
+\label{sec:introduction}
+\input{partsv2/introductionv2}
+
+
+\section{Related work}
+\label{sec:related_work}
+\input{partsv2/related_workv2}
+
+
+\section{Theoretical properties of OTNN gradient}
+\label{sec:ot_rob_explain}
+\input{partsv2/transport_robustnessv2}
+
+%\section{Multiclass loss}
+%\input{partsv2/multiclass}
+\section{Experiments}
+\label{sec:experiments}
+
+\input{partsv2/experimentsv2}
+
+\section{Conclusions and broader impact}
+\input{partsv2/conclusionv2}
+
+
+\begin{ack}
+This work has benefited from the AI Interdisciplinary Institute ANITI, which is funded by the French ``Investing for the Future – PIA3'' program under the Grant agreement ANR-19-P3IA-0004. The authors gratefully acknowledge the support of the DEEL project.\footnote{\url{https://www.deel.ai/}}
+\end{ack}
+
+\bibliographystyle{abbrv} %plainnat
+\bibliography{hkr_explainability}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%s
+
+%\newpage
+%\input{parts/checklist}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+
+\appendix
+
+\section{Appendix}
+\input{partsv2/appendixv2}
+
+
+\end{document}

@@ -1,0 +1,135 @@
+%%%%%%%% ICML 2025 EXAMPLE LATEX SUBMISSION FILE %%%%%%%%%%%%%%%%%
+
+\documentclass{article}
+
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{pifont}
+\usepackage{multirow}
+\usepackage{booktabs} 
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{dsfont}
+
+% hyperref makes hyperlinks in the resulting PDF.
+% If your build breaks (sometimes temporarily if a hyperlink spans a page)
+% please comment out the following usepackage line and replace
+% \usepackage{icml2025} with \usepackage[nohyperref]{icml2025} above.
+\usepackage{hyperref}
+\usepackage{enumitem} 
+\usepackage[capitalize,noabbrev]{cleveref}
+
+\newcommand{\theHalgorithm}{\arabic{algorithm}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% THEOREMS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% Use the following line for the initial blind version submitted for review:
+\usepackage[accepted]{icml2025}
+
+\usepackage[textsize=tiny]{todonotes}
+\usepackage{xcolor}
+
+\input{preamble}
+
+\usepackage{tabularx}
+\usepackage{caption}
+\usepackage{siunitx} 
+\usepackage[font=small]{caption}
+
+% \everypar{\looseness=-5}
+% \setlength{\parskip}{4pt}
+% \setlength{\partopsep}{0pt}
+% \captionsetup[figure]{skip=10pt} % Default is 10pt
+% \usepackage{float} % For placement control
+% \setlength{\textfloatsep}{5pt}  % Space between floats and text
+% \setlength{\intextsep}{5pt}     % Space around in-text floats
+% % Adjust spacing with "titlespacing":
+% % \titlespacing{\section}{0pt}{6pt}{3pt}    % {left}{before}{after}[right]
+% % \titlespacing{\subsection}{0pt}{4pt}{2pt}
+% % \titlespacing{\paragraph}{0pt}{3pt}{1pt} % For \paragraph headings
+% \setlength{\abovedisplayskip}{5pt} % Default is ~10pt
+% \setlength{\belowdisplayskip}{5pt}
+% \setlength{\abovedisplayshortskip}{0pt} % For short lines before equations
+
+% The \icmltitle you define below is probably too long as a header.
+% Therefore, a short form for the running title is supplied here:
+
+\icmltitlerunning{Efficient Robust Conformal Prediction via Lipschitz-Bounded Networks}
+
+\begin{document}
+
+\twocolumn[
+\icmltitle{Efficient Robust Conformal Prediction via Lipschitz-Bounded Networks}
+
+\icmlsetsymbol{equal}{*}
+
+\begin{icmlauthorlist}
+\icmlauthor{Thomas Massena}{equal,irit,sncf}
+\icmlauthor{L\'eo And\'eol}{equal,imt,sncf}
+\icmlauthor{Thibaut Boissin}{irt}
+\icmlauthor{Franck Mamalet}{irt}
+\icmlauthor{Corentin Friedrich}{irt}
+\icmlauthor{Mathieu Serrurier}{irit}
+\icmlauthor{S\'ebastien Gerchinovitz}{irt,imt}
+\end{icmlauthorlist}
+
+\icmlaffiliation{irit}{IRIT}
+\icmlaffiliation{sncf}{SNCF}
+\icmlaffiliation{imt}{Institut de Mathématiques de Toulouse}
+\icmlaffiliation{irt}{IRT Saint Exupery}
+
+\icmlcorrespondingauthor{Thomas Massena}{thomas.massena@irit.fr}
+
+% You may provide any keywords that you
+% find helpful for describing your paper; these are used to populate
+% the "keywords" metadata in the PDF but will not be shown in the document
+\icmlkeywords{Conformal Prediction, Robustness, Lipschitz networks}
+
+\vskip 0.3in
+]
+
+% this must go after the closing bracket ] following \twocolumn[ ...
+
+% This command actually creates the footnote in the first column
+% listing the affiliations and the copyright notice.
+% The command takes one argument, which is text to display at the start of the footnote.
+% The \icmlEqualContribution command is standard text for equal contribution.
+% Remove it (just {}) if you do not need this facility.
+
+%\printAffiliationsAndNotice{}  % leave blank if no need to mention equal contribution
+\printAffiliationsAndNotice{\icmlEqualContribution} % otherwise use the standard text.
+
+\input{0_abstract}
+\input{1_intro}
+\input{2_background}
+\input{3_vanillacoverage}
+\input{4_robustpredsets}
+\input{5_results}
+\input{6_conclusion}
+\input{impact_statement}
+
+\bibliography{biblio}
+\bibliographystyle{icml2025}
+
+\appendix
+\onecolumn
+
+\input{X_suppl}
+
+\end{document}

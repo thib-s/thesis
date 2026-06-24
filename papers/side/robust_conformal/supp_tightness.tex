@@ -1,0 +1,28 @@
+To estimate how tight our score estimations are we evaluate all our methods on the same model. We train a VGG-like 1-LipNet with 10.7M parameters from \citet{boissin2025adaptiveorthogonalconvolutionscheme} on CIFAR-10. Then, we evaluate robust CP methods (average across 10 runs).
+
+\begin{table}[h!]
+  \centering
+  \sisetup{
+    detect-weight = true,
+    detect-family = true,
+    table-number-alignment = center
+  }
+  \begin{tabular}{
+    l
+    S[table-format=2.2]
+    S[table-format=1.3]
+    S[table-format=4.0]
+  }
+    \toprule
+    \textbf{Method}                & {\textbf{Coverage (\%)}} & {\textbf{Set size}} & {\textbf{Runtime (s)}} \\
+    \midrule
+    \emph{CAS} \(n_{\mathrm{mc}}=1024\)   & 94.60                    & 2.302               & 2615                  \\
+    \emph{lip-rcp}                        & 92.83                    & 1.889               &   10                  \\
+    \emph{VRCP-I/C} (CROWN)               & {OOM}                    & {OOM}               & {N/A}                 \\
+    \bottomrule
+  \end{tabular}
+  \caption{Average robust CP coverage, set size, and runtime (per run) with \(\epsilon=0.03\) across 10 runs.}
+  \label{tab:robust_cp_performance}
+\end{table}
+
+CROWN does not scale to such a deep network due to its inner complexity. Additionally, given the cost of the CAS method, we did not tune the $\sigma$ smoothing hyperparameter set it to $\sigma = 2.\epsilon$ as recommended in previous works \cite{rscp_plus}. Optimizing this hyperparameter could lead to better results as obtained in \cite{bincp}.

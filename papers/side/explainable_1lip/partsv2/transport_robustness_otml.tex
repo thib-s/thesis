@@ -1,0 +1,71 @@
+In this section, we extend the properties of the \otnn s~to the explainability framework, all the proofs are in the appendix~A.1. We note $\pi$ the optimal transport plan corresponding to the minimizer of \losshkr. In the most general setting, $\pi$ is a joint distribution over $\dpos,\dneg$ pairs. However when $\dpos$ and $\dneg$ admit a density function~\cite{peyre2018computational} with respect to Lebesgue measure, then the joint density describes a deterministic mapping, i.e. a Monge map. Given $\x \sim \dpos$ %\fel{check here, belong to with proba distrib. (sugg: $\x \sim \dpos$)} 
+(resp. $\dneg$) we note $\z = \tr_\pi(\x) \in \dneg$ (resp. $\dpos$) the image of $\x$ with respect to $\pi$. When $\pi$ is not deterministic (on real datasets that are defined as a discrete collection of Diracs), we take $\tr_\pi(\x)$ as the point of maximal mass with respect to $\pi$.%\mathieu{Eventuellement utiliser que le transport est point par point si les distrib admettent une pdf}
+
+% \fel{$\x \sim \dpos$ est correct, mais pas $\x \in \dpos$ (P+ avant) il faut qu'on reformule (meme si je comprend ce que tu veux dire). Je propose un truc du style $\sign(\f(\x)) \neq \sign(\f(\tr(\x))$?}. \commentgreen{y etait le label ds la section precedente, peut etre z. et tr n'est pas definit avant}% retirer ?
+
+\begin{proposition}[Transportation plan direction]\label{th:gradient_transport_plan}
+Let $\f^*$ an optimal solution minimizing the \losshkr. Given $\x \sim \dpos$ (resp. $\dneg$)  and  $\z = \tr_\pi(\x)$, then $\exists t \geq 0$ (resp. $t \leq 0$) such that $\tr_\pi(\x) = \x  -t \nabla_{\x}  \f^*(\x)$ almost surely. 
+\end{proposition}
+
+This proposition also holds for the Kantorovich-Rubinstein dual problem without hinge regularization, demonstrating that for $\x \sim \djoint$,
+%\fel{union of proba distrib is not correct. I have properly defined $\dx$ at the beginning, I suggest $\x \sim \dx$ and $(\x,\y) \sim \djoint$ for the joint ? }
+ the gradient $\nabla_{\x} \f^{*}(\x)$ indicates the direction in the transportation plan almost surely.
+
+\begin{proposition}[Decision boundary]\label{boundary_distance}
+Let $\dpos$ and $\dneg$ two distributions with disjoint supports with minimal distance~$\epsilon$ and  $\f^*$ an optimal solution minimizing the \losshkr~with $m<2\epsilon$. Given $\x \sim \djoint$, %\fel{belong to with proba distrib is not correct, c'est plutot $\x \sim \dx$? (et union non plus) mais j'ai définis $\dx$ que tu peut utiliser}, 
+$\x_\delta = \x -\f^*(\x) \nabla_{\x} \f^*(\x) \in \boundary $
+where $\boundary = \left\{\x' \in \inp | \f^*(\x') = 0 \right\}$  is the decision boundary (i.e. the 0 level set of $\f^*$).
+\end{proposition}
+
+ Experiments suggest this probably remains true when the supports of $\dpos$ and $\dneg$  are not disjoint. % \fel{again check here with separability}.
+%, but we haven't proven it yet.\commentgreen{Je le mettrai plus positif dans l'autre sens: We will show in the experiments that this property remains true even when $P_+$ and $P_-$  are not separable.}
+%\commentgreen{As said before, tu l'as déjà dit}, For any \onlyonelip~binary classifier $f$, \commentgreen{ a direct consequence of the Lipschitz property is that $|f(\x)|$ provides an upper bounf of the robustness certificate.} \sout{it is well known that the robustness certificate is higher than $|f(\x)|$ due to the Lipschitz property.}
+Prop.~\ref{boundary_distance} proves that for an \otnn~ $\f$ learnt by minimizing  the \losshkr, $|\f(\x)|$ provides a tight robustness certificate. A direct consequence of~\ref{boundary_distance}, is  that $t$ defined in~\ref{th:gradient_transport_plan} is such that $|t|\geq|\f^*(\x)|$.
+
+\begin{corollary}\label{fx_grad_adversarial}
+Let $\dpos$ and $\dneg$ two separable distributions with minimal distance $\epsilon$ and  $\f^*$ an optimal solution minimizing the \losshkr~with $m<2\epsilon$, given $\x \sim \djoint$,  %\fel{$\x \sim \dx$}, 
+$adv(\f^*,\x) = \x_{\delta}$ % = x-|f^*(x)|\nabla_x f^*(\x)$$ 
+almost surely, where $\x_\delta = \x -\f^*(\x) \nabla_{\x} \f^*(\x)$ .
+\end{corollary}
+
+This corollary shows that adversarial examples are precisely identified for the classifier based on \losshkr: the direction given by $\nabla_{\x} \f^*(\x)$ and distance by $|\f^*(\x)|*||\nabla_{\x} \f^*(\x)||=|\f^*(\x)|$. In this scenario, the optimal adversarial attacks align with the gradient direction (i.e., FGSM attack \cite{Goodfellow2014a}). This supports the observations made in \cite{serrurier2021achieving}, where all attacks, such as PGD \cite{Madry2017} or Carlini and Wagner \cite{carlini2017towards}, applied on an \otnn~model, were equivalent to FGSM attacks.
+
+To illustrate these propositions, we learnt a dense binary classifier with \losshkr~to separate two complex distributions, following two concentric Koch snowflakes. Fig.\ref{fig:koch}-a shows the two distributions (blue and orange snowflakes), the learnt boundary ($0$-levelset) (red dashed line). Fig.\ref{fig:koch}-{b,c} show for random samples $\x$ from the two distributions, the segments $[\x,\x_\delta]$ where $\x_\delta$ is defined in Prop.~\ref{boundary_distance} . %\sout{As expected by theorems \ref{th:gradient_transport_plan} and \ref{boundary_distance} since the attacks in the direction of the gradient follow the transport plan path and falls exactly on the decision boundary.}
+As expected by Prop.~\ref{boundary_distance},  $\x_\delta$ points fall exactly on the decision boundary. Besides, as stated in Prop.~\ref{th:gradient_transport_plan} each segment provides the direction of the image with respect to the transport plan.
+
+Finally, we showed that with \otnn, adversarial attacks are formally known and simple to compute.
+%, but also corresponding to travel along a transportation map from a class to its other one. Intuitively,it means that it is not \commentgreen{
+%Furthermore, since we proved that these attacks are along the transportation map, they are no more an imperceptible modification but an understandable transformation of the example.
+Furthermore, since we proved that these attacks are along the transportation map, they acquire a meaningful interpretation and are no longer mere adversarial examples exploiting local noise, but rather correspond to the global solution of a transportation problem.
+\section{Link between OTNN gradient and counterfactual explanations}
+
+The vulnerability of traditional networks to adversarial attacks indicates that their decision boundaries are locally flawed, deviating significantly from the Bayesian boundaries between classes. Since the gradient directs towards this anomalous boundary, Saliency Maps~\cite{SimonyanVZ13}, given by $ \bm{g}(\x) = | \nabla_{\x} \f(\x) | $ fails to represent a meaningful transition between classes and then often lead to noisy explanation (as stated in Section~\ref{sec:related_work}).
+
+On the contrary, in the experiments, we will demonstrate that OTNN gradients induce meaningful explanations (Sec.~\ref{sec:experiments}). We justify these good properties by building a  link with counterfactual explanations. Indeed, according to~\cite{black19OptimTransp,deLara2021}, optimal transport plans are potential surrogates or even substitutes to causal counterfactuals.  Optimal Transport plan provides for any sample $\x \in \dpos$ a sample $\tr_\pi(\x)\in  \dneg$, the closest in average on the pairing process. ~\cite{deLara2021} prove that these optimal transport plans can even coincide with causal counterfactuals when available.
+Relying on this definition of OT counterfactual, Prop.~\ref{th:gradient_transport_plan} demonstrates that 
+gradients 
+%$\nabla_{\x}  \f^*(\x)$
+ of the optimal OTNN solution 
+%\otnn s~gradients  $\nabla_{\x}  \f^*(\x)$ 
+provide almost surely the direction to the counterfactual $\tr_\pi(\x) = \x-t\nabla_{\x} \f^*(\x)$. Even if $t$ is only partially known, using $t = \f^*(\x)$, we know that $\x_\delta$ is on the decision boundary (Corr.~\ref{fx_grad_adversarial}) and is both an adversarial attack and a counterfactual explanation and $|t|\geq |\f^*(\x)|$ is on the path to the other distribution.
+%optimal transport plan.
+\\
+Thus the learning process of  \otnn s~induces a strong constraint on the gradients of the neural network, aligning them to the optimal transport plan. We claim that is the reason why the simple Saliency Maps for \otnn s~have very good properties: We will demonstrate in the Sec~\ref{sec:experiments} that, for the Saliency Map explanations: (\textbf{\textit{i}}) metrics scores are higher  or comparable to other explanation methods (which is not the case for unconstrained networks), thus it has higher ranks; (\textbf{\textit{ii}}) distance to other attribution methods such as Smoothgrad is imperceptible; (\textbf{\textit{iii}})
+scores obtained on metrics that can be compared between networks are higher than those obtained with unconstrained networks; (\textbf{\textit{iv}}) alignment with human explanations is impressive.
+
+%\sout{
+%In the following, we will take advantage of these properties to show that 
+%$\nabla_{\x} \f^*(\x)$ provides a natural counterfactual explanation with provable explainability properties.
+%}
+
+\begin{figure*}
+\centering
+\includegraphics[width=.9\textwidth]{img/koch_v4.pdf}
+\caption{Level sets of an \otnn~classifier $\f$ for two concentric Koch snowflakes (a).  The decision boundary (denoted $\boundary$, also called the 0-level set) is the red dashed line. Figure (b) (resp. (c)) represents 
+the translation of the form $\x'= \x-\f(\x)\nabla_{\x} \f(\x)$  of each point $\x$ of the first class (resp second class). 
+$[\x,\x']$ pairs are represented by blue (resp. orange)  segments.}
+\label{fig:koch}
+\end{figure*}
+
+
+

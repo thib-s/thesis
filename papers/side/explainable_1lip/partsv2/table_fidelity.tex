@@ -1,0 +1,75 @@
+\begin{table*}[t]
+    \centering
+    \scalebox{0.87}{
+        \begin{tabular}{l C{0mm} P{0mm} P{5mm}P{5mm}P{5mm}P{5mm}P{5mm} P{1mm} P{5mm}P{5mm}P{9mm}P{5mm}P{5mm} P{1mm} P{5mm}P{5mm}P{5mm}P{5mm}P{5mm}}
+        \toprule
+        &&& \multicolumn{5}{c}{MNIST} &&  \multicolumn{5}{c}{Cifar-10} &&  \multicolumn{5}{c}{ImageNet}  \\
+        \cmidrule(lr){4-8} \cmidrule(lr){10-14} \cmidrule(lr){16-20}
+        
+        &&& Del.$\downarrow$ & Ins.$\uparrow$ & Fid.$\uparrow$ & Rob.$\downarrow$ & Time 
+        && Del.$\downarrow$ & Ins.$\uparrow$ & Fid.$\uparrow$ & Rob.$\downarrow$ & Time 
+        && Del.$\downarrow$ & Ins.$\uparrow$ & Fid.$\uparrow$ & Rob.$\downarrow$ & Time
+        \\
+        
+        \midrule
+        Saliency\cite{simonyan2013deep} &   && .193 & \underline{.633} & \underline{.378} & .071 & 0.04
+                 && \underline{.171} & .172 & -.021 & .026 & 0.16
+                 && \underline{.057} & .126 & .035 & .769 & 0.36 \\
+        GradInput\cite{ancona2017better} &   && .222 & .611 & .107 & .074 & 0.04 
+                 && .200 & .143 & -.018 & .095 & 0.17
+                 && \underline{.057} & .050 & .023 & .814 & 0.36  \\
+        SmoothGrad\cite{smilkov2017smoothgrad} &   && .185 & .621 & .331  & .070 & 1.91
+                 && .174 & .181 & .092 & .048 & 9.07
+                 && \textbf{.051} & .069 & .019 & .809 & 9.63 \\
+        VarGrad\cite{seo2018noise} &   && .207   & .555   & .216   & .077   & 1.76 
+                 && .183 & .211 & -.012 & .193 & 9.07
+                 && .098 & .201 & .021 & .787 &  9.62 \\
+        InteGrad\cite{sundararajan2017axiomatic} &   && .209 & .615 & .108 & .074 & 1.77
+                 && .194 & .171 & -.016 & .154 & 7.19
+                 && .058 & .052 & .023 & .813 & 8.39 \\
+        Occlusion\cite{ancona2017better} &   && .247  & .545  & .137  & .082  & 0.04 
+                 && .217 & \underline{.290} & .105 & .232 & 1.13
+                 && .100 & .266 & .026 & .821 & 4.97 \\
+        GradCAM\cite{Selvaraju_2019} &   && n/a &  n/a  &  n/a  &  n/a  &  n/a  
+                 && .297 & .282 & .056 & .195 & 0.39
+                 && .073 & .232 & .036 & .817 & 0.18 \\
+        GradCAM++\cite{chattopadhay2018grad} &   && n/a  & n/a & n/a & n/a & n/a
+                 && .270 & \textbf{.326} & .102 & .094 & 0.39
+                 && .074 & \underline{.285} & \underline{.054} & .800 & 0.19 \\
+        RISE\cite{petsiuk2018rise}     &   && .248  & .558 & .133  & .093  & 2.26 
+                 && .196 & .273  & \underline{.157} & .385 & 20.5
+                 && .074 & .276 & \textbf{.154} & .818 & 1215 \\
+        Greedy-AS\cite{hsieh2020evaluations} &   && .260  & .497  & .110  & \textbf{.061}  & 335
+                 && .205 & .264 & -.003 & \textbf{.013} & 4618
+                 && .088 & .047 & .023 & \textbf{.612} & 180056  \\
+        \midrule 
+        %Greedy-AO && .237 & .572 & .244 & \underline{.063} & 290
+        %         && \textbf{.162} & .283 & .041 & .024 & 2874
+        %         && .086 & .050 & .023 & \underline{.752} & 26762 \\
+        %\evaEmp  && \underline{.101} & .621 & \underline{.378} & .067 & 14.4 
+        %         && .184 & .270 & \textbf{.397} & \underline{.022} & 186.6
+        %         && \multirow{ 2}{*}{.070} & \multirow{ 2}{*}{\textbf{.289}} & \multirow{ 2}{*}{.048} & \multirow{ 2}{*}{.758} & \multirow{ 2}{*}{6454} \\ 
+        %\eva     && \textbf{.089} & \textbf{.736} & \textbf{.428} & .069 & 1.29 
+        %         && \underline{.164} & \underline{.290} & \underline{.352} & .025 & 12.7 \\
+                 %&& .070 & \textbf{.289} & \underline{.048} & \underline{.758} &  \\
+        \textbf{\eva}~(ours)     & && \textbf{.089} & \textbf{.736} & \textbf{.428} & \underline{.069} & 1.29 
+                 && \textbf{.164} & \underline{.290} & \textbf{.352} & \underline{.025} & 12.7 
+                 && .070 & \textbf{.289} & .048 & \underline{.758} & 6454
+                 \\
+        
+        \bottomrule \\
+        \end{tabular}
+    }
+    \caption{Results on Deletion (Del.), Insertion (Ins.), $\mu$Fidelity (Fid.) and \rsr~ (Rob.) metrics. 
+Time in seconds corresponds to the generation of 500 (MNIST/CIFAR-10) and 100 (ImageNet) explanations on an Nvidia P100.
+Note that \eva~is the only method with guarantees that the entire set of possible perturbations has been exhaustively searched.
+Verified perturbation analysis with IBP + Forward + Backward is used for MNIST, with Forward only for  CIFAR-10 and with our hybrid strategy described in Section.\ref{sec:scaling} for ImageNet. 
+Grad-CAM and Grad-CAM++ are not calculated on the MNIST dataset since the network  only has dense layers. 
+%Greedy-AO is the equivalent of Greedy-AS but with the \AO estimator. 
+%\fel{rajouter colonne certifiable ? Avec des croix rouges sauf nous, remove greedy-ao, mettre (ours) a cote de eva}
+%For ImageNet, we used the hybrid approach described in \ref{sec:scaling}.
+The first and second best results are  in \textbf{bold} and \underline{underlined}, respectively. 
+}
+    \label{tab:cifar_mnist_metrics}
+    \vspace{-3mm}
+\end{table*}

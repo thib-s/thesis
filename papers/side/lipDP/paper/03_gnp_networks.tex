@@ -1,0 +1,73 @@
+ We discuss how the tightness of the bound provided by Algorithm~\ref{alg:gnbc} can be controlled.  
+
+\subsection{Theoretical analysis of Clipless DP-SGD}
+\label{sec:gnp}
+%\textbf{What makes our bounds tight ? }
+    In some cases we can manually derive the bounds across diverse configurations.% Below, we conduct a sensitivity analysis on $\ell$-Lipschitz networks.
+    \begin{restatable}{inftheorem}{nablalossgrad}{\normalfont\textbf{Gradient Norm of Lipschitz Networks.}}\label{infthm:nablalossgrad}
+        Assume that every layer $f_d$ is $K$-Lipschitz, i.e $l_1=\dots=l_D=K$. Assume that every bias is bounded by $B$. We further assume that each activation is centered at zero (i.e $f_d(\bm 0)=\bm 0$, like ReLU, GroupSort...).%We recall that~$\theta=[\theta_1,\theta_2,\ldots \theta_D]$.
+         Then the global upper bound of Algorithm~\ref{alg:noclipDP-SGDlocal} can be computed analytically, as follows:
+        
+        \textbf{1. If $K<1$ we have:}
+        % \begin{equation} 
+        $
+        \|\nabla_{\theta}\Loss(f(\theta,x),y)\|_2=\BigO\left(L\left(K^D(X_0+B)+1\right)\right).
+        % \end{equation}
+        $\\
+        Due to the $K^D\ll 1$ term this corresponds to a vanishing gradient phenomenon~\citep{pascanu2013difficulty}. The output of the network is essentially independent of its input, and training is nearly impossible. 
+    
+        \textbf{2. If $K>1$ we have:}
+        % \vspace{-2mm} 
+        % \begin{equation}
+        $
+            \|\nabla_{\theta}\Loss(f(\theta,x),y)\|_2=\BigO\left(LK^D \left(X_0+B+1\right)\right).
+        % \end{equation}
+        $\\
+        Due to the $K^{D}\gg 1$ term this corresponds to an exploding gradient phenomenon~\citep{bengio1994learning}. The upper bound becomes vacuous for deep networks: the added noise $\zeta$ will be too high.  
+    
+        \textbf{3. If $K=1$ we have:}
+        % \vspace{-2mm}
+        % \begin{equation} 
+        $
+            \|\nabla_{\theta}\Loss(f(\theta,x),y)\|_2=\BigO\left(L\left(\sqrt{D}+X_0\sqrt{D}+\sqrt{BX_0}D+BD^{3/2}\right)\right),
+        % \end{equation}
+        $\\
+        which for linear layers without biases further simplify to $\BigO(L\sqrt{D}(1+X_0))$.  
+    \end{restatable}
+    The formal statement can be found in appendix. We see that most favorable bounds are achieved by 1-Lipschitz neural networks with 1-Lipschitz layers. In classification tasks, they are as expressive as conventional networks~\citep{bethune2022pay}. Hence, this choice of architecture is not at the expense of utility. Moreover an accuracy/robustness trade-off exists, determined by the choice of loss function~\citep{bethune2022pay}. However, setting $K=1$ merely ensures that $\|\nabla_x f\| \leq 1$, and in the worst-case scenario we could have~$\|\nabla_x f\| \ll 1$ almost everywhere. This results in a situation where the bound of case 3 in Theorem~\ref{infthm:nablalossgrad} is not tight, leading to an underfitting regime as in the case $K<1$. With Gradient Norm Preserving (GNP) networks, we expect to mitigate this issue.  
+\paragraph{Controlling \textcolor{paramcolor}{$K$} with Gradient Norm Preserving (GNP) networks.}
+    GNP~\citep{li2019preventing} networks are 1-Lipschitz neural networks with the additional constraint that the Jacobian of layers consists of orthogonal matrices. They fulfill the Eikonal equation $\left\|\Jac{f_d (\theta_d, x_d) }{x_d}\right\|_2=1$ for any intermediate activation $f_d(\theta_d,x_d)$. As a consequence, the gradient of the loss with respect to the parameters is bounded by
+    \begin{equation}
+        \|\nabla_{\theta_d}\Loss\|\leq\textcolor{backwardcolor}{\|\nabla_{y_D} \Loss\|}\times \left\|\prod_{d< i\leq D}\Jac{f_i (\theta_i, x_i) }{x_i}\right\|\times \left\|\Jac{f_{d}(\theta_{d},x_d)}{\theta_{d}}\right\|=\textcolor{backwardcolor}{\|\nabla_{y_D} \Loss\|}\times \left\|\Jac{f_{d}(\theta_{d},x_d)}{\theta_{d}}\right\|,
+    \end{equation}
+    which for weight matrices $W_d$ further simplifies to $\|\nabla_{W_d}\Loss\|\leq \|\nabla_{y_D} \Loss\|\times \textcolor{forwardcolor}{\left\|f_{d-1}(\theta_{d-1},x_{d-1})\right\|}$. We see that this upper bound crucially depends on two terms than can be analyzed separately. On the one hand, $\textcolor{forwardcolor}{\left\|f_{d-1}(\theta_{d-1},x_{d-1})\right\|}$ depends on the scale of the input. On the other, $\|\nabla_{y_D} \Loss\|$ depends on the loss, the predictions and the training stage. We show below how to intervene on these two quantities. 
+    
+\textbf{Controlling $\textcolor{forwardcolor}{X_0}$ with input pre-processing.}
+    The weight gradient norm $\|\nabla_{W_d}\Loss\|$ indirectly depends on the norm of the inputs. Multiple strategies are available to keep this norm under control: projection onto the ball (``norm clipping''), or projection onto the sphere (``normalization''). In the domain of natural images, this result sheds light on the importance of color space: RGB, HSV, etc. Empirically, a narrower distribution of input norms would make up for tighter gradient norm bounds. %, therefore allowing better a signal to noise ratio for equal privacy guarantees.
+
+
+\textbf{Controlling $\textcolor{backwardcolor}{L}$ with the hybrid approach: loss gradient clipping}\label{sec:lossgradclip} 
+    As training progresses, the magnitude of $\textcolor{backwardcolor}{\|\nabla_f \Loss\|}$ tends to diminish when approaching local minima, falling below the upper bound and diminishing the signal to noise ratio. Fortunately, for Lipschitz constrained networks, the norm of the elementwise-gradient remains lower bounded throughout~\citep{bethune2022pay}. Since the noise amplitude only depends on the architecture and the loss, and remains fixed during training, the loss with the best signal-to-noise ratio would be a loss whose gradient norm w.r.t the logits remains constant during training. For the binary classification case, with labels $y\in\{-1,+1\}$, this yields the loss $\Loss_{KR}(\hat y, y)=-y\hat y$, that arises in Kantorovich-Rubinstein duality~\citep{villani2008optimal}:
+    \begin{equation}
+        \mathcal{W}_1(P,Q)\defeq \frac{1}{\ell}\underset{f\in\text{$\ell$-Lip}(\Dataset,\Reals)}{\inf}\Expect_{(x,y)\sim\Dataset}[\Loss_{KR}(f(x), y)],
+    \end{equation}
+    where $\mathcal{W}_1(P,Q)$ is the Wasserstein-1 distance between the two classes $P$ and $Q$.% (see appendix~\ref{app:wassdef}).
+
+    Another way to ensure high signal-to-noise ratio is to diminish the noise and clip the gradients of the loss w.r.t the logits. We emphasize that \textit{this is different from the clipping of the ``parameter gradient'' $\nabla_{\theta}\Loss$} done in DP-SGD. Here, \textit{any intermediate gradient $\nabla_{f_d}\Loss$} can be clipped during backpropagation. This can be achieved with a special ``\textit{clipping layer}'' that behaves like the identity function at the forward pass, and clips the gradient during the backward pass. In DP-SGD the clipping is applied on the element-wise gradient $\nabla_{W_d}\Loss$ of size $b\times h^2$ for matrix weight~${W_d\in\Reals^{h\times h}}$ and batch size $b$, and clipping it can cause memory issues or slowdowns~\citep{lee2021scaling}. In our case,~$\nabla_{y_D}\Loss$ is of size $b\times h$: this is far smaller, especially for the last layer. Moreover, this clipping is compatible with the adaptive clipping introduced by~\citep{andrew2021differentially}: the quantiles of $\|\nabla_{y_D}\Loss\|$ can be privately estimated for a small privacy budget. This allows to effectively reduce the noise while ensuring that most of the gradients remain unbiased. Furthermore, this bias of this clipping can be characterized.  
+    
+    \begin{restatable}[Bias of loss gradient clipping in binary classification tasks]{infproposition}{bceiswassvulga}\label{prop:bceiswassvulga}
+    Let $\Loss_{BCE}$ be the binary cross-entropy loss, with sigmoid activation. Assume that the loss gradient (w.r.t the logits) $\nabla_{\hat y}\Expect_{\Dataset}[\Loss_{BCE}(\hat y,y)]$ is clipped to norm at most $C>0$.
+    Then there exists $C'>0$ such that for all $C\leq C'$ a gradient descent step with the clipped gradient is identical in direction to the  
+    gradient descent step obtained from the loss $\Loss_{KR}(\hat y, y)=-\hat yy$. 
+    \end{restatable}
+
+    As observed in~\cite{serrurier2021achieving} and~\cite{bethune2022pay} this descent direction yields classifiers with high certifiable robustness, but lower clean accuracy. Therefore, in practice, we set the adaptive clipping threshold at not less than the 90\%-th quantile to mitigate the bias and avoid utility drop.    
+
+\subsection{Lip-dp library}
+\label{sec:lipdp}
+To foster and spread accessibility, we provide an open source TensorFlow library for Clipless DP-SGD training\footnote{\url{https://anonymous.4open.science/r/lipdp-5EA1} distributed under MIT License.} , named \lstinline[basicstyle=\ttfamily, backgroundcolor=\color{gray!20}]{lip-dp}, with Keras API. The code is available at \url{https://github.com/Algue-Rythme/lip-dp}. Its usage is illustrated in Figure~\ref{fig:pseusocode}. We rely on the \lstinline[basicstyle=\ttfamily, backgroundcolor=\color{gray!20}]{deel-lip}\footnote{\url{https://github.com/deel-ai/deel-lip} distributed under MIT License.} library~\cite{serrurier2021achieving} to enforce Lipschitz constraints in practice, with Reshaped Kernel Orthogonalization (RKO) for fast and near-orthogonal convolutions~\citep{li2019orthogonal}.  The Lipschitz constraint is enforced by using activations with known Lipschitz constant $l_d$ (most activations fulfill this condition), and by applying a projection $\Pi:\Reals^p\rightarrow \Theta$ on the weights of affine layers. These constraints correspond to spectrally normalized  matrices~\cite{yoshida2017spectral,bartlett2017spectrally}, since for affine layers we have~${\ell_d=\|W_d\|_2\defeq\underset{\|x\|\leq 1}{\max}\|W_dx\|_2}$ and therefore $\Theta=\{\|W_d\|_2\leq \ell_q\}$. We rely on Power Iteration for fast computation of the spectral norm. The leading eigenvector is cached from a step to another to speed-up computations. The seminal work of~\cite{anil2019sorting} proved that universal approximation in the set of $\ell$-Lipschitz functions was achievable by this family of architectures. In practice, GNP networks are parametrized with GroupSort activation~\cite{anil2019sorting,tanielian2021approximating}, Householder activation~\cite{mhammedi2017efficient}, and orthogonal weight matrices~\cite{li2019preventing,li2019orthogonal}.
+
+\begin{remark}[GNP networks limitations]\label{remark:gnp}
+        Strict orthogonality is challenging to enforce, especially for convolutions for which it is still an active research area (see~\cite{trockman2021orthogonalizing,singla2021skew,achour2022existence,singla2022improved,xu2022lot} and references therein). Our line of work traces an additional motivation for the development of GNP and the bounds will strengthen as the field progresses. Concurrent approaches based on regularization~\citep{gulrajani2017improved,cisse2017parseval,gouk2021regularisation}) fail to produce formal guarantees.  
+\end{remark}  
+    

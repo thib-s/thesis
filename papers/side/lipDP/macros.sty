@@ -1,0 +1,95 @@
+%%% SETS
+\newcommand{\Reals}{\mathbb{R}}
+\newcommand{\Rational}{\mathbb{Q}}
+\newcommand{\Natural}{\mathbb{N}}
+\newcommand{\Complexs}{\mathbb{C}}
+\newcommand{\M}{\mathcal{M}}
+\newcommand{\X}{\mathcal{X}}
+\newcommand{\Y}{\mathcal{Y}}
+\newcommand{\D}{\mathcal{D}}
+
+%%% Notations
+\newcommand{\sntv}{\Delta}
+\newcommand{\Dataset}{\mathcal{D}}
+\newcommand{\yhat}{\hat y}
+\newcommand{\Loss}{\mathcal{L}}
+\newcommand{\Batch}{\mathcal{B}}
+\newcommand{\Convex}{\mathcal{C}}
+\newcommand{\Prob}{\mathbb{P}}
+\newcommand{\DP}{$(\epsilon,\delta)$-DP }
+\newcommand{\RDP}{$(\alpha,\epsilon)$-DP }
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\Expect}{\mathbb{E}}
+\newcommand{\BigO}{\mathcal{O}}
+\newcommand{\Jac}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\tr}{\mathsf{T}}  % transpose
+\newcommand{\I}{\mathbf{I}}  % transpose
+\newcommand{\defeq}{\vcentcolon=}  % :=
+\newcommand{\Gaussian}{\mathcal{N}}
+
+\newcommand{\cross}{\ding{55}}
+
+
+% Theorems
+\newtheorem{corollary}{Corollary}
+\newtheorem{example}{Example}
+\newtheorem{lemma}{Lemma}
+\newtheorem{property}{Property}
+\newtheorem{proposition}{Proposition}
+\newtheorem{remark}{Remark}
+%\newtheoremstyle{break}
+%  {\topsep}{\topsep}%
+%  {\itshape}{}%
+%  {\bfseries}{}%
+%  {\newline}{}%
+% \theoremstyle{break}
+\newtheorem{theorem}{Theorem}
+\newtheorem{inftheorem}{Theorem (informal)}
+\newtheorem{infproposition}{Proposition (informal)}
+\newtheorem{definition}{Definition}
+\newtheorem{informaldef}{Definition (informal)}
+\newtheorem{assumption}{Assumption}
+\newtheorem{requirement}{Requirement}
+
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argsupp}{arg\,supp}
+\DeclareMathOperator*{\arginf}{arg\,inf}
+
+
+%%% Subproofs
+\newenvironment{subproof}[1][\proofname]{%
+  \renewcommand{\qedsymbol}{$\blacksquare$}%
+  \begin{proof}[#1]%
+}{%
+  \end{proof}%
+}
+
+%%% colors
+\definecolor{forwardcolor}{HTML}{D40E0D}%006EB8}
+\definecolor{backwardcolor}{HTML}{49C39E}%00A699}
+\definecolor{paramcolor}{HTML}{EBB424}%FC642D}
+% \definecolor{forwardcolor}{HTML}{006EB8}
+% \definecolor{backwardcolor}{HTML}{00A699}
+% \definecolor{paramcolor}{HTML}{FC642D}
+
+%%%%%%%%%%%%%%%%%%%
+
+\def\enablecommments{0}
+
+\newcommand{\thib}[1]{{\if\enablecommments1\color{orange}[Teeble]: #1\fi}}
+\newcommand{\louis}[1]{{\if\enablecommments1\color{blue}[louis]: #1\fi}}
+\newcommand{\thomas}[1]{{\if\enablecommments1\color{teal}[Thomas]: #1\fi}}
+\newcommand{\aurelien}[1]{{\if\enablecommments1\color{olive}[aurelien]: #1\fi}}
+\newcommand{\franck}[1]{{\if\enablecommments1\color{green}[Franck]: #1\fi}}
+\newcommand{\corentin}[1]{{\if\enablecommments1\color{brown}[Coco]: #1\fi}}
+\newcommand{\mathieu}[1]{{\if\enablecommments1\color{red}[Mathieu]: #1\fi}}
+
+% UNCOMMENT BELOW IN CAMERA READY:
+\newcommand{\rebuttal}[1]{#1}
+% COMMENT BELOW IN CAMERA READY:
+% \newcommand{\rebuttal}[1]{{\color{blue}#1}}
+

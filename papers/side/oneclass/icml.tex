@@ -1,0 +1,173 @@
+%%%%%%%% ICML 2022 EXAMPLE LATEX SUBMISSION FILE %%%%%%%%%%%%%%%%%
+\documentclass[nohyperref]{article}
+
+% Include other packages here, before hyperref.
+\usepackage{graphicx}
+\usepackage{booktabs}
+
+\usepackage{times}
+\usepackage{helvet}
+\usepackage{courier}
+\usepackage{graphicx}
+\usepackage{caption} 
+
+%\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{xcolor}         % colors
+\usepackage{comment}
+
+\usepackage{makecell}
+\usepackage{multirow}
+
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{dsfont}
+\usepackage{mathtools}
+\usepackage{bm}
+\usepackage{xfrac}
+
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{thmtools,thm-restate}
+
+\usepackage{macros}
+
+\usepackage{footnote}
+\usepackage{hyperref}
+
+\usepackage{xspace}
+\usepackage{mwe}
+\usepackage{array}
+\makesavenoteenv{tabular}
+\makesavenoteenv{table}
+
+% Attempt to make hyperref and algorithmic work together better:
+\newcommand{\theHalgorithm}{\arabic{algorithm}}
+
+% Use the following line for the initial blind version submitted for review:
+%\usepackage{icml2023}
+% If accepted, instead use the following line for the camera-ready submission:
+\usepackage[accepted]{icml2023}
+
+% if you use cleveref..
+\usepackage[capitalize,noabbrev]{cleveref}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% THEOREMS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\theoremstyle{plain}
+%\newtheorem{theorem}{Theorem}[section]
+%\newtheorem{proposition}[theorem]{Proposition}
+%\newtheorem{lemma}[theorem]{Lemma}
+%\newtheorem{corollary}[theorem]{Corollary}
+%\theoremstyle{definition}
+%\newtheorem{definition}[theorem]{Definition}
+%\newtheorem{assumption}[theorem]{Assumption}
+%\theoremstyle{remark}
+%\newtheorem{remark}[theorem]{Remark}
+
+% Todonotes is useful during development; simply uncomment the next line
+%    and comment out the line below the next line to turn off comments
+%\usepackage[disable,textsize=tiny]{todonotes}
+%\usepackage[textsize=tiny]{todonotes}
+
+%\newcommand{\thib}[1]{{\color{blue}[thib]: #1}}
+
+
+% The \icmltitle you define below is probably too long as a header.
+% Therefore, a short form for the running title is supplied here:
+\icmltitlerunning{Robust One Class Classification using Signed Distance Function}
+
+\begin{document}
+
+\twocolumn[
+\icmltitle{Robust One-Class Classification with Signed Distance Function\\ using 1-Lipschitz Neural Networks}
+
+           
+
+% It is OKAY to include author information, even for blind
+% submissions: the style file will automatically remove it for you
+% unless you've provided the [accepted] option to the icml2022
+% package.
+
+% List of affiliations: The first argument should be a (short)
+% identifier you will use later to specify author affiliations
+% Academic affiliations should list Department, University, City, Region, Country
+% Industry affiliations should list Company, City, Region, Country
+
+% You can specify symbols, otherwise they are numbered in order.
+% Ideally, you should not use this facility. Affiliations will be numbered
+% in order of appearance and this is the preferred way.
+\icmlsetsymbol{equal}{*}
+
+%\title{Certifiable Learning of Signed Distance Functions with 1-Lipschitz Neural Networks}
+
+\begin{icmlauthorlist}
+\icmlauthor{Louis B\'ethune}{equal,sch}
+\icmlauthor{Paul Novello}{equal,yyy}
+\icmlauthor{Guillaume Coiffier}{nge}
+\icmlauthor{Thibaut Boissin}{yyy}
+\icmlauthor{Mathieu Serrurier}{sch}
+\icmlauthor{Quentin Vincenot}{comp}
+\icmlauthor{Andres Troya-Galvis}{comp}
+\end{icmlauthorlist}
+
+\icmlaffiliation{yyy}{DEEL, IRT Saint Exupéry}
+\icmlaffiliation{comp}{Thales Alénia Space}
+\icmlaffiliation{sch}{IRIT, Université Paul Sabatier}
+\icmlaffiliation{nge}{Université de Lorraine, CNRS, Inria, LORIA}
+
+\icmlcorrespondingauthor{Louis Bethune}{louis.bethune@univ-toulouse.fr}
+
+% You may provide any keywords that you
+% find helpful for describing your paper; these are used to populate
+% the "keywords" metadata in the PDF but will not be shown in the document
+\icmlkeywords{signed distance function, Lipschitz neural network, robustness, one class learning, anomaly detection, neural implicit surface}
+
+\vskip 0.3in
+]
+
+% this must go after the closing bracket ] following \twocolumn[ ...
+
+% This command actually creates the footnote in the first column
+% listing the affiliations and the copyright notice.
+% The command takes one argument, which is text to display at the start of the footnote.
+% The \icmlEqualContribution command is standard text for equal contribution.
+% Remove it (just {}) if you do not need this facility.
+
+%\printAffiliationsAndNotice{}  % leave blank if no need to mention equal contribution
+\printAffiliationsAndNotice{\icmlEqualContribution } % otherwise use the standard text.
+
+%\begin{document}
+
+\input{paper/00_abstract.tex}
+\input{paper/01_intro.tex}
+\input{paper/02_method.tex}
+\input{paper/03_experiments.tex}
+\input{paper/06_conclusion.tex}
+
+\section{Acknowledgements}
+This work has benefited from the AI Interdisciplinary Institute ANITI, which is funded by the French ``Investing for the Future – PIA3'' program under the Grant agreement ANR-19-P3IA-0004. The authors gratefully acknowledge the support of the DEEL project.\footnote{\url{https://www.deel.ai/}}  
+
+%%%%%%%%% REFERENCES
+{\small
+\bibliographystyle{plainnat}
+\bibliography{biblio}
+}
+
+\newpage
+\onecolumn
+\input{appendices/appendix}
+
+\end{document}
+

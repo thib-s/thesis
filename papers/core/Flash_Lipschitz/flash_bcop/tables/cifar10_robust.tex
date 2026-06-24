@@ -1,0 +1,44 @@
+\begin{table}[ht]
+    \centering
+        \begin{tabular}{crrrr}
+        \toprule
+                 & Models & \makecell{Acc-\\uracy} &  \makecell{Provable \\ Accuracy \\ $\epsilon = \frac{36}{255}$} &  \makecell{Trainable\\ Parameters}  \\
+        \midrule
+          \multirow{12}{*}{\rotatebox{90}{CIFAR-10}} &          BCOP &   72.2 &   58.2 &     2.6M \\
+          &         GloRo$^\dagger$ &   77.0 &   58.4 &     8.0M \\
+          &   Local-Lip-B$^\dagger$ &   77.4 &   60.7 &     2.3M \\
+          &  Cayley Large &   74.6 &   61.4 &    21.0M \\
+          &        SOC 20 &   78.0 &   62.7 &    27.0M \\
+          &       SOC+ 20 &   76.3 &   62.6 &    27.0M \\
+          &        CPL XL$^\dagger$ &   78.5 &   64.4 &   236.0M \\
+          &     AOL Large$^\dagger$ &   71.6 &   64.0 &   136.0M \\
+          &     SLL Small$^\dagger$ &   71.2 &   62.6 &    41.0M \\
+          &    SLL Medium$^\dagger$ &   72.2 &   64.3 &    78.0M \\
+          &     SLL Large$^\dagger$ &   72.7 &   65.0 &   118.0M \\
+          &   SLL X-Large$^\dagger$ &   73.3 &   65.8 &   236.0M \\
+          &  $\text{Li-Resnets}^{\dagger*}$ &   82.1 &   70.1 &    49.0M \\
+          &  $\text{Li-Resnets++}^{\dagger*}$ &   87.0 &   78.1 &    49.0M \\
+        \cline{2-5}
+          & \textbf{AOC} \small{accurate} &   91.5 &   00.0 &    2.3M \\
+          & \textbf{AOC} \small{robust} &   74.0 &   64.3 &    41.3M \\
+          & \textbf{AOC} \small{robust*} & 85.3  &  75.0  &    46.3M \\
+        \midrule
+        \midrule
+        \multirow{3}{*}{\rotatebox{90}{IN-1K}}
+          & $\text{Li-Resnets}^{\dagger*}$ &   45.6 &   35.0 &     86.0M \\
+          & $\text{Li-Resnets++}^{\dagger*}$ &   49.0 &   38.3 &     86.0M \\
+        \cline{2-5}
+          & \textbf{AOC} \small{accurate} &   68.2 &   00.0 &     53.1M \\
+          & \textbf{AOC} \small{robust} &   42.1 &   26.3 &     53.1M \\
+        \bottomrule
+        \end{tabular}
+    \caption{\textbf{AOC is competitive on small-scale datasets and enables affordable training on large-scale datasets.} For both cifar-10 (top) and Imagenet-1K (bottom), we reported provable accuracy (accuracy guaranteed under any attack whose $l_2$ radius is $\frac{36}{255}$) from respective papers.
+    % While AOC does not improve expressiveness of BCOP, this table shows that the state of the art is driven by 
+    we evaluate our models under two settings: one tailored for accuracy and another for robustness. $^*$ denotes the use of extra data.%Our baseline can be improved with techniques such as last layer normalization, certificate regularization \cite{singla_skew_2021}, or augmentation using diffusion \cite{hu_recipe_2023}.
+    Our networks are trained under two settings that use similar architectures but differ in their loss parameters (see \cref{sec:ap_training_details}).%\thib{todo: symbol pour les non-ortho}
+    $^\dagger$ denotes nonorthogonal methods.
+    % \vspace{1mm}
+    }
+    \label{tab:robust_cifar10}
+\end{table}
+

@@ -1,0 +1,12 @@
+\label{app:vanillapredsetcertificates}
+
+In this section, we explictly develop extensions of formal verification methods for robust conformal prediction. First, we recall the following robustness regimes: 
+
+\begin{itemize}
+    \item \textbf{Robust conformal prediction set} Here, we return a conformal prediction set that verifies user-specified conformal coverage under adversarial perturbations. However, this certificate can yield overly conservative results on clean data resulting in increased conformal prediction set sizes.
+    \item \textbf{Certifiably robust vanilla conformal prediction} Through estimations of the conservative and restrictive prediction sets on an extra set of holdout data $\HoldoutDataset$, our theoretical results ensure that for a given adversarial attack budget, our conformal coverage on adversarially perturbed data will remain within a range of $[\covminmm, \covmaxmp]$ with high probability.
+\end{itemize}
+
+In \emph{VRCP}~\cite{vrcp}, the authors develop a method allowing the computation of supersets of the conservative prediction set around a point $x$ leveraging formal verification methods. To this end, they prove that the conservative prediction set verifies robust coverage bounds under adversarial attacks. In order to extend verification methods to the computation of the restrictive prediction set (necessary for the coverage bounds on vanilla CP under attack) and the computation of a lower bound for the robustness radius of a vanilla prediction set, we give the following insights. 
+
+\paragraph{Restrictive prediction set} Given that formal verification methods often return the upper and lower bounds of every logit of the output layer. This facilitates the computation of a subset of the restrictive prediction set with formal verification methods. 

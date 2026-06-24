@@ -1,0 +1,76 @@
+\clearpage
+\setcounter{page}{1}
+
+\begin{table*}[h]
+  \centering
+  \sisetup{table-format=1.0} % adjust to your needs
+  \begin{tabularx}{\textwidth}{
+      c     % Method
+      c                 % Certifiable
+      c                 % Fast cal.
+      c                 % Fast test
+      c                 % l1, linf norm
+      c                 % Poisoning
+      S[table-format=1.0] % Nb hyperparams
+    }
+    \toprule
+    Method & Certifiable & Fast cal. & Fast test & \(\ell_1,\,\ell_\infty\) & Poisoning & {Nb hyperparams} \\
+    \midrule
+    \emph{aPRCP}~\cite{prcp}               & \impossible & \impossible & \possible   & \impossible & \impossible & 2 \\
+    \emph{RSCP}~\cite{rscp}               & \impossible & \impossible & \impossible & \possible   & \impossible & 3 \\
+    \emph{RSCP}+ (PTT/RCT)~\cite{rscp_plus}
+                                   & \possible   & \impossible & \impossible & \possible   & \impossible & 4 (6) \\
+    \emph{CAS}~\cite{cas}                 & \possible   & \impossible & \impossible & \possible   & \possible   & 2 \\
+    \emph{VRCP-I}~\cite{vrcp}             & \possible   & \possible   & \impossible & \possible   & \impossible & 2 \\
+    \emph{VRCP-C}~\cite{vrcp}             & \possible   & \impossible & \possible   & \possible   & \impossible & 2 \\
+    \emph{lip-rcp}                           & \possible   & \possible   & \possible   & \impossible & \possible   & 2 \\
+    \bottomrule
+  \end{tabularx}
+  \caption{Comparison of certified robustness methods. Note that aPRCP is not certifiable without assumptions on the adversarial distribution. See Section~\ref{par:hyperparams} for details on hyperparameter counts.}
+  \label{tab:huge_table}
+\end{table*}
+
+
+\section{On the Lower Bound of \citet[Theorem~2]{rscp}}
+\label{app:GendlerMistake}
+
+Unfortunately, it seems that a subtle mathematical mistake was left aside in Theorem~2 by \citet{rscp}. It can be seen in the statement and in the proof.
+
+In the statement, the deterministic quantity $\mathbb{P}\bigl[Y_{n+1} \in \mathcal{C}(\Tilde{X}_{n+1})\bigr]$ is bounded from below by the random quantity $\tau$ (note that $\tau$ depends on the calibration data); this lower bound can thus fail in general.\footnote{This could make sense if the probability $\mathbb{P}\bigl[Y_{n+1} \in \mathcal{C}(\Tilde{X}_{n+1})\bigr]$ were conditional on the calibration data, but it is not the case in the proof: the probability is with respect to the joint distribution of $(X_i,Y_i)_{1 \leq i \leq n+1}$.}
+
+In the proof, which appears in \citet[Appendix S1, Proof of theorem~2]{rscp}, the authors use Lemma~2 by \citet{romano2019conformalized} which only holds for deterministic values of $\tau$ (or $\alpha$, following the notation in \citealt{romano2019conformalized}). Since $\tau$ is random, their lemma can unfortunately not be used here.
+
+\section{Proof of Theorem~\ref{thm:robustcoverageuniform}}
+\label{app:new-proof}
+\input{supp_proof.tex}
+
+\section{On Measurability Details}
+\input{supp_measurability}
+
+\section{Extending VRCP}
+\input{supp_restrictivepredset}
+
+\input{score_functions}
+
+\section{Model Implementation}
+\label{app:models_experiments}
+
+\subsection{Training Time Overhead}
+\input{speed_training}
+
+\subsection{Placement of Method}
+\input{overall_aspect}
+
+\section{Experimental Settings}
+\label{app:experimental_settings}
+\input{experiment_settings}
+
+\section{Calibration Poisoning Results}
+\input{supp_poisoning.tex}
+
+\pagebreak
+
+\section{About the Tightness of Score Bounds}
+\label{app:tightness}
+\input{supp_tightness}
+

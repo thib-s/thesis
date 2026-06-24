@@ -1,0 +1,77 @@
+\textbf{1-Lipschitz Neural network and optimal transport:}
+%
+%For sake of simplicity, we consider binary classification problems on feature vector space $\X \subseteq \Omega$ and labels $\Y = \{-1,1\}$. We name $P_+=\mathbb{P}(X|Y=1)$ and  $P_-=\mathbb{P}(X|Y=-1)$, the conditional distributions with respect to Y. We note $p=P(Y=1)$ and $1-p=P(Y=-1)$ the apriori class distribution. \\
+%\fel{@louis: check ce que j'ai fait ici quand tu peux.}
+Consider a classical supervised machine learning binary classification problem on $(\Omega, \mathcal{F}, \mathbb{P})$ -- the underlying probability space -- where $\Omega$ is the sample space, $\mathcal{F}$ is a $\sigma$-algebra on $\Omega$, and $\mathbb{P}$ is a probability measure on $\mathcal{F}$. 
+%
+We denote the input space $\inp \subseteq \mathbb{R}^d$ and the output space $\mathcal{Y} = \{\pm 1 \}$. Let input data $\x : \Omega \to \inp$ and target label $\y : \Omega \to \mathcal{Y}$ are random variables with distributions $\dx$, $\dy$, respectively.
+%
+The joint random vector $(\x, \y)$ on $(\Omega, \mathcal{F})$ has a joint distribution $\djoint$ defined over the product space $\inp \times \mathcal{Y}$.
+%
+Moreover, let $\dpos = \djoint(\x | \y = 1)$ and $\dneg = \djoint(\x | \y = -1)$ the conditional probability distributions of $\x$ given
+%that the true label is positive or negative, respectively. 
+the true label.
+We assume that the supports of $\Omega$,  $\dpos$ and $\dneg$ are compact sets.
+
+
+%The classification problem is balanced when $p=\frac{1}{2}$.\\
+A function $\f :\inp \to \mathbb{R}$ is a 1-Lipschitz functions over $\inp$ (denoted $Lip_1(\inp)$) if and only if $\forall (\x,\z) \in \inp^2, ||\f(\x) -\f(\z) ||\leq || \x-\z||$.
+\onlyonelip~neural networks have received a lot of attention, especially due to the link with adversarial attacks. They provide certifiable robustness guarantees~\cite{hein_formal_2017,ono_lightweight_2018}, improve  the generalizations~\cite{Sokolic_2017} and the interpretability of the model~\cite{tsipras2018robustness}. The simplest way to constrain a network to be in $Lip_1(\inp)$ is to impose this \onlyonelip~property to each layer. Frobenius normalization \cite{SalimansK16}, or spectral normalization \cite{Miyato2018SpectralNF} can be used for linear layers, and can also be extended, in some situations, to  orthogonalization \cite{li2019preventing,Achour2021,TrockmanK21,araujo2023a}. 
+%\commentgreen{peut etre ajouter le papier de elmehdi pour l'instant que sur arxiv mais d'ici la jmlr}
+
+Optimal transport, \onlyonelip~neural networks, and binary classification were first associated in the context of Wasserstein GAN (WGAN) \cite{Arjovsky2017}. The discriminator of a WGAN is the solution to the Kantorovich-Rubinstein dual formulation of the $1$-Wasserstein distance \cite{villani2008}, and it can be regarded as a binary classifier with a carefully chosen threshold.
+Nevertheless, it has been demonstrated in \cite{serrurier2021achieving} that this type of classifier is suboptimal, even on a toy dataset. In the same paper, the authors address the suboptimality of the Wasserstein classifier by introducing the hKR loss $\mathcal{L}^{hKR}$, which adds a hinge regularization term to the Kantorovich-Rubinstein optimization objective~:
+\begin{equation} \label{eq:reg_OT} 
+\mathcal{L}^{hKR}_{\lambda,m}(\f) =  \underset{\x \sim \dneg}{\mathbb{E}} \left[\f(\x)\right]-\underset{\x \sim \dpos}{\mathbb{E}}\left[\f(\x)\right]  +\lambda\underset{(\x, \y) \sim \djoint}{\mathbb{E}} \left(m-\y \f(\x)\right)_+ 
+\end{equation}
+where $m>0$ is the margin, and  $(z)_+ = max(0,z)$. We note $\f^*$ 
+the optimal minimizer of $\mathcal{L}^{hKR}_{\lambda,m}$. The classification is given by the sign of $\f^*$. In the following, the \onlyonelip~neural networks that minimize $\mathcal{L}^{hKR}_{\lambda,m}$ will be denoted as \otnn.
+%MAthieu : on l'a déjà fait dans l'intro mais bon
+~Given a function $\f$, a classifier based on $\sign(\f)$ and an example $\x$, an adversarial example is defined as follows:
+\begin{align}
+    &adv(\f, \x) = \argmin_{\z \in \inp} \parallel \x -\z \parallel 
+    ~~ s.t. ~~ \sign(\f(\z)) \neq \sign(\f(\x)) .
+    \label{def:adversary}
+\end{align}
+Since $\f^*$ is a \onlyonelip~function, $|\f^*(\x)|$ is a certifiable lower bound of the robustness of the classification of $\x$ 
+(i.e. $\forall \x \in \inp, |\f^*(\x)|\leq ||\x - adv(\f^*,\x) || $). The function $\f^*$ has the following properties \cite{serrurier2021achieving}
+~(\textbf{\textit{i}}) if the supports of $\dpos$ and $\dneg$ are disjoints (separable classes) with a minimal distance of $\epsilon>0$, then for $m<2\epsilon$, $f^*$ 
+achieves 100\% accuracy; % on $\dpos$ and $\dneg$ \fel{mu et nu (avnt P+ et P-) sont des proba distrib. je changerai separable (meme si je comprend ce que tu veux dire) };
+~(\textbf{\textit{ii}}) minimizing $\mathcal{L}^{hKR}$ is still the dual formulation of an optimal transport problem (see appendix for more details).
+
+\textbf{Explainability and metrics:} 
+Attribution methods aim to explain the prediction of a deep neural network by pointing out input variables that support the prediction -- typically pixels or image regions for images -- which lead to importance maps.
+%Attribution methods aims to provide a rank of important variables in the decision of a classfier. 
+Saliency~\cite{SimonyanVZ13} was the first proposed white-box attribution method and consists of back-propagating the gradient from the output to the input. The resulting absolute gradient heatmap indicates which pixels affect the most the decision score.
+However, this family of methods suffers from problems inherent to the gradients of standard models.
+%e.g., it has been shown that gradients often vanish when the prediction score to be explained is near the maximum value \cite{Sundararajan2017}.
+Methods such as Integrated Gradient~\cite{Sundararajan2017} and SmoothGrad~\cite{Smilkov2017} partially address this issue by accumulating gradients, either along a straight interpolation path from a baseline state to the original image or from a set of points close to the original image obtained after adding noise but multiply the computational cost by several orders of magnitude.
+% by 100.
+%. It nevertheless requires a computational up to 100 higher than Saliency.
+These methods were then followed by a plethora of other methods using gradients such as Grad-cam~\cite{Selvaraju_2019} or Input Gradient~\cite{ancona18GradInput}. All rely on the gradient calculation of the classification score.
+%\fel{Proposition (black-box attribution method): 
+Finally, other methods -- sometimes called black-box attribution methods -- do not involve the gradient and rely on perturbations around the image to generate their explanations~\cite{petsiuk18Rise,fel21sobol}.
+
+%others methods aim to explore perturbations around the image to measure the variation of the classification output and build an importance map~\cite{petsiuk18Rise,fel21sobol}. 
+%followed by several improvements such as Grad-cam~\cite{Selvaraju_2019},Gradient.Input~\cite{ancona18GradInput}, Integrated Gradients~\cite{Sundararajan2017}, Smoothgrad~\cite{Smilkov2017}, all relying on gradient calculation of the classifcation method. 
+
+%\fel{Proposition (metrics): 
+However, it is becoming increasingly clear that current methods raise many issues~\cite{Adebayo18Sanity, Heo19foolingInterpretation, sixt2020explanations} such as confirmation bias: it is not because the explanations make sense to humans that they reflect the evidence of the prediction. 
+To address this challenge, a large number of metrics were proposed to provide objective evaluations of the quality of explanations. Deletion and Insertion methods~\cite{petsiuk18Rise} evaluate the drop in accuracy when important pixels are replaced by a baseline. $\mu\text{Fidelity}$ method~\cite{Bhatt20muFidelity} evaluates the correlation between the sum of importance scores of pixels and the drop of the score when removing these pixels.
+In parallel, a growing literature relies on model robustness to derive new desiderata for a good explanation~\cite{hsieh2020evaluations, boopathy2020proper, lin2019explanations, ross2021learning, eva}. 
+%The central idea is that a region is considered important if it allows to easily generate an adversarial example.
+In addition,~\cite{hsieh2020evaluations} showed that some of these metrics also suffer from a bias due to the choice of the baseline value and proposed a new metric called Robustness-Sr. This metric assesses the ease to generate an adversarial example when the attack is limited to the important variables proposed by the explanation.
+%Finally, 
+Other metrics 
+%propose to assess other
+consider properties such as generalizability, consistency~\cite{felHowGood22}, or stability~\cite{Yeh19InfidelityExplain,Bhatt20muFidelity} of explanation methods.
+A recent approach~\cite{linsley2017visual} aims to evaluate the alignment between attribution methods and human feature importance across 200,000 unique ImageNet images (called ClickMe dataset). The alignment between DNN Saliency and human explanations is quantified using the mean Spearman correlation, normalized by the average inter-rater alignment of humans.
+%\mathieu{The ClickMe dataset~\cite{linsley2017visual} allows for the evaluation of the alignment between attribution methods and human feature importance across 200,000 unique ImageNet images. In their study \cite{fel2022aligning}, the authors utilize this dataset to illustrate the trade-off between deep neural network (DNN) performance and alignment with human feature importance.. The alignment between human and DNN saliency is quantified using the mean Spearman correlation, normalized by the average inter-rater alignment of humans.}
+
+
+These works on explainability metrics have also initiated the emergence of links between the robustness of models and the quality of their explanations~\cite{Chalasani20explanationAdvTraining,wang2022robust,Harshay2021,Suraj2022,Dombrowski2022,Etmann2019OnTC}. In particular,\cite{felHowGood22} claimed that \onlyonelip~networks explanations have better metrics scores. But this study was not on \otnn s~and was limited to their proposed metrics.
+
+To end with, recent literature is focusing on  counterfactual explanations \cite{wachter2017counterfactual,Verma20CounterfactualReview} methods, providing information on "why the decision was A and not B". Several properties are desirable for these counterfactual explanations\cite{Verma20CounterfactualReview}: Validity (close sample and in another class), Actionability, Sparsity, Data Manifold closeness, and Causality.
+The three last properties are generally not covered by standard adversarial attacks and complex methods have been proposed~\cite{Goyal19counter,rodriguez21beyond,wang20scout}. %For the causality property, recent papers~\cite{black19OptimTransp,deLara2021} have proposed, when a causal model is hard to fully-defined , a definition of optimal transport based counterfactuals easier to compute and that can sometimes coincide with causal model based ones. 
+Since often a causal model is hard to fully-define, recent papers~\cite{black19OptimTransp,deLara2021} have proposed a definition of counterfactual based on optimal transport easier to compute and that can sometimes coincide with causal model based ones. 
+We will rely on this theoretical definition of counterfactuals.

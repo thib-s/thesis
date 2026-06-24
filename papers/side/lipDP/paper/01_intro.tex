@@ -1,0 +1,103 @@
+%Differential privacy allows to develop methods for training models that preserve the privacy of individual data points in the training set.
+The field of differential privacy seeks to enable deep learning on sensitive data, while ensuring that models do not inadvertently memorize or reveal specific details about individual samples in their weights. This involves incorporating privacy-preserving mechanisms into the design of deep learning architectures and training algorithms, whose most popular example is Differentially Private Stochastic Gradient Descent (DP-SGD)~\citep{abadi2016deep}. One main drawback of classical DP-SGD methods is that they require costly per-sample backward processing and gradient clipping.  In this paper, we offer a new method that unlocks fast differentially private training through the use of Lipschitz constrained neural networks. 
+
+\textbf{Differential privacy.}
+    Informally, differential privacy (DP) is a \emph{definition} that bounds how much the change of a single sample in a dataset affects the range of a stochastic function (here, the training algorithm). This definition is largely accepted as a strong guarantee against privacy leakages under various scenarii, including data aggregation or post-processing~\citep{dwork2006calibrating}.  
+
+    In this paper we focus on supervised learning tasks: we assume that the dataset $\Dataset$ is a finite collection of input/label pairs $\Dataset=\{(x_1,y_1),\ldots... (x_N,y_N)\}$.  
+    The definition of DP relies on the notion of neighboring datasets, i.e datasets that vary by at most one example.
+    We highlight below the central tools related to the field, inspired from~\cite{dwork2014algorithmic}.
+    
+    \begin{definition}[$(\epsilon,\delta)$-Approximate Differential Privacy]\label{def:dp}
+        Two datasets $\Dataset$ and $\Dataset'$ are said to be neighboring for the ``add/remove-one'' relation if they differ by exactly one sample: $|\Dataset'\ominus\Dataset|=1$ where $\ominus$ denotes the symmetric difference between sets. Let $\epsilon$ and $\delta$ be two non-negative scalars. An algorithm $\mathcal{A}$ is \DP if for any two neighboring datasets $\Dataset$ and $\Dataset'$, and for any $S \subseteq \text{range}(\mathcal{A})$:
+        \begin{equation}\Prob[\mathcal{A}(\Dataset) \in S] \leq e^{\epsilon} \times \Prob[\mathcal{A}(\Dataset') \in S] + \delta.
+        \end{equation}
+    \end{definition}
+    
+    A popular rule of thumb suggests using $\epsilon \leq 10$ and $\delta < \frac{1}{N}$ with $N$ the number of records~\citep{ponomareva2023dp} for mild guarantees. In practice, most classic algorithmic procedures (called \emph{queries} in this context) do not readily fulfill the definition for useful values of $(\epsilon,\delta)$: in particular, randomization is mandatory.  A general recipe to make a query differentially private is to compute its \emph{sensitivity} $\Delta$, and to perturb its output by adding a Gaussian noise of predefined variance~$\zeta^2=\Delta^2\sigma^2$, where the $(\epsilon,\delta)$ guarantees depend on $\sigma$, yielding what is called a \emph{Gaussian mechanism}~\citep{dwork2006calibrating}.
+    \begin{definition}[$l_2$-sensitivity]\label{def:l2sensitivity}
+        Let $\M$ be a query mapping from the space of the datasets to $\Reals^p$. Let $\mathcal{N}$ be the set of all possible pairs of neighboring datasets $\Dataset,\Dataset'$. The $l_2$ sensitivity of $\M$ is defined by: 
+        \begin{equation}
+            \sntv(\M) = \underset{\Dataset,\Dataset' \in \mathcal{N}}{\sup} \|\M(D) - \M(D')\|_2.
+        \end{equation}
+    \end{definition}
+    \vspace{-2mm}
+    This randomization comes at the expense of ``utility'', i.e the usefulness of the output for downstream tasks~\citep{alvim2012differential}. The goal is then to strike a balance between privacy and utility, ensuring that the released information remains useful and informative for the intended purpose while minimizing the risk of privacy breaches. The privacy/utility trade-off yields a Pareto front, materialized by plotting $\epsilon$ 
+    against a measurement of utility, such as validation accuracy for a classification task.    
+
+\begin{figure}
+    \centering
+\begin{lstlisting}[language=Python,
+basicstyle=\ttfamily\footnotesize,
+stringstyle=\color{red}\ttfamily,
+commentstyle=\color{olive}\ttfamily,
+showstringspaces=false,
+breaklines=true,
+frame=lines,
+classoffset=1,
+morekeywords={compile, fit},
+keywordstyle=\color{purple}\bfseries,
+classoffset=2,
+morekeywords={DP_Sequential, DP_BoundedInput, DP_SpectralConv2D,
+DP_GroupSort, DP_ScaledL2NormPooling2D,
+DP_LayerCentering, DP_Flatten, DP_SpectralDense,
+DP_ClipGradient, MulticlassHinge, Adam, DP_Accountant},
+keywordstyle=\color{blue}\bfseries,
+classoffset=3,
+morekeywords={input_shape, upper_bound, filters, kernel_size, strides, pool_size, loss, optimizer, epochs, batch_size, validation_data, callbacks},
+keywordstyle=\color{gray}\bfseries,]
+model = DP_Sequential([ # step 1: use DP_Sequential to build a model
+        # step 2: add Lipschitz layers of known sensitivity
+        DP_BoundedInput(input_shape=(28, 28, 1), upper_bound=20.),
+        DP_SpectralConv2D(filters=16, kernel_size=3, use_bias=False),
+        DP_GroupSort(2),
+        DP_Flatten(),
+        DP_SpectralDense(1)],
+    dp_parameters=dp_parameters,
+    dataset_metadata=dataset_metadata,
+) # step 4: compile the model, and choose any first order optimizer
+model.compile(loss=DP_TauBCE(tau=20.), optimizer=Adam(1e-3)) 
+model.fit( # step 5: train the model and measure the DP guarantees
+    train_dataset, validation_data=val_dataset,
+    epochs=num_epochs, callbacks=[DP_Accountant()]
+)
+\end{lstlisting}
+% noisify_strategy='local' 
+    \caption{\textbf{An example of usage of our framework} \lstinline[basicstyle=\ttfamily, backgroundcolor=\color{gray!20}]{lip-dp}, illustrating how to create a small {Lipschitz~VGG} and how to train it under \DP guarantees while reporting $(\epsilon, \delta)$ values.}
+    \label{fig:pseusocode}
+\end{figure}
+
+    
+\textbf{Differentially Private SGD.} The SGD algorithm consists of a sequence of queries that (i) take the dataset in input, sample a minibatch from it, and return the gradient of the loss evaluated on the minibatch, before (ii) performing a descent step following the gradient direction. In ``add-remove'' neighboring relations, if the gradients are bounded by $K>0$, the sensitivity of the gradients averaged on a minibatch of size $b$ is $\sntv=K/b$. DP-SGD~\citep{abadi2016deep} makes each of these queries private by resorting to the Gaussian mechanism. Crucially, the algorithm requires a bound on gradient norms $\|\nabla_{\theta}\Loss(\yhat,y)\|_2\leq C$. This upper bound on gradient norms is generally unknown in advance, which leads practitioners to clip it to $C>0$, in order to bound the sensitivity manually. Unfortunately, this creates a number of issues: \textbf{1.}~Hyper-parameter search on the broad-range clipping value $C$ is required to train models with good privacy/utility trade-offs~\citep{papernot2022hyperparameter}, \textbf{2.}~The computation of per-sample gradients is expensive: DP-SGD is usually slower and consumes more memory than vanilla SGD, in particular
+    for the large batch sizes often used in private training~\citep{lee2021scaling}, \textbf{3.}~Clipping the per-sample gradients biases their average~\citep{chen2020understanding}. This is problematic as the average direction is mainly driven by misclassified examples. %, which carry the most useful information for future progress, therefore it may induce underfitting.  
+
+\textbf{An unexplored approach: Lipschitz constrained networks.}
+    To avoid these issues, we propose to train neural networks for which the parameter-wise gradients are provably and analytically bounded during the whole training procedure, in order to get rid of the clipping process. This allows for efficient training of models without the need for tedious hyper-parameter optimization. The main reason why this approach has not been experimented much in the past is that upper bounding the gradient of neural networks is often intractable. However, by leveraging the literature on Lipschitz constrained networks introduced by~\cite{anil2019sorting}, we show that these networks have computable bounds for their gradient's norm. This yields tight bounds on the sensitivity of SGD steps, making their transformation into Gaussian mechanisms inexpensive - hence the name \textbf{Clipless DP-SGD}. \rebuttal{Thus, our approach is qualitatively different from methods that replace clipping with re-normalization~\citep{bu2022automatic, yang2022normalized}, or from those that aim to reduce its time and memory footprint~\citep{li2021large,bu2022scalable,he2022exploring,bu2023differentially}. A comparison is made in Appendix~\ref{sec:comparisonsota}.}
+
+    %Our solution comes from the observation that the Lipschitz constant of a function and the norm of its gradient  are two sides of the same coin.
+    The Lipschitz constant of a function and the norm of its gradient  are two sides of the same coin. The function $f:\Reals^m\rightarrow\Reals^n$ is said $\ell$-Lipschitz for $l_2$ norm if for every $x,y\in\Reals^m$ we have $\|f(x)-f(y)\|_2 \leq \ell\|x-y\|_2$. Per Rademacher's theorem~\cite{simon1983lectures}, its gradient is bounded: $\|\nabla_x f\|\leq \ell$. Reciprocally, continuous functions with gradient bounded by $\ell$ are $\ell$-Lipschitz.  
+
+    \rebuttal{A feedforward neural network of depth $D$, with input space $\X\subset\Reals^n$, output space $\Y\subset\Reals^K$ (e.g logits), and parameter space $\Theta\subset \Reals^p$, is a parameterized function $f:\Theta\times\X\rightarrow\Y$ defined by the sequential composition of layers $f_1\ldots f_D$:
+    \begin{align}
+        f(\theta, x) \defeq \left(f_D(\theta_D) \circ \ldots \circ f_2(\theta_2) \circ f_1(\theta_1)\right)(x).
+    \end{align}
+    The parameters of the layers are denoted by $\theta=(\theta_d)_{1\leq d\leq D}\in\Theta$. For affine layers, it corresponds to bias and weight matrix $\theta_d=(W_d,b_d)$. For activation functions, there are no parameters: $\theta_d=\varnothing$. Feedforward networks include notably Fully Connected networks, CNN, Resnets, or MLP mixers.  
+
+    \begin{definition}[Lipschitz feed-forward neural network]\label{def:feedforwardlipnet}
+    Lipschitz networks are feedforward networks, with the additional constraint that each layer~${x_d\mapsto f_d(\theta_d,x_d) \defeq y_d}$ is $\ell_d$-Lipschitz for all $\theta_d$. Consequently, the function ${x\mapsto f(\theta, x)}$ is $\ell$-Lipschitz with~${\ell=\ell_1\times\ldots\times \ell_D}$ for all $\theta\in\Theta$.
+    \end{definition}}  
+
+    % Note that the most common architectures, such as Convolutional Neural Networks (CNNs), Fully Connected Networks (FCNs), Residual Networks (ResNets), or patch-based classifiers (like MLP-Mixers), all fall under the category of feed-forward networks. %We will also tackle the particular case of Gradient Norm Preserving networks, a subset of Lipschitz networks that enjoy tighter bounds. % (see Theorem~\ref{infthm:nablalossgrad}).  
+
+    The literature has predominantly focused on investigating the control of Lipschitzness with respect to the inputs (i.e bounding $\nabla_x f$), primarily motivated by concerns of robustness~\citep{szegedy2013,li2019preventing,fazlyab2019efficient}, or improved generalization~\citep{bartlett2017spectrally, bethune2022pay}. However, in this work, we will demonstrate that it is also possible to control Lipschitzness with respect to parameters (i.e bounding $\nabla_{\theta} f$), which is essential for ensuring privacy. Our first contribution will point out the tight link that exists between those two quantities. The closest work to ours is~\cite{shavit2019exploring}, where a Lipschitz network is used as a general function approximator of bounded sensitivity $\|\nabla_x f(\theta,x)\|_2$, but to this day the sensitivity of the gradient query $x\mapsto \nabla_{\theta}f(\theta,x)$ itself remains largely unexplored. The idea of using automatic differentiation to compute sensitivity bounds has also been discussed in~\cite{ziller2021sensitivity} and~\cite{usynin2021automatic}.  
+    
+\textbf{Contributions}.  While the properties of Lipschitz constrained networks regarding their inputs are well explored, the properties with respect to their parameters remain non-trivial. This work provides a first step to fill this gap: our analysis shows that under appropriate architectural constraints, a $l$-Lipschitz network has a tractable, finite Lipschitz constant with respect to its parameters, which allows for easy estimation of the sensitivity of the gradient computation queries. Our contributions are the following:
+    \begin{compactenum} 
+        \item We extend the field of applications of Lipschitz constrained neural networks. We extend the framework to \textbf{compute the Lipschitzness with respect to the parameters}. This general framework allows to track \textit{layer-wise} sensitivities that depends on the loss and the model's structure. This is exposed in Section~\ref{sec:framework}. We show that SGD training of deep neural networks can be achieved \textbf{without per-sample gradient clipping} using Lipschitz constrained layers.
+        \item We establish connections  between Gradient Norm Preserving (GNP) networks and improved privacy/utility trade-offs (Section~\ref{sec:gnp}). To the best of our knowledge, \textbf{we are the first ones to produce neural networks benefiting from both Lipschitz-based robustness certificates and privacy guarantees}.
+        \item Finally, a \textbf{Python package} companions the project, with pre-computed Lipschitz constants for each loss and each layer type. This is exposed in Section~\ref{sec:lipdp}. It covers widely used architectures, including VGG, ResNets or MLP Mixers. Our package enables the use of larger networks and larger batch sizes, as illustrated by our experiments in Section~\ref{sec:experiments}.
+    \end{compactenum}
+        %\item We extend the field of applications of Lipschitz neural networks. So far the literature focused of Lipschitzness with respect to the \textit{inputs}: we extend the framework to %\textbf{compute the Lipschitzness with respect to the parameters}. This is exposed in Section~\ref{sec:framework}.
+        %\item We propose a \textbf{general framework to train differentially private Lipschitz networks without clipping}. We offer two methods of accounting and cover widely used architectures, including VGG, ResNet, and MLPMixer. This framework permits the use of larger networks and batch sizes than its classical DP-SGD with clipping counterpart (see Section~\ref{sec:experiments}).
+        %\item Finally a \textbf{Python package}\footnote{Code can be found here: TODO} companions the project, with pre-computed Lipschitz constant and noise for each layer type, and examples on various datasets, ready to be forked on any other problems of interest.
+    

@@ -1,0 +1,76 @@
+\theoremstyle{plain}
+\theoremstyle{definition} 
+\newtheorem{innercustomthm}{Theorem}
+\newenvironment{customthm}[1]
+  {\renewcommand\theinnercustomthm{#1}\innercustomthm}
+  {\endinnercustomthm}
+
+\theoremstyle{remark}
+
+% --- inline annotations
+%
+\newcommand{\red}[1]{{\color{red}#1}}
+\newcommand{\TODO}[1]{\textbf{\color{red}[TODO: #1]}}
+
+\newcommand{\impossible}{\color{red}{\ding{55}}}
+\newcommand{\possible}{\color{green}{\checkmark}}
+\newcommand{\Reals}{\mathbb{R}}
+\newcommand{\CalDataset}{\mathcal{D}_\mathrm{cal}}
+\newcommand{\HoldoutDataset}{\mathcal{D}_\mathrm{eval}}
+\newcommand{\TestDataset}{\mathcal{D}_\mathrm{test}}
+\newcommand{\Xt}{X_\mathrm{test}}
+\newcommand{\Yt}{Y_\mathrm{test}}
+\newcommand{\XYt}{\Xt, \Yt}
+
+\newcommand{\XYi}{X_i, Y_i}
+\newcommand{\ind}{\perp\!\!\!\!\perp} 
+\newcommand{\calthreshold}{q_{\alpha}}
+\newcommand{\robustcalthreshold}{\Tilde{q}_{\alpha}}
+\newcommand{\metapredset}{\mathcal{M}_{\alpha,\epsilon}}
+\newcommand{\predset}{\mathcal{C}_{\alpha}}
+\newcommand{\robustpredset}{\overline{\mathcal{C}}_{\alpha, \epsilon}}
+\newcommand{\advpredset}{\Tilde{\mathcal{C}}_{\alpha, \epsilon}}
+\newcommand{\alphamin}{\hat{\alpha}_{min}}
+\newcommand{\alphamax}{\hat{\alpha}_{max}}
+\newcommand{\inputspace}{\mathcal{X}}
+\newcommand{\labelspace}{\mathcal{Y}}
+\newcommand{\gt}{y_{\text{true}}}
+\newcommand{\robconformal}{\mathcal{R}_{\text{conformal}}}
+\newcommand{\boule}{\mathcal{B}}
+\newcommand{\bouleps}{\mathcal{B}_\epsilon}
+\newcommand{\unionmetaset}{\overline{\mathcal{C}}_{\alpha, \epsilon}}
+\newcommand{\intermetaset}{\underline{\mathcal{C}}_{\alpha, \epsilon}}
+
+\newcommand{\R}{\mathbb{R}}
+\DeclarePairedDelimiter\Brackets{\llbracket}{\rrbracket}
+\DeclarePairedDelimiterX{\norm}[1]{\lVert}{\rVert}{#1}
+\DeclarePairedDelimiterX{\abs}[1]{\lvert}{\rvert}{#1}
+\newcommand{\Prob}{\mathbb{P}}
+\newcommand{\Ex}[1]{\mathbb{E}\left[#1\right]}
+\newcommand{\Prcal}[1]{\Prob_{\CalDataset}\!\left(#1\right)}
+\newcommand{\Prhol}[1]{\Prob_{\HoldoutDataset}\!\left(#1\right)}
+\newcommand{\Prtes}[1]{\Prob_{\TestDataset}\!\left(#1\right)}
+\newcommand{\cov}{\gamma}
+\newcommand{\covmax}{\overline{\gamma}}
+\newcommand{\covmin}{\underline{\gamma}}
+\newcommand{\covmaxm}{\covmax_{m}}
+\newcommand{\covminm}{\covmin_{m}}
+\newcommand{\covmaxmp}{\covmaxm^{+}}
+\newcommand{\covminmm}{\covminm^{-}}
+\newcommand{\sss}{\mathrm{SS}}
+\newcommand{\ssmax}{\Bar{\mathrm{SS}}}
+\newcommand{\ssmin}{\underline{\mathrm{SS}}}
+\newcommand{\ssmaxm}{\ssmax_{m}}
+\newcommand{\ssminm}{\ssmin_{m}}
+\newcommand{\ssmaxmp}{\ssmaxm^{+}}
+\newcommand{\ssminmm}{\ssminm^{-}}
+\newcommand{\Epsilon}{\mathcal{E}}
+
+\newcommand{\eqdef}{\stackrel{\mathrm{def}}{=}}
+\newcommand{\eqas}{\stackrel{\mathrm{a.s.}}{=}}
+\newcommand{\geqas}{\stackrel{\mathrm{a.s.}}{\geq}}
+\newcommand{\sie}{\underline{s}_{\epsilon}}
+\newcommand{\sse}{\Bar{s}_{\epsilon}}
+
+%Bold mathcal
+\DeclareMathAlphabet\mathbfcal{OMS}{cmsy}{b}{n}

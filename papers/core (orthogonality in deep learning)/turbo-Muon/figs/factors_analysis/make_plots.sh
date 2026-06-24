@@ -1,1 +1,0 @@
-python unify_plots.py --csv *.csv --legend-outside --paper --line-width 5.0 --marker-size 10.0 --font-size 15 --pareto-figwidth 6.0 --pareto-figheight 4.0 --baseline-algo PolarExpress

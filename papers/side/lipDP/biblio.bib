@@ -1,0 +1,803 @@
+%%%% LIPSCHITZ NETWORKS
+
+@inproceedings{
+bethune2022pay,
+title={Pay attention to your loss : understanding misconceptions about Lipschitz neural networks},
+author={Louis B{\'e}thune and Thibaut Boissin and Mathieu Serrurier and Franck Mamalet and Corentin Friedrich and Alberto Gonzalez Sanz},
+booktitle={Advances in Neural Information Processing Systems},
+editor={Alice H. Oh and Alekh Agarwal and Danielle Belgrave and Kyunghyun Cho},
+year={2022},
+url={https://openreview.net/forum?id=BRIL0EFvTgc}
+}
+
+@inproceedings{anil2019sorting,
+  title={Sorting out lipschitz function approximation},
+  author={Anil, Cem and Lucas, James and Grosse, Roger},
+  booktitle={International Conference on Machine Learning},
+  pages={291--301},
+  year={2019},
+  organization={PMLR}
+}
+
+@inproceedings{li2019preventing,
+  volume = {32},
+  year = {2019},
+  address = {Cambridge, MA},
+  publisher = {MIT Press},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  title = {Preventing Gradient Attenuation in Lipschitz Constrained Convolutional Networks},
+  author = {Li, Qiyang and Haque, Saminul and Anil, Cem and Lucas, James and Grosse, Roger B and Jacobsen, J{\"o}rn-Henrik},
+}
+
+@inproceedings{mhammedi2017efficient,
+  title={Efficient orthogonal parametrisation of recurrent neural networks using householder reflections},
+  author={Mhammedi, Zakaria and Hellicar, Andrew and Rahman, Ashfaqur and Bailey, James},
+  booktitle={International Conference on Machine Learning},
+  pages={2401--2409},
+  year={2017},
+  organization={PMLR}
+}
+
+@inproceedings{bartlett2017spectrally,
+  title={Spectrally-normalized margin bounds for neural networks},
+  author={Bartlett, Peter L and Foster, Dylan J and Telgarsky, Matus},
+  booktitle={Proceedings of the 31st International Conference on Neural Information Processing Systems},
+  pages={6241--6250},
+  year={2017}
+}
+
+@inproceedings{wang2023direct,
+  title={Direct parameterization of lipschitz-bounded deep networks},
+  author={Wang, Ruigang and Manchester, Ian},
+  booktitle={International Conference on Machine Learning},
+  pages={36093--36110},
+  year={2023},
+  organization={PMLR}
+}
+
+
+
+@article{yoshida2017spectral,
+  title={Spectral norm regularization for improving the generalizability of deep learning},
+  author={Yoshida, Yuichi and Miyato, Takeru},
+  journal={arXiv preprint arXiv:1705.10941},
+  year={2017}
+}
+
+@inproceedings{serrurier2021achieving,
+  title={Achieving robustness in classification using optimal transport with hinge regularization},
+  author={Serrurier, Mathieu and Mamalet, Franck and Gonz{\'a}lez-Sanz, Alberto and Boissin, Thibaut and Loubes, Jean-Michel and Del Barrio, Eustasio},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={505--514},
+  year={2021}
+}
+
+@article{fazlyab2019efficient,
+  title={Efficient and accurate estimation of lipschitz constants for deep neural networks},
+  author={Fazlyab, Mahyar and Robey, Alexander and Hassani, Hamed and Morari, Manfred and Pappas, George},
+  journal={Advances in Neural Information Processing Systems},
+  volume={32},
+  year={2019}
+}
+
+@inproceedings{meunier2022dynamical,
+  title={A dynamical system perspective for Lipschitz neural networks},
+  author={Meunier, Laurent and Delattre, Blaise J and Araujo, Alexandre and Allauzen, Alexandre},
+  booktitle={International Conference on Machine Learning},
+  pages={15484--15500},
+  year={2022},
+  organization={PMLR}
+}
+
+@inproceedings{cisse2017parseval,
+  title={Parseval networks: Improving robustness to adversarial examples},
+  author={Cisse, Moustapha and Bojanowski, Piotr and Grave, Edouard and Dauphin, Yann and Usunier, Nicolas},
+  booktitle={International Conference on Machine Learning},
+  pages={854--863},
+  year={2017},
+  organization={PMLR}
+}
+
+@inproceedings{gulrajani2017improved,
+ author = {Gulrajani, Ishaan and Ahmed, Faruk and Arjovsky, Martin and Dumoulin, Vincent and Courville, Aaron C},
+ booktitle = {Advances in Neural Information Processing Systems},
+ pages = {5767--5777},
+ publisher = {Curran Associates, Inc.},
+ title = {Improved Training of Wasserstein GANs},
+ volume = {30},
+ year = {2017}
+}
+
+@article{virmaux2018lipschitz,
+  title={Lipschitz regularity of deep neural networks: analysis and efficient estimation},
+  author={Virmaux, Aladin and Scaman, Kevin},
+  journal={Advances in Neural Information Processing Systems},
+  volume={31},
+  year={2018}
+}
+
+@article{achour2022existence,
+  title={Existence, stability and scalability of orthogonal convolutional neural networks},
+  author={Achour, El Mehdi and Malgouyres, Fran{\c{c}}ois and Mamalet, Franck},
+  journal={The Journal of Machine Learning Research},
+  volume={23},
+  number={1},
+  pages={15743--15798},
+  year={2022},
+  publisher={JMLRORG}
+}
+
+@book{absil2008optimization,
+  title={Optimization algorithms on matrix manifolds},
+  author={Absil, P-A and Mahony, Robert and Sepulchre, Rodolphe},
+  year={2008},
+  publisher={Princeton University Press}
+}
+
+@article{miyato2018spectral,
+  title={Spectral normalization for generative adversarial networks},
+  author={Miyato, Takeru and Kataoka, Toshiki and Koyama, Masanori and Yoshida, Yuichi},
+  journal={arXiv preprint arXiv:1802.05957},
+  year={2018}
+}
+
+@inproceedings{arjovsky2017wasserstein,
+  title={Wasserstein generative adversarial networks},
+  author={Arjovsky, Martin and Chintala, Soumith and Bottou, L{\'e}on},
+  booktitle={International conference on machine learning},
+  pages={214--223},
+  year={2017},
+  organization={PMLR}
+}
+
+@inproceedings{tanielian2021approximating,
+  title={Approximating Lipschitz continuous functions with GroupSort neural networks},
+  author={Tanielian, Ugo and Biau, Gerard},
+  booktitle={International Conference on Artificial Intelligence and Statistics},
+  pages={442--450},
+  year={2021},
+  organization={PMLR}
+}
+
+@article{li2019orthogonal,
+  title={Orthogonal deep neural networks},
+  author={Li, Shuai and Jia, Kui and Wen, Yuxin and Liu, Tongliang and Tao, Dacheng},
+  journal={IEEE transactions on pattern analysis and machine intelligence},
+  volume={43},
+  number={4},
+  pages={1352--1368},
+  year={2019},
+  publisher={IEEE}
+}
+
+@article{xu2022lot,
+  title={LOT: Layer-wise Orthogonal Training on Improving l2 Certified Robustness},
+  author={Xu, Xiaojun and Li, Linyi and Li, Bo},
+  journal={arXiv preprint arXiv:2210.11620},
+  year={2022}
+}
+
+@article{singla2022improved,
+  title={Improved techniques for deterministic l2 robustness},
+  author={Singla, Sahil and Feizi, Soheil},
+  journal={arXiv preprint arXiv:2211.08453},
+  year={2022}
+}
+
+@inproceedings{singla2021fantastic,
+  title={Fantastic Four: Differentiable Bounds on Singular Values of Convolution Layers},
+  author={Singla, S and Feizi, S},
+  booktitle={International Conference on Learning Representations (ICLR)},
+  year={2021}
+}
+
+@article{chernodub2016norm,
+  title={Norm-preserving orthogonal permutation linear unit activation functions (oplu)},
+  author={Chernodub, Artem and Nowicki, Dimitri},
+  journal={arXiv preprint arXiv:1604.02313},
+  year={2016}
+}
+
+@article{gouk2021regularisation,
+  title={Regularisation of neural networks by enforcing lipschitz continuity},
+  author={Gouk, Henry and Frank, Eibe and Pfahringer, Bernhard and Cree, Michael J},
+  journal={Machine Learning},
+  volume={110},
+  pages={393--416},
+  year={2021},
+  publisher={Springer}
+}
+
+@inproceedings{
+trockman2021orthogonalizing,
+title={Orthogonalizing Convolutional Layers with the Cayley Transform},
+author={Asher Trockman and J Zico Kolter},
+booktitle={International Conference on Learning Representations},
+year={2021},
+url={https://openreview.net/forum?id=Pbj8H_jEHYv}
+}
+
+@inproceedings{singla2021skew,
+  title={Skew orthogonal convolutions},
+  author={Singla, Sahil and Feizi, Soheil},
+  booktitle={International Conference on Machine Learning},
+  pages={9756--9766},
+  year={2021},
+  organization={PMLR}
+}
+
+%%%% Differential Privacy
+
+@article{sander2022tan,
+  title={TAN without a burn: Scaling Laws of DP-SGD},
+  author={Sander, Tom and Stock, Pierre and Sablayrolles, Alexandre},
+  journal={arXiv preprint arXiv:2210.03403},
+  year={2022}
+}
+
+@article{ponomareva2023dp,
+  title={How to DP-fy ML: A Practical Guide to Machine Learning with Differential Privacy},
+  author={Ponomareva, Natalia and Hazimeh, Hussein and Kurakin, Alex and Xu, Zheng and Denison, Carson and McMahan, H Brendan and Vassilvitskii, Sergei and Chien, Steve and Thakurta, Abhradeep},
+  journal={arXiv preprint arXiv:2303.00654},
+  year={2023}
+}
+
+@article{balle2018privacy,
+  title={Privacy amplification by subsampling: Tight analyses via couplings and divergences},
+  author={Balle, Borja and Barthe, Gilles and Gaboardi, Marco},
+  journal={Advances in Neural Information Processing Systems},
+  volume={31},
+  year={2018}
+}
+
+@inproceedings{abadi2016deep,
+  title={Deep learning with differential privacy},
+  author={Abadi, Martin and Chu, Andy and Goodfellow, Ian and McMahan, H Brendan and Mironov, Ilya and Talwar, Kunal and Zhang, Li},
+  booktitle={Proceedings of the 2016 ACM SIGSAC conference on computer and communications security},
+  pages={308--318},
+  year={2016}
+}
+
+@article{usynin2021automatic,
+  title={An automatic differentiation system for the age of differential privacy},
+  author={Usynin, Dmitrii and Ziller, Alexander and Knolle, Moritz and Trask, Andrew and Prakash, Kritika and Rueckert, Daniel and Kaissis, Georgios},
+  journal={arXiv preprint arXiv:2109.10573},
+  year={2021}
+}
+
+@inproceedings{dwork2006calibrating,
+  title={Calibrating noise to sensitivity in private data analysis},
+  author={Dwork, Cynthia and McSherry, Frank and Nissim, Kobbi and Smith, Adam},
+  booktitle={Theory of Cryptography: Third Theory of Cryptography Conference, TCC 2006, New York, NY, USA, March 4-7, 2006. Proceedings 3},
+  pages={265--284},
+  year={2006},
+  organization={Springer}
+}
+
+@inproceedings{dwork2006our,
+  title={Our data, ourselves: Privacy via distributed noise generation},
+  author={Dwork, Cynthia and Kenthapadi, Krishnaram and McSherry, Frank and Mironov, Ilya and Naor, Moni},
+  booktitle={Advances in Cryptology-EUROCRYPT 2006: 24th Annual International Conference on the Theory and Applications of Cryptographic Techniques, St. Petersburg, Russia, May 28-June 1, 2006. Proceedings 25},
+  pages={486--503},
+  year={2006},
+  organization={Springer}
+}
+
+@inproceedings{wang2019subsampled,
+  title={Subsampled r{\'e}nyi differential privacy and analytical moments accountant},
+  author={Wang, Yu-Xiang and Balle, Borja and Kasiviswanathan, Shiva Prasad},
+  booktitle={The 22nd International Conference on Artificial Intelligence and Statistics},
+  pages={1226--1235},
+  year={2019},
+  organization={PMLR}
+}
+
+@inproceedings{zhu2019poission,
+  title={Possion subsampled r{\'e}nyi differential privacy},
+  author={Zhu, Yuqing and Wang, Yu-Xiang},
+  booktitle={International Conference on Machine Learning},
+  pages={7634--7642},
+  year={2019},
+  organization={PMLR}
+}
+
+@article{zhu2020improving,
+  title={Improving sparse vector technique with renyi differential privacy},
+  author={Zhu, Yuqing and Wang, Yu-Xiang},
+  journal={Advances in Neural Information Processing Systems},
+  volume={33},
+  pages={20249--20258},
+  year={2020}
+}
+
+@article{mironov2019r,
+  title={R{\'e}enyi differential privacy of the sampled gaussian mechanism},
+  author={Mironov, Ilya and Talwar, Kunal and Zhang, Li},
+  journal={arXiv preprint arXiv:1908.10530},
+  year={2019}
+}
+
+@inproceedings{mironov2017renyi,
+  title={R{\'e}nyi differential privacy},
+  author={Mironov, Ilya},
+  booktitle={2017 IEEE 30th computer security foundations symposium (CSF)},
+  pages={263--275},
+  year={2017},
+  organization={IEEE}
+}
+
+@article{dwork2014algorithmic,
+  title={The algorithmic foundations of differential privacy},
+  author={Dwork, Cynthia and Roth, Aaron and others},
+  journal={Foundations and Trends{\textregistered} in Theoretical Computer Science},
+  volume={9},
+  number={3--4},
+  pages={211--407},
+  year={2014},
+  publisher={Now Publishers, Inc.}
+}
+
+@article{chen2020understanding,
+  title={Understanding gradient clipping in private sgd: A geometric perspective},
+  author={Chen, Xiangyi and Wu, Steven Z and Hong, Mingyi},
+  journal={Advances in Neural Information Processing Systems},
+  volume={33},
+  pages={13773--13782},
+  year={2020}
+}
+
+@misc{tramer2021differentially,
+      title={Differentially Private Learning Needs Better Features (or Much More Data)}, 
+      author={Florian Tramer and Dan Boneh},
+      year={2021},
+      eprint={2011.11660},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
+
+@inproceedings{papernot2021tempered,
+  title={Tempered sigmoid activations for deep learning with differential privacy},
+  author={Papernot, Nicolas and Thakurta, Abhradeep and Song, Shuang and Chien, Steve and Erlingsson, {\'U}lfar},
+  booktitle={Proceedings of the AAAI Conference on Artificial Intelligence},
+  volume={35},
+  pages={9312--9321},
+  year={2021}
+}
+
+@inproceedings{song2019privacy,
+  title={Privacy risks of securing machine learning models against adversarial examples},
+  author={Song, Liwei and Shokri, Reza and Mittal, Prateek},
+  booktitle={Proceedings of the 2019 ACM SIGSAC Conference on Computer and Communications Security},
+  pages={241--257},
+  year={2019}
+}
+
+@article{klause2022differentially,
+  title={Differentially private training of residual networks with scale normalisation},
+  author={Klause, Helena and Ziller, Alexander and Rueckert, Daniel and Hammernik, Kerstin and Kaissis, Georgios},
+  journal={arXiv preprint arXiv:2203.00324},
+  year={2022}
+}
+
+@article{tang2022dp,
+  title={DP-SGD-LF: Improving Utility under Differentially Private Learning via Layer Freezing},
+  author={Tang, Qiaoyue and L{\'e}cuyer, Mathias},
+  journal={openreview preprint},
+  url={https://openreview.net/pdf?id=coLtCLTHFbW},
+  year={2022}
+}
+
+@inproceedings{
+papernot2022hyperparameter,
+title={Hyperparameter Tuning with Renyi Differential Privacy},
+author={Nicolas Papernot and Thomas Steinke},
+booktitle={International Conference on Learning Representations},
+year={2022},
+url={https://openreview.net/forum?id=-70L8lpp9DF}
+}
+
+@article{ding2022revisiting,
+  title={Revisiting Hyperparameter Tuning with Differential Privacy},
+  author={Ding, Youlong and Wu, Xueyang},
+  journal={arXiv preprint arXiv:2211.01852},
+  year={2022}
+}
+
+@inproceedings{mcmahanlearning,
+  title={Learning Differentially Private Recurrent Language Models},
+  author={McMahan, H Brendan and Ramage, Daniel and Talwar, Kunal and Zhang, Li},
+  booktitle={International Conference on Learning Representations},
+  year={2018}
+}
+
+@article{andrew2021differentially,
+  title={Differentially private learning with adaptive clipping},
+  author={Andrew, Galen and Thakkar, Om and McMahan, Brendan and Ramaswamy, Swaroop},
+  journal={Advances in Neural Information Processing Systems},
+  volume={34},
+  pages={17455--17466},
+  year={2021}
+}
+
+@inproceedings{alvim2012differential,
+  title={Differential privacy: on the trade-off between utility and information leakage},
+  author={Alvim, M{\'a}rio S and Andr{\'e}s, Miguel E and Chatzikokolakis, Konstantinos and Degano, Pierpaolo and Palamidessi, Catuscia},
+  booktitle={Formal Aspects of Security and Trust: 8th International Workshop, FAST 2011, Leuven, Belgium, September 12-14, 2011. Revised Selected Papers 8},
+  pages={39--54},
+  year={2012},
+  organization={Springer}
+}
+
+@article{lee2021scaling,
+  title={Scaling up differentially private deep learning with fast per-example gradient clipping},
+  author={Lee, Jaewoo and Kifer, Daniel},
+  journal={Proceedings on Privacy Enhancing Technologies},
+  volume={2021},
+  number={1},
+  year={2021}
+}
+
+@article{de2022unlocking,
+  title={Unlocking high-accuracy differentially private image classification through scale},
+  author={De, Soham and Berrada, Leonard and Hayes, Jamie and Smith, Samuel L and Balle, Borja},
+  journal={arXiv preprint arXiv:2204.13650},
+  year={2022}
+}
+
+@techreport{shavit2019exploring,
+  title={Exploring the use of Lipschitz Neural Networks for Automating the Design of Differentially Private Mechanisms},
+  author={Shavit, Yonadav and Gjura, Boriana},
+  year={2019},
+  institution={Technical Report}
+}
+
+@article{wu2023augment,
+  title={Augment then Smooth: Reconciling Differential Privacy with Certified Robustness},
+  author={Wu, Jiapeng and Ghomi, Atiyeh Ashari and Glukhov, David and Cresswell, Jesse C and Boenisch, Franziska and Papernot, Nicolas},
+  journal={arXiv preprint arXiv:2306.08656},
+  year={2023}
+}
+
+@inproceedings{zhang2019theoretically,
+  title={Theoretically principled trade-off between robustness and accuracy},
+  author={Zhang, Hongyang and Yu, Yaodong and Jiao, Jiantao and Xing, Eric and El Ghaoui, Laurent and Jordan, Michael},
+  booktitle={International conference on machine learning},
+  pages={7472--7482},
+  year={2019},
+  organization={PMLR}
+}
+
+@article{ziller2021sensitivity,
+  title={Sensitivity analysis in differentially private machine learning using hybrid automatic differentiation},
+  author={Ziller, Alexander and Usynin, Dmitrii and Knolle, Moritz and Prakash, Kritika and Trask, Andrew and Braren, Rickmer and Makowski, Marcus and Rueckert, Daniel and Kaissis, Georgios},
+  journal={arXiv preprint arXiv:2107.04265},
+  year={2021}
+}
+
+@inproceedings{shokri2017membership,
+  title={Membership inference attacks against machine learning models},
+  author={Shokri, Reza and Stronati, Marco and Song, Congzheng and Shmatikov, Vitaly},
+  booktitle={2017 IEEE symposium on security and privacy (SP)},
+  pages={3--18},
+  year={2017},
+  organization={IEEE}
+}
+
+@inproceedings{song2021systematic,
+  title={Systematic evaluation of privacy risks of machine learning models},
+  author={Song, Liwei and Mittal, Prateek},
+  booktitle={30th USENIX Security Symposium (USENIX Security 21)},
+  pages={2615--2632},
+  year={2021}
+}
+
+@inproceedings{yeom2018privacy,
+  title={Privacy risk in machine learning: Analyzing the connection to overfitting},
+  author={Yeom, Samuel and Giacomelli, Irene and Fredrikson, Matt and Jha, Somesh},
+  booktitle={2018 IEEE 31st computer security foundations symposium (CSF)},
+  pages={268--282},
+  year={2018},
+  organization={IEEE}
+}
+
+ @InProceedings{pmlr-v97-cohen19c, title = {Certified Adversarial Robustness via Randomized Smoothing}, author = {Cohen, Jeremy and Rosenfeld, Elan and Kolter, Zico}, booktitle = {Proceedings of the 36th International Conference on Machine Learning}, pages = {1310--1320}, year = {2019}, volume = {97}, series = {Proceedings of Machine Learning Research}, publisher = {PMLR}} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% Others %%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+@book{boucheron2013concentration,
+  title={Concentration inequalities: A nonasymptotic theory of independence},
+  author={Boucheron, St{\'e}phane and Lugosi, G{\'a}bor and Massart, Pascal},
+  year={2013},
+  publisher={Oxford university press}
+}
+
+@article{mcdiarmid1989method,
+  title={On the method of bounded differences},
+  author={McDiarmid, Colin and others},
+  journal={Surveys in combinatorics},
+  volume={141},
+  number={1},
+  pages={148--188},
+  year={1989},
+  publisher={Norwich}
+}
+
+@article{bousquet2002stability,
+  title={Stability and generalization},
+  author={Bousquet, Olivier and Elisseeff, Andr{\'e}},
+  journal={The Journal of Machine Learning Research},
+  volume={2},
+  pages={499--526},
+  year={2002},
+  publisher={JMLR. org}
+}
+
+@article{tolstikhin2021mlp,
+  title={Mlp-mixer: An all-mlp architecture for vision},
+  author={Tolstikhin, Ilya O and Houlsby, Neil and Kolesnikov, Alexander and Beyer, Lucas and Zhai, Xiaohua and Unterthiner, Thomas and Yung, Jessica and Steiner, Andreas and Keysers, Daniel and Uszkoreit, Jakob and others},
+  journal={Advances in neural information processing systems},
+  volume={34},
+  pages={24261--24272},
+  year={2021}
+}
+
+@article{li2017hyperband,
+  title={Hyperband: A novel bandit-based approach to hyperparameter optimization},
+  author={Li, Lisha and Jamieson, Kevin and DeSalvo, Giulia and Rostamizadeh, Afshin and Talwalkar, Ameet},
+  journal={The Journal of Machine Learning Research},
+  volume={18},
+  number={1},
+  pages={6765--6816},
+  year={2017},
+  publisher={JMLR. org}
+}
+
+@InProceedings{szegedy2013,
+  author    = {Christian Szegedy and Wojciech Zaremba and Ilya Sutskever and Joan Bruna and Dumitru Erhan and Ian Goodfellow and Rob Fergus},
+  title     = {Intriguing properties of neural networks},
+  booktitle = {International Conference on Learning Representations},
+  year      = {2014},
+  url       = {http://arxiv.org/abs/1312.6199},
+}
+
+@misc{airbus,
+  author = {Airbus},
+  title = {Decomon},
+  year = {2023},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/airbus/decomon}},
+}
+
+@article{xu2020automatic,
+  title={Automatic perturbation analysis for scalable certified robustness and beyond},
+  author={Xu, Kaidi and Shi, Zhouxing and Zhang, Huan and Wang, Yihan and Chang, Kai-Wei and Huang, Minlie and Kailkhura, Bhavya and Lin, Xue and Hsieh, Cho-Jui},
+  journal={Advances in Neural Information Processing Systems},
+  volume={33},
+  pages={1129--1141},
+  year={2020}
+}
+
+@article{goldberg1991every,
+  title={What every computer scientist should know about floating-point arithmetic},
+  author={Goldberg, David},
+  journal={ACM computing surveys (CSUR)},
+  volume={23},
+  number={1},
+  pages={5--48},
+  year={1991},
+  publisher={ACM New York, NY, USA}
+}
+
+@article{olah2017feature,
+  author = {Olah, Chris and Mordvintsev, Alexander and Schubert, Ludwig},
+  title = {Feature Visualization},
+  journal = {Distill},
+  year = {2017},
+  note = {https://distill.pub/2017/feature-visualization},
+  doi = {10.23915/distill.00007}
+}
+
+@article{snoek2012practical,
+  title={Practical bayesian optimization of machine learning algorithms},
+  author={Snoek, Jasper and Larochelle, Hugo and Adams, Ryan P},
+  journal={Advances in neural information processing systems},
+  volume={25},
+  year={2012}
+}
+
+@article{singh2019abstract,
+  title={An abstract domain for certifying neural networks},
+  author={Singh, Gagandeep and Gehr, Timon and P{\"u}schel, Markus and Vechev, Martin},
+  journal={Proceedings of the ACM on Programming Languages},
+  volume={3},
+  number={POPL},
+  pages={1--30},
+  year={2019},
+  publisher={ACM New York, NY, USA}
+}
+
+@article{zhang2018efficient,
+  title={Efficient neural network robustness certification with general activation functions},
+  author={Zhang, Huan and Weng, Tsui-Wei and Chen, Pin-Yu and Hsieh, Cho-Jui and Daniel, Luca},
+  journal={Advances in neural information processing systems},
+  volume={31},
+  year={2018}
+}
+
+@misc{chollet2015keras,
+  title={Keras},
+  author={Chollet, Francois and others},
+  year={2015},
+  publisher={GitHub},
+  url={https://github.com/fchollet/keras},
+} 
+
+@article{bubeck2015convex,
+  title={Convex optimization: Algorithms and complexity},
+  author={Bubeck, S{\'e}bastien and others},
+  journal={Foundations and Trends{\textregistered} in Machine Learning},
+  volume={8},
+  number={3-4},
+  pages={231--357},
+  year={2015},
+  publisher={Now Publishers, Inc.}
+}
+
+@inproceedings{jooybar2013gpudet,
+  title={GPUDet: a deterministic GPU architecture},
+  author={Jooybar, Hadi and Fung, Wilson WL and O'Connor, Mike and Devietti, Joseph and Aamodt, Tor M},
+  booktitle={Proceedings of the eighteenth international conference on Architectural support for programming languages and operating systems},
+  pages={1--12},
+  year={2013}
+}
+
+@book{simon1983lectures,
+  title={Lectures on geometric measure theory},
+  author={Simon, Leon and others},
+  year={1983},
+  publisher={The Australian National University, Mathematical Sciences Institute, Centre~…}
+}
+
+@misc{TensorFlow,
+title	= {TensorFlow: Large-Scale Machine Learning on Heterogeneous Distributed Systems},
+author	= {Martín Abadi and Ashish Agarwal and Paul Barham and Eugene Brevdo and Zhifeng Chen and Craig Citro and Greg Corrado and Andy Davis and Jeffrey Dean and Matthieu Devin and Sanjay Ghemawat and Ian Goodfellow and Andrew Harp and Geoffrey Irving and Michael Isard and Yangqing Jia and Rafal Jozefowicz and Lukasz Kaiser and Manjunath Kudlur and Josh Levenberg and Dan Mane and Rajat Monga and Sherry Moore and Derek Murray and Chris Olah and Mike Schuster and Jonathon Shlens and Benoit Steiner and Ilya Sutskever and Kunal Talwar and Paul Tucker and Vincent Vanhoucke and Vijay Vasudevan and Fernanda Viegas and Oriol Vinyals and Pete Warden and Martin Wattenberg and Martin Wicke and Yuan Yu and Xiaoqiang Zheng},
+year	= {2015},
+URL	= {http://download.tensorflow.org/paper/whitepaper2015.pdf}
+}
+
+@article{paszke2019pytorch,
+  title={Pytorch: An imperative style, high-performance deep learning library},
+  author={Paszke, Adam and Gross, Sam and Massa, Francisco and Lerer, Adam and Bradbury, James and Chanan, Gregory and Killeen, Trevor and Lin, Zeming and Gimelshein, Natalia and Antiga, Luca and others},
+  journal={Advances in neural information processing systems},
+  volume={32},
+  year={2019}
+}
+
+@inproceedings{han2022adbench,  
+      title={ADBench: Anomaly Detection Benchmark},   
+      author={Songqiao Han and Xiyang Hu and Hailiang Huang and Mingqi Jiang and Yue Zhao},  
+      booktitle={Neural Information Processing Systems (NeurIPS)},
+      year={2022},  
+}
+
+@book{trefethen2022numerical,
+  title={Numerical linear algebra},
+  author={Trefethen, Lloyd N and Bau, David},
+  volume={181},
+  year={2022},
+  publisher={Siam}
+}
+
+@book{boyd2004convex,
+  title={Convex optimization},
+  author={Boyd, Stephen P and Vandenberghe, Lieven},
+  year={2004},
+  publisher={Cambridge university press}
+}
+
+@book{villani2008optimal,
+  title={Optimal transport: old and new},
+  author={Villani, C{\'e}dric},
+  volume={338},
+  year={2008},
+  publisher={Springer Science \& Business Media}
+}
+
+@inproceedings{pascanu2013difficulty,
+  title={On the difficulty of training recurrent neural networks},
+  author={Pascanu, Razvan and Mikolov, Tomas and Bengio, Yoshua},
+  booktitle={International conference on machine learning},
+  pages={1310--1318},
+  year={2013},
+  organization={Pmlr}
+}
+
+@article{bengio1994learning,
+  title={Learning long-term dependencies with gradient descent is difficult},
+  author={Bengio, Yoshua and Simard, Patrice and Frasconi, Paolo},
+  journal={IEEE transactions on neural networks},
+  volume={5},
+  number={2},
+  pages={157--166},
+  year={1994},
+  publisher={IEEE}
+}
+
+@article{simonyan2014very,
+  title={Very deep convolutional networks for large-scale image recognition},
+  author={Simonyan, Karen and Zisserman, Andrew},
+  journal={arXiv preprint arXiv:1409.1556},
+  year={2014}
+}
+
+@inproceedings{he2016deep,
+  title={Deep residual learning for image recognition},
+  author={He, Kaiming and Zhang, Xiangyu and Ren, Shaoqing and Sun, Jian},
+  booktitle={Proceedings of the IEEE conference on computer vision and pattern recognition},
+  pages={770--778},
+  year={2016}
+}
+
+@article{yang2020closer,
+  title={A closer look at accuracy vs. robustness},
+  author={Yang, Yao-Yuan and Rashtchian, Cyrus and Zhang, Hongyang and Salakhutdinov, Russ R and Chaudhuri, Kamalika},
+  journal={Advances in Neural Information Processing Systems},
+  volume={33},
+  year={2020}
+}
+
+@article{bu2022automatic,
+  title={Automatic clipping: Differentially private deep learning made easier and stronger},
+  author={Bu, Zhiqi and Wang, Yu-Xiang and Zha, Sheng and Karypis, George},
+  journal={arXiv preprint arXiv:2206.07136},
+  year={2022}
+}
+
+@article{yang2022normalized,
+  title={Normalized/clipped sgd with perturbation for differentially private non-convex optimization},
+  author={Yang, Xiaodong and Zhang, Huishuai and Chen, Wei and Liu, Tie-Yan},
+  journal={arXiv preprint arXiv:2206.13033},
+  year={2022}
+}
+
+@article{bu2022scalable,
+  title={Scalable and efficient training of large convolutional neural networks with differential privacy},
+  author={Bu, Zhiqi and Mao, Jialin and Xu, Shiyun},
+  journal={Advances in Neural Information Processing Systems},
+  volume={35},
+  pages={38305--38318},
+  year={2022}
+}
+
+@inproceedings{li2021large,
+  title={Large Language Models Can Be Strong Differentially Private Learners},
+  author={Li, Xuechen and Tramer, Florian and Liang, Percy and Hashimoto, Tatsunori},
+  booktitle={International Conference on Learning Representations},
+  year={2021}
+}
+
+@inproceedings{he2022exploring,
+  title={Exploring the Limits of Differentially Private Deep Learning with Group-wise Clipping},
+  author={He, Jiyan and Li, Xuechen and Yu, Da and Zhang, Huishuai and Kulkarni, Janardhan and Lee, Yin Tat and Backurs, Arturs and Yu, Nenghai and Bian, Jiang},
+  booktitle={The Eleventh International Conference on Learning Representations},
+  year={2022}
+}
+
+@inproceedings{bu2023differentially,
+  title={Differentially private optimization on large model at small cost},
+  author={Bu, Zhiqi and Wang, Yu-Xiang and Zha, Sheng and Karypis, George},
+  booktitle={International Conference on Machine Learning},
+  pages={3192--3218},
+  year={2023},
+  organization={PMLR}
+}
+
+@article{opacus,
+  title={Opacus: {U}ser-Friendly Differential Privacy Library in {PyTorch}},
+  author={Ashkan Yousefpour and Igor Shilov and Alexandre Sablayrolles and Davide Testuggine and Karthik Prasad and Mani Malek and John Nguyen and Sayan Ghosh and Akash Bharadwaj and Jessica Zhao and Graham Cormode and Ilya Mironov},
+  journal={arXiv preprint arXiv:2109.12298},
+  year={2021}
+}

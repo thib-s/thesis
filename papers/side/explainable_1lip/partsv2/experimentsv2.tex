@@ -1,0 +1,23 @@
+We conduct experiments with networks learnt on FashionMNIST~\cite{Xiao2017FashionMNIST}, and 22 binary labels of CelebA~\cite{liu2015faceattributes} datasets, Cat vs Dog (binary classification, 224x224x3 uncentered images),  and Imagenet~\cite{imagenet}. Note that labels in CelebA are very unbalanced (see~Table~2 in Appendix~A.2, with for instance less than $5\%$ samples for \textit{Mustache} or \textit{Wearing\_Hat}).% or \textit{Wearing\_Hat}). 
+
+Architectures used for \otnn s~and unconstrained networks are similar (same number of layers and neurons, a VGG for FashionMNIST and CelebA, a ResNet50 for Cat vs Dog and Imagenet). We also train an alternative of ResNet50 OTNN with twice the number of parameters (50 M).  Unconstrained networks use batchnorm and ReLU layers for activation, whereas \otnn s~only use GroupSort2~\cite{pmlr-v97-anil19a,serrurier2021achieving} activation. \otnn s~are built using the \Deellip library, using Björck orthogonalization projection algorithm for linear layers. Note that several other approaches can be used for orthogonalization without altering the theoretical results; these might potentially enhance experimental outcome scores.
+%*Loss
+The loss functions are cross-entropy for unconstrained networks (categorical for multiclass, and sigmoid for multilabel settings), and hKR \losshkr~(and the multiclass variants see appendix A.2.3) for \otnn s. We train all networks with Adam optimizer~\cite{Diederik14Adam}. Details on architectures and parameters are given in Appendix~A.2.
+
+
+\textbf{Classification performance:} \otnn~models achieve comparable results to  unconstrained ones, confirming claims of~\cite{bethunelip}: they reach 88.5\%
+%\commentgreen{@Mathieu merci de remplir}
+average accuracy on FashionMNIST
+(Table~6), and 81\% (resp. 82\%) average Sensitivity (resp. Specificity) over labels on CelebA (Table~6 in Appendix~A.3). We use  Sensitivity and Specificity for CelebA to take into consideration the unbalanced labels. \otnn s~achieve 96\%  accuracy (98\% for the unconstrained version) on Cat vs Dog and 67\% (75\% for the unconstrained version) on Imagenet. The ResNet50 OTNN with 50M parameters achieves 70\% accuracy on Imagenet. 
+
+%\subsection{Quantitative evaluation of explanations metrics}
+\input{partsv2/megatab}
+\input{partsv2/explanations_metrics2}
+%Reseau normal: Grad => metriques nulles; comparer avec autre methode d'explication
+%Reseau hKR: Grad => metriques++; eventuellement comparer autres explications 
+%Metriques: robustnes-Sr; stability; .... (voir avec thomas les autres potentiellement deja dans xplique qu'on pourrait tester )
+%\subsection{adult} explaination show unfairness
+
+%\subsection{Qualitative results}
+\textbf{Qualitative results: }
+\input{partsv2/qualitative_results_v2}

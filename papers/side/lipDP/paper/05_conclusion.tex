@@ -1,0 +1,12 @@
+% \section{}
+
+\vspace{-0.2cm}
+\section{Limitations, future work and broader impact}
+\vspace{-0.2cm}
+
+Our framework offers a novel approach to address differentially private training, but also introduces new challenges. \rebuttal{Clipless DP-SGD replaces a bias of optimizer with a bias in function space (as discussed in Appendix~\ref{sec:discussionbias}). We primary rely on GNP networks, where high performing architectures are quite different from the usual CNN architectures. This serves as \textbf{(1) a motivation to further develop Gradient Norm Preserving architectures}.} As emphasized in Remark~\ref{remark:gnp}, we anticipate that progress in these areas will greatly enhance the effectiveness of our approach.  
+Additionally, to meet requirement~\ref{req:pgd}, we rely on projections, necessitating additional efforts to incorporate ``trivializations''~\cite{trockman2021orthogonalizing,singla2021skew}. %recent advancements associated with differentiable reparametrizations~\cite{trockman2021orthogonalizing,singla2021skew}.
+Finally, as mentioned in Remark~\ref{remark:forwardbounds}, our propagation bound method can be refined. \rebuttal{Comparison of Clipless DP-SGD with recent methods based on back-propagation, in particular~\cite{bu2023differentially}, is discussed in appendix~\ref{sec:comparisonsota}}. %Beyond the application of Algorithms~\ref{alg:gnbc}~and~\ref{alg:noclipDP-SGDlocal}, our framework provides numerous opportunities to enhance our understanding of prevalent techniques identified in the literature. % An in-depth exploration of these is beyond the scope of this work, so we focus on giving insights on promising tracks based on our theoretical analysis.
+Furthermore, the development of networks with known Lipschitz constant with respect to parameters is a question of independent interest, making \lstinline[basicstyle=\ttfamily, backgroundcolor=\color{gray!20}]{lip-dp} \textbf{(2) a useful tool for the study of the optimization dynamics} in Lipschitz constrained neural networks.
+
+

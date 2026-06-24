@@ -1,0 +1,33 @@
+In this paper, we study the explainability properties of OTNN~(Optimal Transport Neural Networks) 
+that are 1-Lipschitz~constrained neural networks trained with an optimal transport dual loss. 
+We establish that the gradient of the optimal solution aligns with the transportation plan direction,
+and the closest decision boundary point (adversarial example) also lies in this gradient direction at a distance of the absolute value of the network output.  
+Relying on a formal definition of Optimal Transport counterfactuals, we build a link between the OTNN gradients and counterfactual explanations
+%, justifying that 
+. We thus show that
+OTNNs loss jointly targets the classification task and induces a gradient alignment to the transportation plan. 
+%building a counterfactual explanation. 
+%%%%%%These beneficial properties of the gradient substantially enhance the Saliency Map XAI method for \otnn~s.
+The experiments show that the simple Saliency Map has top-rank scores on state-of-the-art XAI metrics, and largely outperforms any method applied to unconstrained networks. 
+%This is illustrated in the experiments which shows that the simple Saliency Map for OTTNs has top-rank scores on state-of-the-art XAI metrics, and largely outperforms any method applied to unconstrained networks. 
+%Besides, as far as we know, our models are the first large provable 1-Lipschitz neural models that match state-of-the-art results on large problems.
+%To the best of our knowledge, our models are also the first large, provable 1-Lipschitz neural models that achieve results on-par with state-of-the-art on large problems. 
+And even if counterfactual explanations are less compelling for Imagenet, probably due to the complexity of transport for 
+large number of classes,
+%multiclass
+ we prove that \otnn s Saliency Maps are impressively aligned to human explanations. 
+
+This paper demonstrates how leveraging an Optimal Transport (OT) objective for classification tasks provides additional interesting properties for critical problems. 
+%1-Lipschitz Neural Networks are known for their certifiable robustness; But, Optimal Transport Neural Networks (OTNNs) offer inherent explainability by design through the utilization of the simple Saliency Map method.
+Besides the well known certifiable robustness of 1-Lipschitz Neural Networks, Optimal Transport Neural Networks (OTNNs) offer inherent explainability by design through the utilization of the simple Saliency Map method.
+%—and is notably aligned with human rationales. 
+Furthermore, our study reveals that OTNNs can achieve accuracy comparable to those of unconstrained networks.
+While the training duration for OTNNs is three to six times longer than that for unconstrained networks, they share comparable computational costs for inference. We hope that this contribution will further add to the growing interest in the application of Optimal Transport for Neural Networks.
+
+
+%We first provide  enhancements of the \losshkr, proposed in\cite{serrurier2021achieving}, reducing the number of hyperparameters and the improving the performances at convergence. 
+%Experiments provide quantitative and qualitative evaluations showing that Saliency Maps for OTNNs have better score than for unconstrained networks, and comparable scores to other XAI methods.To end with we show that Saliency Maps for OTNNs have an unprecedented alignment to human explanations.   
+%OTNNs, because of their connection with optimal transport, structurally produce counterfactual explanations. Indeed, we prove that the gradient of an OTNN at a point represents the direction of the adversarial attack but also of its image in the optimal transport plan, transforming the adversary attacks into an understandable counterfactual explanation.  
+%This is illustrated in the experiment which shows that the simple Saliency Map for OTTNs has top-rank scores on state-of-the-art XAI metrics, and largely outperforms any method applied to unconstrained networks.\commentgreen{Last but not least, we prove that \otnn s Saliency Maps are impressively aligned to human explanations.} 
+
+%\commentgreen{peut etre renommer pour ne pas trop faire post neurips, et developper les points negatifs de notre methode -voir reponse au reviewer-}

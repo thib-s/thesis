@@ -1,0 +1,84 @@
+
+%\commentgreen{In this section, we put aside temporally the explainability to focus on the loss}.
+In this section, we put aside the explainability to focus on hKR loss.
+As pointed out in \cite{bethunelip}, one drawback of working with \onlyonelip~functions is that it depends strongly on the parameters of the loss. In the binary case, \losshkr ~(equation \ref{eq:reg_OT} ) has two parameters : the margin $m$ and the hinge weight $\lambda$. $\lambda$ represents the tradeoff between robustness and accuracy. When the classes are separable and the $m$ is small enough, the hinge part of the loss tends to zero. Since, the parameter $m$ is hard to choose, to we propose a new formulation of the loss as follows:
+
+
+\begin{align}\label{eq:reghrk}
+\begin{split}
+ \mathcal{L}^{hKR}_{\lambda,\alpha}(\f) =&	\underset{\x \sim \dneg}{\mathbb{E}} \left[\f(\x)\right]-\underset{\x \sim \dpos}{\mathbb{E}}\left[\f(\x)\right]\\
+ & +\lambda\left(\underset{(\x, \y) \sim \djoint}{\mathbb{E}} \left(m-\y \f(\x)\right)_+ -\alpha m\right)
+	\end{split}
+\end{align}
+
+%\begin{equation}
+%\label{reghrk}
+%\mathcal{L}^{hKR}_{\lambda,\alpha}(f) =  \underset{\x \sim P_-}{\mathbb{E}} \left[f(\x)\right]-\underset{\x \sim P_+}{\mathbb{E}}\left[f(\x\right]  +\lambda\left(\underset{\x}{\mathbb{E}} \left(m-Yf(\x)\right)_+ +\alpha m\right)
+%\end{equation}
+with $m>0$ a learnable parameter,
+%. In this formulation, $m$ is no more a parameter but a variable to optimize, 
+and $0<\alpha \leq 1$ is a new parameter. It is easy to see that, according to the linear growth of $\alpha m$ and its opposite hinge term, if $\f(\x)$ is uniformly distributed on a bounded interval, the optimal margin $m$ is obtained when the ratio of $\x$ such that $\f(\x)\leq m$ is equal to $\alpha$. The latter  can be interpreted as the target proportion of data that is concerned by the hinge part of the loss. By choosing $\lambda \approx \frac{1}{\alpha}$, the weight of the KR part in the loss will be approximately the same as the hinge part at the end of the optimizing process. With this approach, the only parameter to choose is $\alpha$ which can be interpreted as the approximated error rate targeted in the learning process. 
+
+%\commentgreen{Proposition de changer de titre: A mon avis, vu ce que j'ai du decrire avant, il faudra faire de cette partie une extension au multiclass avec une proposition loss, et expliquer comment on adapte d'explication basée gradient au multiclass; et dire que même si les theoreme ne s'appliquent pas directement au multiclass, on montrera des résultats interessant dans la partie experiments}
+
+An extension has also been proposed in \cite{serrurier2021achieving} to the  multiclass case with $q$ classes. The idea is to learn $q$ \onlyonelip~functions $(\f_1, \ldots, \f_q)$, each component $\f_i$ being a  \textit{one-versus-all} binary classifier. The loss proposed was the following 
+
+
+\iffalse
+\begin{align}\label{eq:hkr_multi}
+\begin{split}
+ \mathcal{L}^{hKR}_\lambda(\f_1,\ldots,\f_q) =&
+ \sum_{k=1}^q \left[\underset{\x \sim \neg P_k}{\mathbb{E}} \left[\f_k(\x)\right] -\underset{\x \sim P_k}{\mathbb{E}}\left[\f_k(\x)\right] \right]
+\\ 
+&+\lambda\underset{(\x,\y) \sim \underset{k=1}{\bigcup^q}P_k
+ }{\mathbb{E}}(H\left(\f_1(\x),\ldots, \f_q(\x) ,\y\right)
+	\end{split}
+\end{align}
+\fi
+
+\begin{align}\label{eq:hkr_multi}
+\begin{split}
+ \mathcal{L}^{hKR}_\lambda(\f_1,\ldots,\f_q) =&
+ \sum_{k=1}^q \left[\underset{\x \sim \neg P_k}{\mathbb{E}} \left[\f_k(\x)\right] -\underset{\x \sim P_k}{\mathbb{E}}\left[\f_k(\x)\right] \right]
+\\ 
+&+\lambda \underset{(\x,\y) \sim \djoint}{\mathbb{E}}(H\left(\f_1(\x),\ldots, \f_q(\x) ,\y\right)
+	\end{split}
+\end{align}
+
+
+%\begin{equation}
+%\label{eq:hkr_multi}
+%\mathcal{L}^{hKR}_\lambda(f_1,\ldots,f_q) = \sum_{k=1}^q \left[\underset{\textbf{x}  \sim \neg P_k}{\mathbb{E}} \left[f_k(\textbf{x})\right] -\underset{\textbf{x} \sim P_k}{\mathbb{E}}\left[f_k(\textbf{x})\right] \right]
+% +\lambda\underset{\textbf{x},\y\sim \underset{k=1}{\bigcup^q}P_k
+% }{\mathbb{E}}(H\left(f_1(\x),\ldots, f_q(\x) ,\y\right)
+%\end{equation}
+with :
+
+\begin{equation}
+\label{eq:hinge_multi}
+H\left(f_1(\x),\ldots, f_q(\x),\y \right) =\sum_{k=1}^q \left(m -(2*\mathbbm{1}_{y=k}-1)*\f_k(\x)\right)_+
+\end{equation}
+
+
+
+\fel{define $P_k$ here. Suggestion, we have already defined the joint $\djoint$ so we could easily say 'with $\djoint_k = \djoint(\x | \y = k)$ '. Also check with the union}
+This formulation has three main drawbacks: (\textbf{\textit{i}}) the optimal margin for each class may be different leading to a huge number of hyperparameters - solved by \cref{eq:reghrk}-, (\textbf{\textit{ii}}) for a large number of classes several outputs may have few or no positive sample within a batch leading to slow convergence, (\textbf{\textit{iii}})  weight of $\f_y(\x)$ (the function of the true class) with respect to the other decreases when the number of classes increases. To overcome these drawbacks, we propose a softmax-based hinge regularization with a learnable margin :
+
+\begin{align}\label{eq:Hingesoft}
+\begin{split}
+ H^{\alpha}_{soft}&\left(\f_1(\x),\ldots, \f_q(\x),\y \right) 	=\\
+ &\left(m_y-\frac{1}{2} \f_y(\x)+\frac{1}{2} \sum_{k\neq y} \f_k(\x)*\frac{e^{\f_k(\x)}}{\sum_{j\neq y} e^{\f_j(\x)}}\right)_+\\
+ & - \alpha  m_y
+	\end{split}
+\end{align}
+
+
+%\begin{equation}
+%\label{eq:Hingesoft}
+%H^{\alpha}_{soft}\left(f_1(\x),\ldots, f_q(\x),\y \right) =m_y-\frac{1}{2} f_y(\x) +\frac{1}{2} \sum_{k\neq y} f_k(\x)*\frac{e^{f_k(\x)}}{\sum_{j\neq y} e^{f_j(\x)}} + \alpha  m_y
+%\end{equation}
+with $m_y\geq 0$ and 
+%\begin{equation}
+%soft(f_k(\x)) = \frac{e^{f_k(\x)}}{\sum_{j\neq y} e^{f_j(\x)}}
+%\end{equation}
+ in this function, the value of $\f_{\y}(\x)$ for the true class  always has the same weight as the value of the other functions, no matter the number of classes. At the beginning of the learning, the softmax acts like an average since all the values of $\f_k$ are close. During the learning process, the values of $\f_k$ diverge and the softmax acts like a maximum.  Margins are automatically learnt as for the binary case ($\alpha$ a single hyperparameter).

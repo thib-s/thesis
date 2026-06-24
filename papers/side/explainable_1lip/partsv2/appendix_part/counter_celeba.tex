@@ -1,0 +1,814 @@
+
+\begin{figure}[ht]
+\begin{tabular}{ccc}
+\centering
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00005_input_lbl0_fx-1.11.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00005_gradColor.pdf} &
+\includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00005_xMinus10.0Grad.pdf} 
+ \end{tabular} & 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00009_input_lbl0_fx-0.48.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00009_gradColor.pdf} &
+\includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00009_xMinus10.0Grad.pdf} 
+ \end{tabular} \\ 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00024_input_lbl0_fx-0.59.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00024_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00024_xMinus10.0Grad.pdf} 
+ \end{tabular} & 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00085_input_lbl0_fx-0.36.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00085_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00085_xMinus10.0Grad.pdf} 
+ \end{tabular} \\
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00111_input_lbl0_fx-0.98.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00111_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00111_xMinus10.0Grad.pdf} 
+ \end{tabular} & 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00125_input_lbl0_fx-0.70.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00125_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00125_xMinus10.0Grad.pdf} 
+ \end{tabular} \\ 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00161_input_lbl0_fx-0.74.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00161_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00161_xMinus10.0Grad.pdf} 
+ \end{tabular} & 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00203_input_lbl0_fx-0.56.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00203_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00203_xMinus10.0Grad.pdf} 
+ \end{tabular} 
+ \end{tabular}
+\caption{Samples from label Mouth\_slightly\_open: left source image (closed) , center difference image, right counterfactual (open) of form $\x-10*\hat{f}(\x)\nabla_x \hat{f}(\x)$}
+\label{fig:celebA_mouth}
+\end{figure}
+
+
+\begin{figure*}[h]
+\begin{tabular}{ccc}
+\centering
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00072_input_lbl1_fx0.47.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00072_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00072_xMinus10.0Grad.pdf} 
+ \end{tabular} & 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00118_input_lbl1_fx0.38.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00118_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00118_xMinus10.0Grad.pdf} 
+ \end{tabular} \\ 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00006_input_lbl1_fx0.60.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00006_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00006_xMinus10.0Grad.pdf} 
+ \end{tabular} & 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00038_input_lbl1_fx0.41.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00038_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00038_xMinus10.0Grad.pdf} 
+ \end{tabular} \\ 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00039_input_lbl1_fx0.54.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00039_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00039_xMinus10.0Grad.pdf} 
+ \end{tabular} & 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00045_input_lbl1_fx0.50.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00045_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00045_xMinus10.0Grad.pdf} 
+ \end{tabular} \\ 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00055_input_lbl1_fx0.68.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00055_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00055_xMinus10.0Grad.pdf} 
+ \end{tabular} & 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00067_input_lbl1_fx0.51.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00067_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00067_xMinus10.0Grad.pdf} 
+ \end{tabular} \\ 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00147_input_lbl1_fx0.46.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00147_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00147_xMinus10.0Grad.pdf} 
+ \end{tabular} & 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00168_input_lbl1_fx0.33.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00168_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00168_xMinus10.0Grad.pdf} 
+ \end{tabular} \\ 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00176_input_lbl1_fx1.34.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00176_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00176_xMinus10.0Grad.pdf} 
+ \end{tabular} & 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00190_input_lbl1_fx0.64.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00190_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00190_xMinus10.0Grad.pdf} 
+ \end{tabular} \\
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00205_input_lbl1_fx0.91.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00205_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00205_xMinus10.0Grad.pdf} 
+ \end{tabular} & 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00213_input_lbl1_fx0.56.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00213_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/Mouth_slightly_open/00213_xMinus10.0Grad.pdf} 
+ \end{tabular} 
+ \end{tabular}
+\caption{Samples from label Mouth\_slightly\_open: left source image (open) , center difference image, right counterfactual (close) of form $\x-10*\hat{f}(\x)\nabla_x \hat{f}(\x)$}
+\label{fig:celebA_mouth_2}
+\end{figure*}
+%\newpage
+%\subsubsection{CelebA: Mustache}
+
+
+\begin{figure*}[h]
+\begin{tabular}{ccc}
+\centering
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mustache/00007_input_lbl0_fx-3.68.pdf} & \includegraphics[width=.14\linewidth]{img/Mustache/00007_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/Mustache/00007_xMinus5.0Grad.pdf}
+ \end{tabular} & 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mustache/00009_input_lbl0_fx-0.80.pdf} & \includegraphics[width=.14\linewidth]{img/Mustache/00009_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/Mustache/00009_xMinus10.0Grad.pdf}
+ \end{tabular} \\ 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mustache/00035_input_lbl0_fx-2.53.pdf} & \includegraphics[width=.14\linewidth]{img/Mustache/00035_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/Mustache/00035_xMinus10.0Grad.pdf}
+ \end{tabular} & 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mustache/00050_input_lbl0_fx-5.28.pdf} & \includegraphics[width=.14\linewidth]{img/Mustache/00050_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/Mustache/00050_xMinus5.0Grad.pdf}
+ \end{tabular} \\ 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mustache/00055_input_lbl0_fx-1.95.pdf} & \includegraphics[width=.14\linewidth]{img/Mustache/00055_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/Mustache/00055_xMinus5.0Grad.pdf}
+ \end{tabular} & 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mustache/00056_input_lbl0_fx-3.23.pdf} & \includegraphics[width=.14\linewidth]{img/Mustache/00056_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/Mustache/00056_xMinus5.0Grad.pdf}
+ \end{tabular} \\
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mustache/00060_input_lbl0_fx-0.88.pdf} & \includegraphics[width=.14\linewidth]{img/Mustache/00060_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/Mustache/00060_xMinus10.0Grad.pdf}
+ \end{tabular} & 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mustache/00067_input_lbl0_fx-0.86.pdf} & \includegraphics[width=.14\linewidth]{img/Mustache/00067_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/Mustache/00067_xMinus20.0Grad.pdf}
+ \end{tabular} 
+  \end{tabular}
+\caption{Samples from label Mustache: left source image (no mustache) , center difference image, right counterfactual (mustache) of form $\x-t*\hat{f}(\x)\nabla_x \hat{f}(\x)$ with $t\in \{5,10,20\}$}
+\label{fig:celebA_mustache}
+\end{figure*}
+
+
+\begin{figure*}[h]
+\begin{tabular}{ccc}
+\centering
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mustache/00041_input_lbl1_fx2.57.pdf} & \includegraphics[width=.14\linewidth]{img/Mustache/00041_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/Mustache/00041_xMinus10.0Grad.pdf}
+ \end{tabular} &
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mustache/00128_input_lbl1_fx3.59.pdf} & \includegraphics[width=.14\linewidth]{img/Mustache/00128_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/Mustache/00128_xMinus5.0Grad.pdf}
+ \end{tabular} \\
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mustache/00203_input_lbl0_fx2.35.pdf} & \includegraphics[width=.14\linewidth]{img/Mustache/00203_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/Mustache/00203_xMinus10.0Grad.pdf}
+ \end{tabular} & 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/Mustache/00012_input_lbl1_fx5.93.pdf} & \includegraphics[width=.14\linewidth]{img/Mustache/00012_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/Mustache/00012_xMinus5.0Grad.pdf}
+ \end{tabular} 
+ \end{tabular}
+\caption{Samples from label Mustache: left source image (Mustache) , center difference image, right counterfactual (Non Mustache) of form $\x-t*\hat{f}(\x)\nabla_x \hat{f}(\x)$, $t\in{5,10}$}
+\label{fig:celebA_mustache_2}
+\end{figure*}
+
+%\newpage
+%\subsubsection{CelebA: Wearing Hat}
+
+
+\begin{figure*}[h]
+\begin{tabular}{ccc}
+\centering
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/wearing_hat/00003_input_lbl0_fx-4.02.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00003_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00003_xMinus10.0Grad.pdf} 
+ \end{tabular} & 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/wearing_hat/00007_input_lbl0_fx-10.30.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00007_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00007_xMinus10.0Grad.pdf} 
+ \end{tabular} \\
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/wearing_hat/00027_input_lbl0_fx-5.29.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00027_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00027_xMinus10.0Grad.pdf} 
+ \end{tabular} & 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/wearing_hat/00029_input_lbl0_fx-18.09.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00029_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00029_xMinus5.0Grad.pdf} 
+ \end{tabular} \\
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/wearing_hat/00054_input_lbl0_fx-15.53.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00054_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00054_xMinus5.0Grad.pdf} 
+ \end{tabular} & 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/wearing_hat/00058_input_lbl0_fx-6.54.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00058_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00058_xMinus10.0Grad.pdf} 
+ \end{tabular} \\
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/wearing_hat/00067_input_lbl0_fx-12.21.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00067_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00067_xMinus5.0Grad.pdf} 
+ \end{tabular} & 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/wearing_hat/00078_input_lbl0_fx-14.60.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00078_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00078_xMinus2.5Grad.pdf} 
+ \end{tabular} \\
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/wearing_hat/00083_input_lbl0_fx-12.45.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00083_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00083_xMinus5.0Grad.pdf} 
+ \end{tabular} & 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/wearing_hat/00106_input_lbl0_fx-18.10.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00106_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00106_xMinus2.5Grad.pdf} 
+ \end{tabular} \\ 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/wearing_hat/00109_input_lbl0_fx-6.36.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00109_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00109_xMinus5.0Grad.pdf} 
+ \end{tabular} & 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/wearing_hat/00118_input_lbl0_fx-12.07.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00118_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00118_xMinus5.0Grad.pdf} 
+ \end{tabular} \\
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/wearing_hat/00165_input_lbl0_fx-3.21.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00165_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00165_xMinus10.0Grad.pdf} 
+ \end{tabular} & 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/wearing_hat/00134_input_lbl0_fx-5.48.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00134_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00134_xMinus10.0Grad.pdf} 
+ \end{tabular} \\ 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/wearing_hat/00138_input_lbl0_fx-12.14.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00138_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00138_xMinus5.0Grad.pdf} 
+ \end{tabular} & 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/wearing_hat/00140_input_lbl0_fx-8.96.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00140_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00140_xMinus5.0Grad.pdf} 
+ \end{tabular} \\ 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/wearing_hat/00203_input_lbl0_fx-14.85.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00203_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00203_xMinus2.5Grad.pdf} 
+ \end{tabular} & 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/wearing_hat/00210_input_lbl0_fx-7.23.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00210_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00210_xMinus10.0Grad.pdf} 
+ \end{tabular}
+ \end{tabular}
+\caption{Samples from label Wearing Hat: left source image (No Hat) , center difference image, right counterfactual (Hat) of form $\x-t*\hat{f}(\x)\nabla_x \hat{f}(\x)$, $t\in{5,10}$}
+\label{fig:celebA_hat}
+\end{figure*}
+
+
+\begin{figure*}[h]
+\begin{tabular}{ccc}
+\centering
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/wearing_hat/00100_input_lbl1_fx17.85.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00100_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00100_xMinus2.5Grad.pdf}
+ \end{tabular} & 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/wearing_hat/00128_input_lbl1_fx9.43.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00128_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00128_xMinus5.0Grad.pdf}
+ \end{tabular} \\ 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/wearing_hat/00216_input_lbl1_fx14.90.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00216_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00216_xMinus2.5Grad.pdf}
+ \end{tabular}  & 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/wearing_hat/00072_input_lbl1_fx2.34.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00072_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00072_xMinus20.0Grad.pdf}
+ \end{tabular} \\
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/wearing_hat/00146_input_lbl1_fx3.87.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00146_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00146_xMinus10.0Grad.pdf}
+ \end{tabular} & 
+  \begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/wearing_hat/00199_input_lbl1_fx9.25.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00199_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/wearing_hat/00199_xMinus5.0Grad.pdf}
+ \end{tabular}
+ \end{tabular}
+\caption{Samples from label Wearing Hat: left source image (Hat) , center difference image, right counterfactual (No Hat) of form $\x-t*\hat{f}(\x)\nabla_x \hat{f}(\x)$, $t\in{5,10}$}
+\label{fig:celebA_hat_2}
+\end{figure*}
+
+%\subsubsection{other celebA labels}
+
+
+\iffalse
+\begin{figure*}[ht]
+\begin{tabular}{cc}
+\hline
+\multicolumn{2}{c}{Attractive $\rightarrow$ "not" Attractive} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Attractive/00036_input_lbl1_fx1.53.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Attractive/00036_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Attractive/00036_xMinus5.0Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Attractive/00154_input_lbl1_fx1.21.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Attractive/00154_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Attractive/00154_xMinus5.0Grad.pdf}
+\end{tabular} \\
+\hline
+\multicolumn{2}{c}{"not"  Attractive $\rightarrow$ Attractive} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Attractive/00122_input_lbl0_fx-1.02.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Attractive/00122_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Attractive/00122_xMinus5.0Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Attractive/00149_input_lbl0_fx-1.10.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Attractive/00149_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Attractive/00149_xMinus5.0Grad.pdf}
+\end{tabular} \\
+\hline
+\end{tabular}
+\caption{Samples from  label Attractive }
+\end{figure*}
+\fi
+
+
+
+
+
+
+\begin{figure*}[ht]
+\begin{tabular}{cc}
+\hline
+\multicolumn{2}{c}{Bald $\rightarrow$ "not" Bald} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Bald/00007_input_lbl1_fx8.75.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Bald/00007_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Bald/00007_xMinus2.5Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Bald/00069_input_lbl1_fx3.04.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Bald/00069_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Bald/00069_xMinus10.0Grad.pdf}
+\end{tabular} \\
+\hline
+\multicolumn{2}{c}{"not"  Bald $\rightarrow$ Bald} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Bald/00054_input_lbl0_fx-7.84.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Bald/00054_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Bald/00054_xMinus5.0Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Bald/00148_input_lbl0_fx-18.73.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Bald/00148_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Bald/00148_xMinus2.0Grad.pdf}
+\end{tabular} \\
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Bald/00253_input_lbl0_fx-24.41.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Bald/00253_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Bald/00253_xMinus1.5Grad.pdf}
+\end{tabular} & \\
+\hline
+\end{tabular}
+\caption{Samples from  label Bald }
+\end{figure*}
+
+
+
+
+
+
+\iffalse
+\begin{figure*}[ht]
+\begin{tabular}{cc}
+\hline
+\multicolumn{2}{c}{Big\_Nose $\rightarrow$ "not" Big\_Nose} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Big_Nose/00211_input_lbl1_fx0.57.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Big_Nose/00211_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Big_Nose/00211_xMinus20.0Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Big_Nose/00250_input_lbl1_fx0.67.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Big_Nose/00250_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Big_Nose/00250_xMinus10.0Grad.pdf}
+\end{tabular} \\
+\hline
+\multicolumn{2}{c}{"not"  Big\_Nose $\rightarrow$ Big\_Nose} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Big_Nose/00154_input_lbl0_fx-0.88.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Big_Nose/00154_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Big_Nose/00154_xMinus5.0Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Big_Nose/00252_input_lbl0_fx-0.92.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Big_Nose/00252_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Big_Nose/00252_xMinus10.0Grad.pdf}
+\end{tabular} \\
+\hline
+\end{tabular}
+\caption{Samples from  label Big\_Nose }
+\end{figure*}
+\fi
+
+
+
+
+
+\begin{figure*}[ht]
+\begin{tabular}{cc}
+\hline
+\multicolumn{2}{c}{Black\_Hair $\rightarrow$ "not" Black\_Hair} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Black_Hair/00062_input_lbl1_fx0.78.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Black_Hair/00062_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Black_Hair/00062_xMinus20.0Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Black_Hair/00087_input_lbl1_fx1.14.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Black_Hair/00087_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Black_Hair/00087_xMinus10.0Grad.pdf}
+\end{tabular} \\
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Black_Hair/00115_input_lbl1_fx0.53.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Black_Hair/00115_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Black_Hair/00115_xMinus20.0Grad.pdf}
+\end{tabular} & \\
+\hline
+\multicolumn{2}{c}{"not"  Black\_Hair $\rightarrow$ Black\_Hair} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Black_Hair/00244_input_lbl0_fx-2.15.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Black_Hair/00244_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Black_Hair/00244_xMinus10.0Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Black_Hair/00246_input_lbl0_fx-2.52.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Black_Hair/00246_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Black_Hair/00246_xMinus2.5Grad.pdf}
+\end{tabular} \\
+\hline
+\end{tabular}
+\caption{Samples from  label Black\_Hair }
+\end{figure*}
+
+
+
+
+
+
+\begin{figure*}[ht]
+\begin{tabular}{cc}
+\hline
+\multicolumn{2}{c}{Blond\_Hair $\rightarrow$ "not" Blond\_Hair} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Blond_Hair/00113_input_lbl1_fx4.33.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Blond_Hair/00113_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Blond_Hair/00113_xMinus5.0Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Blond_Hair/00144_input_lbl1_fx7.65.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Blond_Hair/00144_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Blond_Hair/00144_xMinus2.0Grad.pdf}
+\end{tabular} \\
+\hline
+\multicolumn{2}{c}{"not"  Blond\_Hair $\rightarrow$ Blond\_Hair} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Blond_Hair/00163_input_lbl0_fx-16.33.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Blond_Hair/00163_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Blond_Hair/00163_xMinus2.5Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Blond_Hair/00166_input_lbl0_fx-14.22.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Blond_Hair/00166_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Blond_Hair/00166_xMinus1.5Grad.pdf}
+\end{tabular} \\
+\hline
+\end{tabular}
+\caption{Samples from  label Blond\_Hair }
+\end{figure*}
+
+
+
+
+
+
+\begin{figure*}[ht]
+\begin{tabular}{cc}
+\hline
+\multicolumn{2}{c}{Blurry $\rightarrow$ "not" Blurry} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Blurry/00027_input_lbl1_fx0.72.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Blurry/00027_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Blurry/00027_xMinus10.0Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Blurry/00122_input_lbl1_fx1.03.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Blurry/00122_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Blurry/00122_xMinus10.0Grad.pdf}
+\end{tabular} \\
+\hline
+\multicolumn{2}{c}{"not"  Blurry $\rightarrow$ Blurry} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Blurry/00196_input_lbl0_fx-0.49.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Blurry/00196_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Blurry/00196_xMinus10.0Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Blurry/00250_input_lbl0_fx-1.15.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Blurry/00250_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Blurry/00250_xMinus5.0Grad.pdf}
+\end{tabular} \\
+\hline
+\end{tabular}
+\caption{Samples from  label Blurry }
+\end{figure*}
+
+
+
+
+
+
+\begin{figure*}[ht]
+\begin{tabular}{cc}
+\hline
+\multicolumn{2}{c}{Brown\_Hair $\rightarrow$ "not" Brown\_Hair} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Brown_Hair/00081_input_lbl1_fx0.60.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Brown_Hair/00081_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Brown_Hair/00081_xMinus20.0Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Brown_Hair/00163_input_lbl1_fx0.71.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Brown_Hair/00163_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Brown_Hair/00163_xMinus20.0Grad.pdf}
+\end{tabular} \\
+\hline
+\multicolumn{2}{c}{"not"  Brown\_Hair $\rightarrow$ Brown\_Hair} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Brown_Hair/00087_input_lbl0_fx-0.75.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Brown_Hair/00087_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Brown_Hair/00087_xMinus10.0Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Brown_Hair/00140_input_lbl0_fx-1.05.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Brown_Hair/00140_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Brown_Hair/00140_xMinus10.0Grad.pdf}
+\end{tabular} \\
+\hline
+\end{tabular}
+\caption{Samples from  label Brown\_Hair }
+\end{figure*}
+
+
+
+
+
+
+\begin{figure*}[ht]
+\begin{tabular}{cc}
+\hline
+\multicolumn{2}{c}{Eyeglasses $\rightarrow$ "not" Eyeglasses} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Eyeglasses/00069_input_lbl1_fx1.70.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Eyeglasses/00069_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Eyeglasses/00069_xMinus5.0Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Eyeglasses/00112_input_lbl1_fx0.98.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Eyeglasses/00112_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Eyeglasses/00112_xMinus5.0Grad.pdf}
+\end{tabular} \\
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Eyeglasses/00174_input_lbl1_fx4.86.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Eyeglasses/00174_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Eyeglasses/00174_xMinus2.5Grad.pdf}
+\end{tabular} & \\
+\hline
+\multicolumn{2}{c}{"not"  Eyeglasses $\rightarrow$ Eyeglasses} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Eyeglasses/00010_input_lbl0_fx-12.99.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Eyeglasses/00010_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Eyeglasses/00010_xMinus2.0Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Eyeglasses/00019_input_lbl0_fx-5.85.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Eyeglasses/00019_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Eyeglasses/00019_xMinus2.0Grad.pdf}
+\end{tabular} \\
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Eyeglasses/00130_input_lbl0_fx-7.18.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Eyeglasses/00130_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Eyeglasses/00130_xMinus2.0Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Eyeglasses/00252_input_lbl0_fx-11.19.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Eyeglasses/00252_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Eyeglasses/00252_xMinus2.5Grad.pdf}
+\end{tabular} \\
+\hline
+\end{tabular}
+\caption{Samples from  label Eyeglasses }
+\end{figure*}
+
+
+
+
+
+
+\begin{figure*}[ht]
+\begin{tabular}{cc}
+\hline
+\multicolumn{2}{c}{Gray\_Hair $\rightarrow$ "not" Gray\_Hair} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Gray_Hair/00182_input_lbl1_fx14.45.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Gray_Hair/00182_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Gray_Hair/00182_xMinus2.5Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Gray_Hair/00225_input_lbl1_fx1.58.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Gray_Hair/00225_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Gray_Hair/00225_xMinus10.0Grad.pdf}
+\end{tabular} \\
+\hline
+\multicolumn{2}{c}{"not"  Gray\_Hair $\rightarrow$ Gray\_Hair} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Gray_Hair/00004_input_lbl0_fx-8.74.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Gray_Hair/00004_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Gray_Hair/00004_xMinus2.5Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Gray_Hair/00241_input_lbl0_fx-15.99.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Gray_Hair/00241_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Gray_Hair/00241_xMinus2.5Grad.pdf}
+\end{tabular} \\
+\hline
+\end{tabular}
+\caption{Samples from  label Gray\_Hair }
+\end{figure*}
+
+
+
+
+
+
+\begin{figure*}[ht]
+\begin{tabular}{cc}
+\hline
+\multicolumn{2}{c}{Hairline $\rightarrow$ "not" Hairline} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Hairline/00038_input_lbl1_fx3.79.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Hairline/00038_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Hairline/00038_xMinus2.5Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Hairline/00068_input_lbl1_fx2.85.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Hairline/00068_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Hairline/00068_xMinus5.0Grad.pdf}
+\end{tabular} \\
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Hairline/00119_input_lbl1_fx2.55.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Hairline/00119_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Hairline/00119_xMinus2.5Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Hairline/00225_input_lbl1_fx1.51.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Hairline/00225_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Hairline/00225_xMinus10.0Grad.pdf}
+\end{tabular} \\
+\hline
+\multicolumn{2}{c}{"not"  Hairline $\rightarrow$ Hairline} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Hairline/00033_input_lbl0_fx-5.25.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Hairline/00033_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Hairline/00033_xMinus5.0Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Hairline/00108_input_lbl0_fx-18.33.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Hairline/00108_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Hairline/00108_xMinus2.0Grad.pdf}
+\end{tabular} \\
+\hline
+\end{tabular}
+\caption{Samples from  label Hairline }
+\end{figure*}
+
+
+
+
+
+
+\begin{figure*}[ht]
+\begin{tabular}{cc}
+\hline
+\multicolumn{2}{c}{Heavy\_Makeup $\rightarrow$ "not" Heavy\_Makeup} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Heavy_Makeup/00154_input_lbl1_fx3.13.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Heavy_Makeup/00154_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Heavy_Makeup/00154_xMinus2.0Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Heavy_Makeup/00238_input_lbl1_fx2.38.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Heavy_Makeup/00238_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Heavy_Makeup/00238_xMinus2.5Grad.pdf}
+\end{tabular} \\
+\hline
+\multicolumn{2}{c}{"not"  Heavy\_Makeup $\rightarrow$ Heavy\_Makeup} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Heavy_Makeup/00006_input_lbl0_fx-0.63.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Heavy_Makeup/00006_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Heavy_Makeup/00006_xMinus10.0Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Heavy_Makeup/00140_input_lbl0_fx-1.94.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Heavy_Makeup/00140_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Heavy_Makeup/00140_xMinus5.0Grad.pdf}
+\end{tabular} \\
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Heavy_Makeup/00143_input_lbl0_fx-2.20.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Heavy_Makeup/00143_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Heavy_Makeup/00143_xMinus5.0Grad.pdf}
+\end{tabular} & \\
+\hline
+\end{tabular}
+\caption{Samples from  label Heavy\_Makeup }
+\end{figure*}
+
+
+
+
+
+
+\iffalse
+\begin{figure*}[ht]
+\begin{tabular}{cc}
+\hline
+\multicolumn{2}{c}{Male $\rightarrow$ "not" Male} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Male/00035_input_lbl1_fx1.81.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Male/00035_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Male/00035_xMinus5.0Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Male/00201_input_lbl1_fx2.09.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Male/00201_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Male/00201_xMinus5.0Grad.pdf}
+\end{tabular} \\
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Male/00253_input_lbl1_fx5.33.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Male/00253_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Male/00253_xMinus2.5Grad.pdf}
+\end{tabular} & \\
+\hline
+\multicolumn{2}{c}{"not"  Male $\rightarrow$ Male} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Male/00010_input_lbl0_fx-7.65.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Male/00010_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Male/00010_xMinus2.0Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Male/00028_input_lbl0_fx-6.87.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Male/00028_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Male/00028_xMinus1.5Grad.pdf}
+\end{tabular} \\
+\hline
+\end{tabular}
+\caption{Samples from  label Male }
+\end{figure*}
+\fi
+
+
+
+
+
+\begin{figure*}[ht]
+\begin{tabular}{cc}
+\hline
+\multicolumn{2}{c}{Rosy\_Cheeks $\rightarrow$ "not" Rosy\_Cheeks} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Rosy_Cheeks/00132_input_lbl1_fx3.26.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Rosy_Cheeks/00132_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Rosy_Cheeks/00132_xMinus2.5Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Rosy_Cheeks/00173_input_lbl1_fx1.04.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Rosy_Cheeks/00173_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Rosy_Cheeks/00173_xMinus5.0Grad.pdf}
+\end{tabular} \\
+\hline
+\multicolumn{2}{c}{"not"  Rosy\_Cheeks $\rightarrow$ Rosy\_Cheeks} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Rosy_Cheeks/00079_input_lbl0_fx-7.52.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Rosy_Cheeks/00079_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Rosy_Cheeks/00079_xMinus2.0Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Rosy_Cheeks/00217_input_lbl0_fx-7.28.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Rosy_Cheeks/00217_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Rosy_Cheeks/00217_xMinus2.0Grad.pdf}
+\end{tabular} \\
+\hline
+\end{tabular}
+\caption{Samples from  label Rosy\_Cheeks }
+\end{figure*}
+
+
+
+
+
+
+\iffalse
+\begin{figure*}[ht]
+\begin{tabular}{cc}
+\hline
+\multicolumn{2}{c}{Sideburns $\rightarrow$ "not" Sideburns} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Sideburns/00015_input_lbl1_fx3.85.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Sideburns/00015_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Sideburns/00015_xMinus2.5Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Sideburns/00237_input_lbl1_fx1.98.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Sideburns/00237_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Sideburns/00237_xMinus5.0Grad.pdf}
+\end{tabular} \\
+\hline
+\multicolumn{2}{c}{"not"  Sideburns $\rightarrow$ Sideburns} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Sideburns/00118_input_lbl0_fx-6.25.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Sideburns/00118_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Sideburns/00118_xMinus2.5Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Sideburns/00218_input_lbl0_fx-5.74.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Sideburns/00218_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Sideburns/00218_xMinus2.5Grad.pdf}
+\end{tabular} \\
+\hline
+\end{tabular}
+\caption{Samples from  label Sideburns }
+\end{figure*}
+\fi
+
+
+
+
+
+\begin{figure*}[ht]
+\begin{tabular}{cc}
+\hline
+\multicolumn{2}{c}{Smiling $\rightarrow$ "not" Smiling} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Smiling/00175_input_lbl1_fx0.27.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Smiling/00175_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Smiling/00175_xMinus20.0Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Smiling/00190_input_lbl1_fx0.73.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Smiling/00190_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Smiling/00190_xMinus5.0Grad.pdf}
+\end{tabular} \\
+\hline
+\multicolumn{2}{c}{"not"  Smiling $\rightarrow$ Smiling} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Smiling/00247_input_lbl0_fx-1.21.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Smiling/00247_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Smiling/00247_xMinus10.0Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Smiling/00249_input_lbl0_fx-0.76.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Smiling/00249_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Smiling/00249_xMinus5.0Grad.pdf}
+\end{tabular} \\
+\hline
+\end{tabular}
+\caption{Samples from  label Smiling }
+\end{figure*}
+
+
+
+
+
+
+\iffalse
+\begin{figure*}[ht]
+\begin{tabular}{cc}
+\hline
+\multicolumn{2}{c}{Wearing\_Earrings $\rightarrow$ "not" Wearing\_Earrings} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Wearing_Earrings/00036_input_lbl1_fx0.86.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Wearing_Earrings/00036_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Wearing_Earrings/00036_xMinus10.0Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Wearing_Earrings/00229_input_lbl1_fx0.37.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Wearing_Earrings/00229_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Wearing_Earrings/00229_xMinus20.0Grad.pdf}
+\end{tabular} \\
+\hline
+\multicolumn{2}{c}{"not"  Wearing\_Earrings $\rightarrow$ Wearing\_Earrings} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Wearing_Earrings/00226_input_lbl0_fx-0.80.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Wearing_Earrings/00226_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Wearing_Earrings/00226_xMinus20.0Grad.pdf}
+\end{tabular} & \\
+\hline
+\end{tabular}
+\caption{Samples from  label Wearing\_Earrings }
+\end{figure*}
+\fi
+
+
+
+
+
+\begin{figure*}[ht]
+\begin{tabular}{cc}
+\hline
+\multicolumn{2}{c}{Wearing\_Lipstick $\rightarrow$ "not" Wearing\_Lipstick} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Wearing_Lipstick/00132_input_lbl1_fx4.68.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Wearing_Lipstick/00132_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Wearing_Lipstick/00132_xMinus1.5Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Wearing_Lipstick/00217_input_lbl1_fx3.43.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Wearing_Lipstick/00217_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Wearing_Lipstick/00217_xMinus2.0Grad.pdf}
+\end{tabular} \\
+\hline
+\multicolumn{2}{c}{"not"  Wearing\_Lipstick $\rightarrow$ Wearing\_Lipstick} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Wearing_Lipstick/00047_input_lbl0_fx-1.62.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Wearing_Lipstick/00047_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Wearing_Lipstick/00047_xMinus5.0Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Wearing_Lipstick/00061_input_lbl0_fx-2.09.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Wearing_Lipstick/00061_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Wearing_Lipstick/00061_xMinus2.5Grad.pdf}
+\end{tabular} \\
+\hline
+\end{tabular}
+\caption{Samples from  label Wearing\_Lipstick }
+\end{figure*}
+
+
+
+
+
+
+
+
+
+
+
+\begin{figure*}[ht]
+\begin{tabular}{cc}
+\hline
+\multicolumn{2}{c}{Young $\rightarrow$ "not" Young} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Young/00036_input_lbl1_fx1.60.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Young/00036_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Young/00036_xMinus5.0Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Young/00154_input_lbl1_fx1.40.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Young/00154_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Young/00154_xMinus5.0Grad.pdf}
+\end{tabular} \\
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Young/00252_input_lbl1_fx1.05.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Young/00252_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Young/00252_xMinus5.0Grad.pdf}
+\end{tabular} & \\
+\hline
+\multicolumn{2}{c}{"not"  Young $\rightarrow$ Young} \\
+\hline
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Young/00038_input_lbl0_fx-1.08.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Young/00038_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Young/00038_xMinus2.5Grad.pdf}
+\end{tabular} &
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Young/00053_input_lbl0_fx-1.04.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Young/00053_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Young/00053_xMinus5.0Grad.pdf}
+\end{tabular} \\
+\begin{tabular}{lll}
+\includegraphics[width=.14\linewidth]{img/samplesAppendix/Young/00182_input_lbl0_fx-1.11.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Young/00182_gradColor.pdf} & \includegraphics[width=.14\linewidth]{img/samplesAppendix/Young/00182_xMinus5.0Grad.pdf}
+\end{tabular} & \\
+\hline
+\end{tabular}
+\caption{Samples from  label Young }
+\label{fig:celebA_young}
+\end{figure*}

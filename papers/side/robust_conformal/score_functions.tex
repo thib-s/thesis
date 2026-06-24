@@ -1,0 +1,86 @@
+\section{About Score Functions: Sigmoid vs Softmax}
+\label{app:scores}
+
+\subsection{Vanilla CP Setting}
+
+We recall the following score definitions: 
+
+\begin{equation}
+\begin{aligned}
+    s_\mathrm{LAC \ Softmax} (x, y) &= 1 - \text{softmax} \left( \frac{f(x)}{T} \right)_y \\
+    s_\mathrm{LAC \ Sigmoid} (x, y) &= 1 - \text{sigmoid} \left( \frac{f(x)_y - b}{T} \right)
+\end{aligned}
+\end{equation}
+
+To evaluate the impact of using our LAC Sigmoid score as compared to a classic LAC Softmax score function, we provide the following empirical results for vanilla CP on the \textsl{CIFAR-10} dataset with a ResNet50 model with $\alpha = 0.1$:
+
+\begin{table}[h]
+  \centering
+  \sisetup{table-format=2.2, detect-weight=true, detect-family=true}
+  \begin{tabular}{l S S}
+    \toprule
+    Method       & {Coverage (\%)} & {Set size} \\
+    \midrule
+    LAC Softmax  & 90.04           & 1.088      \\
+    LAC Sigmoid  & 90.28           & 1.144      \\
+    \bottomrule
+  \end{tabular}
+  \caption{Comparison of conformal score performance LAC Softmax vs LAC Sigmoid.}
+  \label{tab:scores}
+\end{table}
+
+This ablation study results in marginally bigger vanilla CP set sizes for LAC Sigmoid scores compared to softmax ones with scaled temperature.
+
+
+\subsection{Robust CP Setting}
+
+Using the 1-Lipschitz nature of our models, we can also use exact worst-case LAC Sigmoid and Softmax score computations under adversarial logit perturbations. Instead of relying on Eq.~\ref{eq:lipschitz_ineq}, we can leverage the monotonicity of the sigmoid function to compute tighter bounds, e.g:
+
+\begin{equation}
+    1 - \text{sigmoid}\left( \frac{f(\Tilde{x})_y + L_n \times \epsilon - b} {T} \right) \leq \min_{x \in \bouleps(\Tilde{x})} 
+    s_\mathrm{LAC \ Sigmoid} (x, y)
+    %\ \forall \Tilde{x} \in \bouleps(x).
+\end{equation}
+
+where $T$ and $b$ are the temperature and the bias of the score. This inequality yields tighter bounds than those based solely on global Lipschitz constants, with no extra cost.
+
+
+Similarly, given that the softmax function exhibits monotonicity in each of its parameters (ceteris paribus), its maximum and minimum values within a hyper-rectangular region are attained at the corners of that region, i.e.:
+
+\begin{equation}
+    %\underline{s}(\Tilde{x}, y) = 
+    1 - \text{softmax}
+    \begin{pmatrix}
+        (f(\Tilde{x})_0 - L_n  \times \epsilon) / T \\
+        \vdots \\
+        (f(\Tilde{x})_y + L_n \times \epsilon)/T \\
+        \vdots \\
+        (f(\Tilde{x})_{c-1} - L_n \times \epsilon) / T
+    \end{pmatrix}_y \leq \min_{x \in \bouleps(\Tilde{x})} s_\mathrm{LAC \ Softmax}(x,y) % \forall \Tilde{x} \in \bouleps(x).
+\end{equation}
+
+where $T$ is the temperature scaling factor of the softmax.
+
+As shown below, for a 1-Lipschitz VGG with 25M parameters on \textsl{CIFAR-10} with $\epsilon=0.03$ and $\alpha = 0.1$, LAC Sigmoid demonstrates considerably smaller robust prediction sets.
+
+\begin{table}[h]
+  \centering
+  \sisetup{
+    table-format=2.1,      % for Coverage
+    table-number-alignment = center,
+    detect-weight = true,
+    detect-family = true
+  }
+  \begin{tabular}{l S S}
+    \toprule
+    Method        & {Coverage (\%)} & {Set size} \\
+    \midrule
+    LAC Softmax   & 95.6            & 2.38       \\
+    LAC Sigmoid   & 94.9            & 1.72       \\
+    \bottomrule
+  \end{tabular}
+  \caption{Robust CP performance for different conformal scores on \textsl{CIFAR-10}. Under the same conditions as Fig~\ref{fig:fastcp_results}.}
+  \label{tab:robust_cp}
+\end{table}
+
+Although the LAC Sigmoid score is marginally worse in vanilla CP conditions, the superior performances obtained in Table~\ref{tab:robust_cp} motivates its use in the paper.

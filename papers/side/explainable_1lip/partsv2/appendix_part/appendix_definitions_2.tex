@@ -1,0 +1,56 @@
+Let us first recall the optimal transport problem associated with the minimization of \losshkr:
+\begin{equation}\label{eq:dual}
+\underset{f\in Lip_1(\Omega)} {\inf} \mathcal{L}^{hKR}_{\lambda(f),m} = \inf_{\pi \in\Pi^p_{\lambda}(\dpos, \dneg)}\int_{\Omega\times \Omega}|{\x}-{{\z}} |d\pi + \pi_{\x}(\Omega)+\pi_{{\z}}(\Omega)-1
+\end{equation}
+Where $\Pi^p_{\lambda}(\dpos, \dneg)$ is the set consisting of positive measures $\pi\in \mathcal{M}_+(\Omega\times \Omega)$ which  are absolutely continuous with respect to the joint measure $d\dpos\times d\dneg$ and $\frac{d\pi_{\textbf{x}}}{d\dpos}\in [p, p(m+\lambda)]$, $\frac{d\pi_{{\textbf{z}}}}{d\dneg}\in [1-p, (1-p)(m+\lambda)] $.
+We name $\pi^*$  the optimal transport plan according to Eq.\ref{eq:dual} and and $f^*$ the associated potential function.
+
+\textbf{Proof of proposition 1}:
+According to \cite{serrurier2021achieving}, we have 
+$$ ||\nabla_x f^*(\x)||=1 $$
+almost surely and
+
+$$\mathbb{P}_{(\x,\y)\sim\pi^*} \left( |f^*(\x) - f^*(\y)| = ||\x - \y|| \right)=1$$
+Following the proof of proposition 1 in \cite{gulrajani2017improved} and \cite{Ambrosio2003} we have :\\
+Given $\x_\alpha = \alpha*x + (1-\alpha) \y$, $0\leq\alpha\leq1$
+$$ \mathbb{P}_{(\x,\y)\sim\pi^*} \left( \nabla_x f^*(\x_\alpha) =\frac{\x_\alpha - \y}{ ||\x_\alpha - \y||} \right)=1.$$
+So for for $\alpha = 1$ whe have
+$$ \mathbb{P}_{(\x,\y)\sim\pi^*} \left( \nabla_x f^*(\x) =\frac{\x - \y}{ ||\x - \y||} \right)=1$$
+and then 
+$$ \mathbb{P}_{(\x,\y)\sim\pi^*} \left( \y = \x -  \nabla_x f^*(\x) .||\x - \y|| \right)=1$$
+This prove the proposition 1 by choosing $t=||\x - \y||$.\BlackBox\\
+
+\textbf{Proof of proposition 2}:
+Let $\dpos$ and $\dneg$ two distributions with disjoint support with minimal distance~$\epsilon$ and  $f^*$ an optimal solution minimizing the \losshkr~with $m<2\epsilon$. According to \cite{serrurier2021achieving}, $f^*$ is $100\%$ accurate. Since the classification is based on the sign of f we have : $\forall \x \in \dpos, f^*(\x) \geq 0$ and $\forall \y \in \dneg, f^*(\y) \leq 0$. Given $\x \in \dpos$ and $\y = tr_\pi(\x) = \x  -t \nabla_x f^*(\x)$  and $\y \in  \dneg$. According to the previous proposition we have :
+\begin{align*}
+  |f^*(\x) - f^*(\y)| & =||\x -\y || & \\
+ |f^*(\x) - f^*(\y)| & =||\x -(\x  -t \nabla_x f^*(\x) ) || &\\
+ |f^*(\x) - f^*(\y)| & =||t \nabla_x f^*(\x) ) || &\\
+ |f^*(\x) - f^*(\y)| & =t.|| \nabla_x f^*(\x) ) || & (t\geq 0)\\
+ |f^*(\x) - f^*(\y)| & =t & (\nabla_x f^*(\x) = 1)\\
+ f^*(\x) - f^*(\y) & =t & (f^*(\x) \geq 0,f^*(\y) \leq 0) \\
+ f^*(\y) & =f^*(\x) - t & 
+\end{align*}
+since $f^*(\y)\leq 0$ we obtain :
+$$f^*(\x) \leq t $$
+Since $f^*$ is continuous, $\exists t'>0$ such that $ \x_\delta = \x  -t' \nabla_x f^*(\x) $ and $f^*(\x_\delta) = 0$. We have :
+\begin{align*}
+|f^*(\x) - f^*(\x_\delta|) & \leq ||\x -\x_\delta || & \\
+f^*(\x) &\leq||\x -(\x  -t' \nabla_x f^*(\x) ) || &\\
+f^*(\x) &\leq t'&
+\end{align*}
+and 
+\begin{align*}
+|f^*(\x_\delta) - f^*(\y)| & \leq ||\x_\delta -\y|| & \\
+-f^*(\y) &\leq||(\x  -t' \nabla_x f^*(\x) )  - (\x  -t \nabla_x f^*(\x))|| &\\
+-f^*(\y) &\leq t-t'&\\
+-f^*(\y) &\leq ||\x-\y ||-t'& )\\
+\end{align*}
+Then, if $f^*(\x) < t'$ we have
+\begin{align*}
+f^*(\x)-f^*(\y) < &t'+||\x-\y ||-t' \\
+f^*(\x)-f^*(\y) < &||\x-\y || \\
+\end{align*}
+which is a contradiction so $f^*(\x) = t'$ and
+$$\x_\delta = \x  -f^*(\x) \nabla_x f^*(\x) $$
+\BlackBox

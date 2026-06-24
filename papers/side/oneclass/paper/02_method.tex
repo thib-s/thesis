@@ -1,0 +1,167 @@
+
+%\vspace{-0.1cm}
+\section{Method}
+%\vspace{-0.1cm}
+
+The method aims to learn the Signed Distance Function (SDF) by reformulating the one-class classification of $\Prob_X$ as a binary classification of $\Prob_X$ against a carefully chosen distribution $Q(\Prob_X)$. We show that this formulation yields desirable properties, especially when the chosen classifier is a 1-Lipschitz neural net trained with the Hinge Kantorovich-Rubinstein (HKR) loss.
+  
+%\subsection{Metric One Class Learning as special case of Binary Classification}
+%\vspace{-0.1cm}
+\subsection{SDF learning formulated as binary classification}
+%\vspace{-0.1cm}
+
+ We formulate SDF learning as a binary classification that consists of classifying samples from $\Prob_X$ against samples from a complementary distribution, as defined below. 
+
+\begin{definition}[$\bedd$ Complementary Distribution (informal)]\label{def:beddinformal}
+Let $Q$ be a distribution of compact support included in $B$, with disjoint support from that of $\Prob_X$ that ``fills'' the remaining space, with $2\epsilon$ gap between $\support$ and $\supp Q$. Then we write $Q\bedd\Prob_X$. 
+\end{definition}
+
+A formal definition is given in Appendix \ref{app:pandc}. For image space with pixel intensity in $[0,1]$, we take $B=[0, 1]^{W\times H\times C}$. For tabular data, a hypercube of side length ten times the standard deviation of the data along the axis. A data point falling outside $B$ is trivially considered anomalous due to aberrant values.  Binary classification between $\Prob_X$ and any $Q\bedd\Prob_X$ allows the construction of the optimal signed distance function, using the Kantorovich-Rubinstein (HKR) Hinge loss~\cite{serrurier2021achieving}, thanks to the following theorem.
+
+\begin{restatable}{theorem}{hkrsdf}{\normalfont\textbf{SDF Learning with HKR loss.}} Let $\hkr(yf(x))=\lambda\max{(0, m-yf(x))}-yf(x)$ be the Hinge Kantorovich Rubinstein loss, with margin $m=\epsilon$, regularization $\lambda>0$, prediction $f(x)$ and label $y\in\{-1,1\}$. Let $Q$ be a probability distribution on $B$. Let $\Empirical^{\text{hkr}}(f)$ be the population risk:
+\begin{equation}
+\begin{aligned}
+    \Empirical^{\text{hkr}}(f,\Prob_X,Q)\defeq&\Expect_{x\sim\Prob_X}[\hkr(f(x))]\\
+    &+\Expect_{z\sim Q}[\hkr(-f(z))].
+\end{aligned}
+\end{equation}
+Let $f^{*}$ be the minimizer of population risk, whose existence is guaranteed with Arzel\`a-Ascoli theorem~\cite{bethune2022pay}:
+\begin{equation}\label{eq:empiricalminimizer}
+    f^{*}\in\arginf_{f\in\Lip}\Empirical^{\text{hkr}}(f,\Prob_X,Q),
+\end{equation}
+where $\Lip$ is the set of Lipschitz functions $\mathbb{R}^d \rightarrow \mathbb{R}$ of constant $1$. Assume that $Q\bedd\Prob_X$. \textbf{Then}, $f^{*}$ approximates the signed distance function over $B$:
+\begin{equation}
+    \begin{aligned}
+        \forall x\in \support,\quad&\Sdf(x)= f^{*}(x)-m,\\
+        \forall z\in\supp Q,\quad&\Sdf(z)= f^{*}(z)-m.
+    \end{aligned}
+\end{equation}\label{thm:hkrsdf}
+Moreover, for all $x\in\supp Q\cup \support$:
+$$\text{sign}(f(x))=\text{sign}(\Sdf(x)).$$  
+\end{restatable}
+%\begin{proof}Follows from the properties of HKR loss on separable distributions. Detail in appendix.\end{proof}
+
+Note that if $m=\epsilon\ll 1$, then we have $f^{*}(x)\approx \Sdf(x)$. In this work, we parametrize $f$ as a 1-Lipschitz neural network, as defined below, because they fulfil $f\in\Lip$ by construction.
+
+\begin{definition}[1-Lipschitz neural network (informal)]
+Neural network with Groupsort activation function and orthogonal transformation in affine layers parameterized like in~\cite{anil2019sorting}.
+\end{definition}
+
+%In this work we use the Deel-Lip library\footnote{\url{https://github.com/deel-ai/deel-lip} distributed under MIT license.}. They are based on the work of~\cite{anil2019sorting} that proved that universal approximation in the set of 1-Lipschitz function was possible with normalized matrices; they suggest to use orthogonal matrices in affine layers (i.e $W_i^TW_i=I$) and GroupSort activation function to counter vanishing gradient: $\text{GroupSort2}(x)_{2i,2i+1}=[\min{(x_{2i},x_{2i+1})},\max{(x_{2i},x_{2i+1})}]$. Details about the architecture are given in appendix.
+
+Details about the implementation can be found in Appendix \ref{app:ortho}. Theorem \ref{thm:hkrsdf} tells us that if we characterize the complementary distribution $Q$, we can approximate the SDF with a 1-Lipschitz neural classifier trained with HKR loss. We now need to find the complementary distribution $Q$.
+
+
+%\vspace{-0.1cm}
+\subsection{Finding the complementary distribution by targeting the boundary}\label{sec:findcompl}
+
+We propose to seek $Q$ through an alternating optimization process: at every iteration $t$, a proposal distribution $Q_t$ is used to train a 1-Lipschitz neural net classifier $f_t$ against $\Prob_X$ by minimizing empirical HKR loss. Then, the proposal distribution is updated in $Q_{t+1}$ based on the loss induced by $f_t$, and the procedure is repeated. % We detail this approach in the next section. 
+
+We suggest starting from the uniform distribution: $Q_0=\Uniform(B)$. Observe that in high dimension, due to the \textit{curse of dimensionality}, a sample $z\sim Q_0$ is unlikely to satisfy $z\in\support$. Indeed the data lies on a low dimensional manifold $\support$ for which the Lebesgue measure is negligible compared to $B$. Hence, in the limit of small sample size $n\ll\infty$, a sample ${Z_n\sim Q_0^{\otimes n}}$ fulfills ${Z_n\bedd\Prob_X}$. This phenomenon is called the Concentration Phenomenon and has already been leveraged in anomaly detection in \cite{sipple_interpretable_2020}. However, the \textit{curse} works both ways and yields a high variance in samples $Z_n$. Consequently, the variance of the associated minimizers $f_0$ of equation~\ref{eq:empiricalminimizer} will also exhibit a high variance, which may impede the generalization and convergence speed. Instead, the distribution $Q_t$ must be chosen to produce higher density in the neighborhood of the boundary $\partial\support$. The true boundary is unknown, but the level set $\Level_t=f_t^{-1}(\{-\epsilon\})$ of the classifier can be used as a proxy to improve the initial proposal $Q_0$. We start from $z_0\sim Q_0$, and then look for a displacement $\delta\in\Reals^d$ such that $z+\delta\in\Level_t$. To this end, we take inspiration from the multidimensional Newton-Raphson method and consider a linearization of $f_t$:
+\begin{equation}
+    f_t(z_0+\delta) \approx f_t(z_0) + \langle \nabla_x f_t(z_0),\delta \rangle.
+\end{equation}
+Since 1-Lipschitz neural nets with GroupSort activation function are piecewise \textit{affines}~\cite{tanielian2021approximating}, the linearization is locally exact, hence the following property.
+\begin{property}
+Let $f_t$ be a 1-Lipschitz neural net with GroupSort activation function. Almost everywhere on $z_0\in\Reals^d$, there exists $\delta_0>0$ such that for every $\|\delta\|\leq \delta_0$, we have:
+\begin{equation}
+    f_t(z_0+\delta) = f_t(z_0) + \langle \nabla_x f_t(z_0),\delta \rangle.
+\end{equation}
+\end{property}
+
+Since $f_t(z_0+\delta)\in \Level_t$ translates into $f_t(z_0+\delta) = -\epsilon$,
+\begin{equation}\label{eq:newton}
+        \delta = -\frac{f_t(z_0)+\epsilon}{\|\nabla_x f_t(z_0)\|^2}\nabla_x f_t(z_0).
+\end{equation}
+
+Properties of $\hkr$ ensure that the optimal displacement follows the direction of the gradient $\nabla_x f_t(z_0)$, which coincides with the direction of an optimal transportation plan ~\cite{serrurier2021achieving}. The term $\|\nabla_x f_t(z_0)\|$ enjoys an interpretation as a Local Lipschitz Constant (see~\cite{jordan2020exactly}) of $f_t$ around $z_0$, which we know fulfills $\|\nabla_x f_t(z_0)\|\leq 1$ when parametrized with an 1-Lipschitz neural net. When $f_t$ is trained to perfection, the expression for $\delta$ simplifies to $\delta=-f_t(z_0)\nabla_x f_t(z_0)$ thanks to Property~\ref{prop:gnphkr}.  
+
+\begin{property}[Minimizers of $\hkr$ are Gradient Norm Preserving (from~\cite{serrurier2021achieving})]\label{prop:gnphkr}
+Let $f^{*}_t$ be the solution of Equation~\ref{eq:empiricalminimizer}. Then for almost every $z\in B$ we have $\|\nabla_x f^*_t(z)\|=1$.  
+\end{property}
+
+In practice, the exact minimizer $f^{*}_t$ is not always retrieved, but equation~\ref{eq:newton} still applies to imperfectly fitted classifiers. The final sample $z'\sim Q_t$ is obtained by generating a sequence of $T$ small steps to smooth the generation. The procedure is summarized in algorithm~\ref{alg:newtonraphson}. In practice, $T$ can be chosen very low (below $16$) without significantly hurting the quality of generated samples. Finally, we pick a random ``learning rate'' $\eta\sim\Uniform([0,1])$ for each negative example in the batch to ensure they distribute evenly on the path toward the boundary. The procedure also benefits from Property \ref{thm:fixpointstop_main}, which ensures that the distribution $Q_{t+1}$ obtained from $Q_t$ across several iterative applications of Algorithm \ref{alg:newtonraphson} still fulfils $Q^{t+1}\bedd\Prob_X$. The proof is given in Appendix \ref{app:sdfadv}.
+
+\begin{property}[Complementary distributions are fix points]\label{thm:fixpointstop_main}
+Let $Q^{t}$ be such that $Q^{t}\bedd\Prob_X$. Assume that $Q^{t+1}$ is obtained with algorithm~\ref{alg:mmalgo}. Then we have $Q^{t+1}\bedd\Prob_X$. 
+\end{property}
+
+
+
+
+\begin{algorithm}%[tb]
+\caption{Adapted Newton–Raphson for Complementary Distribution Generation}
+\label{alg:newtonraphson}
+\textbf{Input}: 1-Lipschitz neural net $f_t$\\
+\textbf{Parameter}: number of steps $T$\\
+\textbf{Output}: sample $z'\sim Q_t(f)$
+\begin{algorithmic}[1] %[1] enables line numbers
+\STATE sample learning rate $\eta\sim\Uniform([0,1])$
+\STATE $z_0\sim\Uniform(B)$  \COMMENT{ Initial approximation.}
+\FOR{each step $t=1$ to $T$}
+\STATE $z_{t+1}\gets z_t-\frac{\eta}{T}\frac{\nabla_x f(z^t)}{\|\nabla_x f(z^t)\|_2^2}(f(z_t)+\epsilon)$\COMMENT{Refining.}
+\STATE $z_{t+1}\gets \Pi_B(z_{t+1})$\COMMENT{ Stay in feasible set.}
+\ENDFOR
+\STATE \textbf{return} $z_T$
+\end{algorithmic}
+\end{algorithm}  
+
+
+\begin{remark}\label{remark:stochasticity}
+In high dimension $d\gg 1$, when $\|\nabla_x f_t(z)\|=1$ and Vol$(B)\gg \text{Vol}(\support)$ the samples obtained with algorithm~\ref{alg:newtonraphson} are approximately uniformly distributed in the levels of $f_t$. It implies that the density of $Q$ increases exponentially fast (with factor $d$) with respect to the value of $-|f_t(\cdot)|$. This mitigates the adverse effects of the curse of dimensionality.   
+\end{remark}
+  
+This scheme of ``generating samples by following gradient in input space'' reminds diffusion models~\cite{ho2020denoising}, feature visualization tools~\cite{olah2017feature}, or recent advances in VAE~\cite{kuzina2022alleviating}. However, no elaborated scheme is required for the training of $f_t$: 1-Lipschitz networks exhibit smooth and interpretable gradients~\cite{serrurier2022adversarial} which allows sampling from $\support$ ``for free'' as illustrated in figure~\ref{fig:mnist_gen_main}.  
+
+\begin{remark}\label{remark:metropolis}
+A more precise characterization of $Q_t$ built with algorithm~\ref{alg:newtonraphson} can be sketched below. Our approach bares some similarities with the spirit of Metropolis-adjusted Langevin algorithm~\cite{grenander1994representations}. In this method, the samples of $p(x)$ are generated by taking the stationary distribution $x_{t\veryshortarrow\infty}$ of a continuous Markov chain obtained from the stochastic gradient step iterates 
+\vspace{-0.2cm}
+\begin{equation}
+\vspace{-0.2cm}
+x_{t+1}\gets x_t+\zeta\nabla_x \log{p(x)}+\sqrt{2\zeta}Z
+\end{equation}
+for some distribution $p(x)$ and $Z\sim\mathcal{N}(\bf 0,\bf 1)$. By choosing the level set $\epsilon=0$, and $p(x)\propto\indicator\{f(x)\leq 0\}\exp{(-\eta f^2(x))}$ the score function $\zeta\nabla_x \log{p(x)}$ is transformed into $\nabla_x f(x)|f(x)|$ with $\zeta=\frac{\eta}{T}$. Therefore, we see that the density decreases exponentially faster with the squared distance to the boundary $\partial\support$ when there are enough steps $T\gg 1$. In particular when $\support = \{0\}$ we recover $p(x)$ as the pdf of a standard Gaussian $\mathcal{N}(\bf 0,\bf 1)$. Although the similarity is not exact (e.g., the diffusion term $\sqrt{2\eta}Z$ is lacking, $T$ is low, $\eta\sim\mathcal{U}([0,1])$ is a r. v.), it provides interesting complementary insights on the algorithm.  
+\end{remark}
+
+%\vspace{-0.2cm} 
+\subsection{Alternating minimization for SDF learning}
+%\vspace{-0.1cm}
+
+Each classifier $f_t$ does not need to be trained from scratch. Instead, the same architecture is kept throughout training, and the algorithm produces a sequence of parameters $\theta_t$ such that $f_t=f_{\theta_t}$. Each set of parameters $\theta_t$ is used as initialization for the next one $\theta_{t+1}$. Moreover, we only perform a low fixed number of parameter updates for each $t$ in a GAN fashion. The final procedure of OCSDF is shown in Figure \ref{fig:main} and detailed in algorithm~\ref{alg:mmalgolazy} of Appendix \ref{app:sdfadv}.
+
+
+
+
+
+
+%\vspace{-0.1cm}
+\section{Properties}
+
+%\vspace{-0.1cm}
+\subsection{Certificates against adversarial attacks}  
+%\vspace{-0.1cm}
+
+The most prominent advantage of 1-Lipschitz neural nets is their ability to produce certificates against adversarial attacks~\cite{szegedy2013}. Indeed, by definition we have $f(x+\delta)\in[f(x)-\|\delta\|, f(x)+\|\delta\|]$ for every example $x\in\support$ and every adversarial attack $\delta\in\Reals^d$. This allows bounding the changes in AUROC score of the classifier for every possible radius $\epsilon>0$ of adversarial attacks.  
+  
+
+\begin{proposition}[certifiable AUROC]\label{certifauroc}
+ Let $F_0$ be the cumulative distribution function associated with the negative classifier's prediction (when $f(x) \leq 0$), and $p_1$ the probability density function of the positive classifier's prediction (when $f(x) > 0$). Then, for any attack of radius $\epsilon > 0$, the AUROC of the attacked classifier $f_{\epsilon}$ can be bounded by
+ 
+%https://stats.stackexchange.com/questions/180638/how-to-derive-the-probabilistic-interpretation-of-the-auc
+%\vspace{-0.1cm}
+\begin{equation}
+%\vspace{-0.1cm}
+    \text{AUROC}_{\epsilon}(f) = \int_{-\infty}^{\infty} F_0(t)p_1(t-2\epsilon)dt.
+\end{equation}
+\end{proposition}
+ 
+
+The proof is left in Appendix \ref{app:certifauroc}. The certified AUROC score can be computed analytically without performing the attacks empirically, solely from score predictions $p_1(t-2\epsilon)$. More importantly, the certificates hold against \textit{any} adversarial attack whose $l_2$-norm is bounded by $\epsilon$, regardless of the algorithm used to perform such attacks. We emphasize that producing certificates is more challenging than traditional defence mechanisms (e.g, adversarial training, see~\cite{ijcai2021p591} and references therein) since they do not target defence against a specific attack method. Note that MILP solvers and branch-and-bound {approaches~\cite{tjengevaluating2019,wang2021beta}} can be used to improve the tightness of certificates, but at a higher cost.  
+
+
+
+
+%\vspace{-0.1cm}
+\subsection{Rank normal and anomalous examples}
+  
+Beyond the raw certifiable AUROC score, $l_2$-based Lipschitz robustness enjoys another desirable property: the farther from the boundary the adversary is, the more important the attack budget required to change the score. In practice, it means that an attacker can only dissimulate anomalies already close to being ``normal''. Aberrant and hugely anomalous examples will require a larger (possibly impracticable) attack budget. This ensures that the \textit{normality score} is actually meaningful: it is high when the point is central in its local cloud, and low when it is far away.

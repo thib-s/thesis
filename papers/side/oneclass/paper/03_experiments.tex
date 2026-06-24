@@ -1,0 +1,190 @@
+
+
+%\vspace{-0.1cm}
+\section{Experiments}
+%\vspace{-0.1cm}
+
+In this section, we evaluate the performances and properties of OCSDF on tabular and image data. All the experiments are conducted with tensorflow, and the 1-Lipschitz neural nets are implemented using the library Deel-Lip\footnote{\url{https://github.com/deel-ai/deel-lip}}. Our code is available at~\url{https://github.com/Algue-Rythme/OneClassMetricLearning}.
+%\vspace{-0.2cm}
+\subsection{Toy examples from Scikit-Learn}
+%\vspace{-0.1cm}
+
+We use two-dimensional toy examples from the Scikit-Learn library~\cite{pedregosa2011scikit}. Results are shown in figure~\ref{fig:toy2d}. The contour of the decision function are plotted in resolution $300\times 300$ pixels. The level sets of the classifier are compared against those of One Class SVM~\cite{scholkopf2001estimating} and Isolation Forest~\cite{liu2008isolation}. We also train a conventional network with Binary Cross Entropy against complementary distribution $Q_t$, and we show it struggles to learn a meaningful decision boundary. Moreover, its Local Lipschitz Constant~\cite{jordan2020exactly} increases uncontrollably, as shown in table~\ref{tab:llc_main}, which makes it prone to adversarial attacks. Finally, there is no natural interpretation of the prediction of the conventional network in terms of distance: the magnitude $|f(\cdot)|$ of the predictions quickly grows above $10^3$, whereas for 1-Lipschitz neural nets, it is approximately equal to the signed distance function $\Sdf$. We refer to Appendix \ref{app:toy2d} for visualizations.
+
+
+\begin{figure}[!ht]
+    \centering
+    
+    \begin{subfigure}{0.02\linewidth}
+    \rotatebox{90}{\small \textbf{OCSDF}} 
+    \end{subfigure}
+    \begin{subfigure}{0.28\linewidth}
+        \centering
+        \includegraphics[width=1.\linewidth]{images/ocml/circles_cropped.png}
+    \end{subfigure}
+    \begin{subfigure}{0.28\linewidth}
+        \centering
+        \includegraphics[width=1.\linewidth]{images/ocml/two_blobs_cropped.png}
+    \end{subfigure}
+    \begin{subfigure}{0.28\linewidth}
+        \centering
+        \includegraphics[width=1.\linewidth]{images/ocml/two-blobs-unbalanced_cropped.png}
+    \end{subfigure}\\
+        \begin{subfigure}{0.02\linewidth}
+    \rotatebox{90}{\small \textbf{OCSVM}} 
+    \end{subfigure}
+    \begin{subfigure}{0.28\linewidth}
+        \centering
+        \includegraphics[width=1.\linewidth]{images/ocsvm/ocsvm_circles_cropped.png}
+        \subcaption{Two circles.}
+    \end{subfigure}
+    \begin{subfigure}{0.28\linewidth}
+        \centering
+        \includegraphics[width=1.\linewidth]{images/ocsvm/ocsvm_two_blobs_cropped.png}
+        \subcaption{Two blobs.}
+    \end{subfigure}
+    \begin{subfigure}{0.28\linewidth}
+        \centering
+        \includegraphics[width=1.\linewidth]{images/ocsvm/ocsvm_two-blobs-unbalanced_cropped.png}
+        \subcaption{Blob \& cloud.}
+    \end{subfigure}
+    \caption{Contour plots of our method with 1-Lipschitz (LIP) network and $\hkr$ (HKR) loss on toy examples of Scikit-learn.}\label{fig:toy2d}
+    %\vspace{-0.5cm}
+    %Datasets: (a) One blob (b) Two circles (c) Two blobs (d) Two unbalanced blobs (e) Two moons.
+\end{figure}
+
+%\vspace{-0.1cm}
+\subsection{Anomaly Detection on Tabular datasets}
+
+We tested our algorithm on some of the most prominent anomaly detection benchmarks of ODDS library~\cite{Rayana:2016}. In this unsupervised setting (like ADBench~\cite{han_adbench_nodate}) all the examples (normal examples and anomalies) are seen during training, but their true label is unknown. To apply our method, the only hyperparameter needed is the margin $m$ that we select in the range $[0.01, 0.05, 0.2, 1.]$. For each value, the results are averaged over $20$ independent runs train/test splits. Following ADBench guidelines and best practices from the AD community, we only compute the AUROC, since this metric is symmetric under label flip. We report the best average in table~\ref{tab:tabularrocad} along baselines from ADBench~\cite{han_adbench_nodate}. As observed by~\cite{han_adbench_nodate}, none of the algorithms clearly dominates the others, because what is considered an anomaly (or not) depends on the context. Among 14 other methods tested, our algorithm ranks $7.1 \pm 3.6 / 15$, while the best (Isolation Forests) ranks $4.5 \pm 3.2 / 15$. The experiment shows that our algorithm is competitive with respect to other broadly used baselines. Nonetheless, it brings several additional advantages. First, our algorithm can be seen as a parametric version of kNN for the euclidean distance, which leverages deep learning to avoid the costly construction of structures like a KDTree~\cite{maneewongvatana1999analysis} and the quadratic cost of nearest neighbor search, thereby enabling its application in high dimensions. Second, it provides robustness certificates. We illustrate those two advantages more thoroughly in the next section.
+
+
+%\vspace{-0.1cm}
+\begin{table}[!ht]
+    \small
+    \centering
+    \resizebox{\linewidth}{!}{\begin{tabular}{|c|ccccc|}
+        \hline
+       \multirow{2}{*}{\makecell{Local Lipschitz\\ Constant}} & \makecell{One\\ Cloud}  & \makecell{Two\\ Clouds} & \makecell{Two\\ Blobs} & \makecell{Blob\\ Cloud} & \makecell{Two\\ Moons} \\
+       \cline{2-6}
+       &   26.66    &    122.84   &  1421.41  &      53.90     &   258.73  \\ 
+       \hline
+    \end{tabular}}
+    \caption{Lower bound on the Local Lipschitz Constant (LLC) of conventional network after $10,000$ training steps for each toy example. It is the maximum of $\|\nabla_{x_i}f(x_i)\|$ over the train set.}
+    \label{tab:llc_main}
+    %\vspace{-0.2cm}
+\end{table}
+\input{paper/04_tables.tex}
+
+
+%Nonetheless, on F1-score our method beat some significant previous works (see Appendix~\ref{tab:againsthrn}). 
+
+%\vspace{-0.1cm}
+\subsection{One Class learning on images}
+%\vspace{-0.1cm}
+
+We evaluate the performances of OCSDF for OCC, where only samples of the normal class are supposed to be available. To emulate this setting, we train a classifier on each of the classes of MNIST and Cifar10, and evaluate it on an independent test set in a \textit{one-versus-all} fashion. We compare our method against DeepSVDD \cite{ruff2018deep}, OCSVM \cite{scholkopf_support_1999}, and Isolation Forests \cite{liu2008isolation}. Details on the implementation of the baselines can be found in Appendix \ref{app:occimage}. The mean AUROC score is reported in table~\ref{tab:mnistroc} and averaged over $20$ runs. It is computed between the $1,000$ test examples of the target class and the remaining $9,000$ examples from other classes of the test set (both unseen during training). The histograms of normality scores are given in Appendix \ref{app:occimage}. OCSDF is competitive with respect to other baselines. In addition, it comes with several advantages described in the following. 
+
+
+%Note that the \textit{out-of-distribution} examples are not seen during training, but more importantly, the \textit{in-distribution} examples from the test set are not seen either. Hence the task evaluates both the generalization capacity (new example from the \textit{in-distribution}) and the discriminative capacity (against \textit{out-of-distribution}). This setting is more challenging because of the curse of dimensionality. 
+
+%Since the models were not available we had to retrain them from scratch. Unfortunately there were discrepancies between the training protocol and the architecture described in original's paper~\cite{ruff2018deep} (LeNet), its official Pytorch repository~\footnote{See \url{https://github.com/lukasruff/Deep-SVDD-PyTorch}.} (LeNet + batch normalization), and its Tensorflow re-implementation from PyOD~\cite{zhao2019pyod} (no convolutions and l$2$-activation regularization). Hence, to allow fair comparison, we run all the versions. We compute the average AUROC over 10 runs, and we keep the best of those runs to compute the empirical AUROC against l$2$-PGD attacks, with the same implementation as Foolbox~\cite{rauber2017foolboxnative}.
+
+%\vspace{-0.1cm}
+\subsubsection{Certifiable and empirical robustness}
+%\vspace{-0.1cm}
+
+% For each class, we compute the certified AUROC score of each digit for $l_2$ attacks of radii $\epsilon\in\{8/255,16/255,36/255\}$.
+None of the concurrent methods can provide certificates against $l_2$ attacks: in the work of~\cite{goyal_drocc_2020} the attacks are performed empirically (no certificates) with $l_\infty$ radii. In table~\ref{tab:mnistroc}, we report our certifiable AUROC with various radii $\epsilon\in\{0, 8/25, 16/255, 36/255, 72/255\}$. In figure~\ref{fig:robust} we report the empirical AUROC against $l_2$-PGD attacks with three random restarts, using stepsize $\zeta=0.025\epsilon$ like Foolbox~\cite{rauber2017foolboxnative}. These results illustrate our method's benefits: not only does it come with robustness certificates that are verified empirically, but the empirical robustness is also way better than DeepSVDD, especially for Cifar10. Note that for 1-Lipschitz network trained with $\hkr$ loss, all the attacks tend to find the same adversaries~\cite{serrurier2021achieving} - hence PGD is also representative of the typical score that would have been obtained with other attack methods.
+
+
+\begin{figure}[!ht]
+%\vspace{-0.2cm}
+    \centering
+    \begin{subfigure}{0.22\textwidth}
+        \centering
+        \includegraphics[scale=0.2]{new_images/graphs/mnist_auroc_robust.png}
+    \end{subfigure}
+    \begin{subfigure}{0.22\textwidth}
+        \centering
+        \includegraphics[scale=0.2]{new_images/graphs/cifar_auroc_robust.png}
+    \end{subfigure}
+    \caption{Empirical Mean AUROC on all classes against adversarial attacks of various radii in One Class setting, using default parameters of FoolBox~\cite{rauber2017foolboxnative}.}
+    %\vspace{-0.15cm}
+    \label{fig:robust}
+\end{figure}
+%Note that the certificates are generally pessimistic, and Eikhonal equation gap $1-\|\nabla_x f(x)\|_2^2$ translates into larger difference between certificates and empirical robustness.
+
+
+%\vspace{-0.1cm}
+\subsubsection{Visualization of the support}
+%\vspace{-0.1cm}
+
+
+OCSDF can be seen as a parametric version of kNN, which enables this approach in high dimensions. As a result, the decision boundary learned by the classifier can be materialized by generating adversarial examples with algorithm~\ref{alg:newtonraphson}. The forward computation graph is a classifier based on optimal transport, and the backward computation graph is an image generator. Indeed, the back-propagation through a convolution is a transposed convolution, a popular layer in the generator of GANs. Overall, the algorithm behaves like a WGAN~\cite{arjovsky2017wasserstein} with a single network fulfilling both roles. This unexpected feature opens a path to the explainability of the One Class classifier: the support learned can be visualized without complex feature visualization tools. In particular, it helps identify failure modes.
+ 
+ %\vspace{-0.1cm}
+ \begin{figure}[!ht]
+    \centering
+    
+    %% 0 1
+    \begin{subfigure}{0.24\textwidth}
+        \centering
+        \includegraphics[width=1.\textwidth]{new_images/mnist/gan_0_cropped.PNG}
+    \end{subfigure}\begin{subfigure}{0.24\textwidth}
+        \centering
+        \includegraphics[width=1.\textwidth]{new_images/mnist/gan_1_cropped.png}
+    \end{subfigure}
+    
+    %% 2 3
+    \begin{subfigure}{0.24\textwidth}
+        \centering
+        \includegraphics[width=1.\textwidth]{new_images/mnist/gan_2_cropped.png}
+    \end{subfigure}\begin{subfigure}{.24\textwidth}
+        \centering
+        \includegraphics[width=1.\textwidth]{new_images/mnist/gan_3_cropped.png}
+    \end{subfigure}
+    
+    
+    \caption{Examples from algorithm~\ref{alg:newtonraphson} with $T=64$ and $\eta=1$.}\label{fig:mnist_gen_main}
+    %\vspace{-0.3cm}
+    %Datasets: (a) One blob (b) Two circles (c) Two blobs (d) Two unbalanced blobs (e) Two moons.
+\end{figure}
+
+
+%\vspace{-0.1cm}
+\subsubsection{Limitations}
+%\vspace{-0.1cm}
+
+We also tested our algorithm on the Cats versus Dogs dataset by training on Cats as the One Class and using Dogs as OOD examples. On this high-dimensional dataset, the AUROC barely exceeds $55.0\%$. This suggests that the SDF is relevant for tabular and simple image datasets (e.g MNIST) but fails to generalize in a meaningful way in higher dimensions. The distance used to define the learned SDF is the euclidian distance. It is well known that such distance has its limitations in pixel space. Using different distances that are more relevant to pixel space is a perspective left for future works.  Our constructions rely on our ability to solve Eikonal equation $\|\nabla_x f\|=1$. This is easy to enforce on dense layers, but it is still an active research area for convolutions (see the recent works of~\cite{achour2021existence,singlaimproved2022,xulot2022}).  
+
+In addition, scores reported in Table~\ref{tab:mnistroc} use the same hyper-parameters for all the classes of Cifar-10, while some concurrent approaches~\cite{goyal_drocc_2020} tune them on a per-class basis. We observed significant improvements with per class tuning of the margin (see figure~\ref{tab:cheatingprotocolcifar} in appendix), but we chose not to report them in Table~\ref{tab:mnistroc}, because this practice is criticized by recent contributions on which we are aligned~\cite{han_adbench_nodate,dinghyperparameter2022}.
+%A more thorough discussion of the limitations is left in Appendix~\ref{app:limitations}.
+
+
+
+
+
+%\vspace{-0.1cm}
+\section{OCSDF for implicit shape parametrization}
+%\vspace{-0.1cm}
+Our approach to learning the SDF contrasts with the computer graphics literature, where SDF is used to obtain the distance of a point to a surface (here defined as $\partial\support$). Indeed, SDFs are usually learned in a supervised fashion, requiring the ground truth of $l_2$ distance. This is classically achieved using Nearest-Neighbor algorithms, which can be cumbersome, especially when the number of points is high. Efficient data structures (e.g., using K-dtrees~\cite{maneewongvatana1999analysis} or Octrees~\cite{meagher1980octree}) can mitigate this effect but do not scale well to high dimensions. Instead, OCSDF learns the SDF solely based on points contained in the support.  While neural network training is not cheap by any mean, the network approach is advantageous at inference time. Indeed, with a dataset of size $n$, a single forward in the network costs $\BigO(1)$ (furthermore orthogonalization of matrices can be done once for all), while kNN costs $\BigO(n^2)$ or $\BigO(n\log{n})$ (with trees).
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=1.\linewidth, trim=0 2.6cm 0 0, clip]{new_images/meshes/reduced_merged.png}
+    \caption{Visualization of the SDF (3rd column) from sparse point clouds of size $2048$ (2nd column) sampled from ground truth meshes (1st column) with \textit{Trimesh} library, against the SSSR algorithm~\cite{boltcheva2017surface} that attempts to reproduce the meshes solely from a point cloud (4th column). The SDF exhibits better extrapolation properties and provides smooth surfaces.}
+    \label{fig:modelnet3d}
+    %\vspace{-0.3cm}
+\end{figure}
+
+To illustrate this, we use models from {Princeton's ModelNet10 dataset~\cite{wu20153d}}. We sample $n=2048$ within each mesh to obtain a 3d point cloud. We fit the SDF on the point cloud with the same hyperparameters as the tabular experiment. We use Lewiner marching algorithm~\cite{lewiner2003efficient} from scikit-image~\cite{van2014scikit}, on a $200\times 200\times 200$ voxelization of the input. We plot the mesh reconstructed with Trimesh~\cite{trimesh}. The results are highlighted in figure~\ref{fig:modelnet3d}. We chose the first percentile of $\Expect_{x\sim \Prob_X}[f(x)]$ as the level set of the iso-surface we plot. We compare our results visually against a baseline from~\cite{boltcheva2017surface} implemented in Graphite~\cite{graphite} that rebuilds the mesh solely from the point cloud (without extrapolation). We highlight that $n=2048$ is considered low resolution; hence many details are expected to be lost. Nonetheless, our method recovers the global aspect of the shape more faithfully, smoothly, and consistently than the other baseline. 
+
+%\vspace{-0.1cm}
+
+
+
+
+%In table~\ref{tab:comparisondeepsdf} we highlight some key differences of our approach with the seminal work of~\cite{park2019deepsdf} on SDF in computer graphics. This table emphasizes that our method can be applied more 
+
+

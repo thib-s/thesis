@@ -1,0 +1,109 @@
+\begin{table*}%[]
+    \centering
+    \small
+    %\hspace{-0.35cm}
+    \resizebox{\textwidth}{!}{\begin{tabular}{cccc|ccccccc}
+    \hline
+      Dataset & $\bm{d}$ &\#no.+an. & perc. & \makecell{OCSDF\\ (Ours)} & \makecell{Deep\\ SVDD} & \makecell{OC\\ SVM} & IF & PCA & kNN & SOTA\\
+    \hline
+    \hline
+    % Arrhythmia & 274 & 386+66 & $14.6\%$ & $77.2\pm 0.7$ & N/A & N/A & N/A & N/A & N/A & $81.7$ (ICL)\\
+    \multicolumn{4}{c}{Average Rank} & $7.1\pm 3.6$ & $11.2$ & $7.5$ & $4.5$ &  $5.7$ & $7.8$ & $4.5\pm 3.2$ (IF)\\
+    \hline  
+    breastw & 9 & 444+239 & $35\%$ & $(\#10)\Hquad 82.6\pm 5.9$ & $65.7$ & $80.3$ & $98.3$ & $95.1$ & $97.0$ & $99.7$ (COPOD) \\ 
+    cardio & 21 & 1,655+176 & $9.6\%$ & $(\#2)\Hquad 95.0\pm 0.1$ & $59.0$ & $93.9$ & $93.2$ & $95.5$ & $76.6$ & $95.5$ (PCA)\\
+    glass & 9 & 205+9 & $4.2\%$ & $(\#7)\Hquad 73.9\pm 4.1$ & $47.5$ & $35.4$ & $77.1$ & $66.3$ & $82.3$ & $82.9$ (CBLOF)\\
+    http (KDDCup99) & 3 & 565,287+2,211 & $0.4\%$ & $(\#11)\Hquad 67.5\pm 37$ & $69.0$ & $99.6$ & $99.96$ & $99.7$ & $03.4$ & $99.96$ (IF) \\
+    Ionosphere & 33 & 225+126 & $36\%$ & $(\#7)\Hquad 80.2\pm 0.1$ & $50.9$ & $75.9$ & $84.5$ & $79.2$ & $88.3$ & $90.7$ (CBLOF)\\
+    Lymphography & 18 & 142+6 & $4.1\%$ & $(\#8)\Hquad 96.1\pm 4.9$ & $32.3$ & $99.5$ & $99.8$ & $99.8$ & $55.9$ & $99.8$ (CBLOF)\\ 
+    mammography & 6 & 10,923+260 & $2.32\%$ & $(\#6)\Hquad 86.0\pm 2.5$ & $57.0$ & $84.9$ & $86.4$ & $88.7$ & $84.5$ & $90.7$ (ECOD)\\
+    musk & 166 & 2,965+97 & $3.2\%$ & $(\#8)\Hquad 92.6\pm 20.$ & $43.4$ & $80.6$ & $99.99$ & $100.0$ & $69.9$ & $100.0$ (PCA) \\
+    Optdigits & 64 & 5,066+150 & $3\%$ & $(\#12)\Hquad 51.0\pm 0.9$ & $38.9$ & $54.0$ & $70.9$ & $51.7$ & $41.7$ & $87.5$ (CBLOF) \\ 
+    Pima & 8 & 500+268 & $35\%$ & $(\#12)\Hquad 60.7\pm 1.0$ & $51.0$ & $66.9$ & $72.9$ & $70.8$ & $73.4$ & $73.4$ (kNN) \\
+    satimage-2 & 36 & 5,732+71 & $1.2\%$ & $(\#3)\Hquad 97.9\pm 0.4$ & $53.1$ & $97.3$& $99.2$ & $97.6$ & $92.6$ & $99.8$ (CBLOF)\\
+    Shuttle & 9 & 45,586+3,511 & $7\%$ & $(\#4)\Hquad 99.1\pm 0.3$ & $52.1$ & $97.4$ & $99.6$ & $98.6$ & $69.6$ & $99.6$ (IF) \\ 
+    smtp (KDDCup99) & 3 & 95,126+30 & $0.03\%$ & $(\#4)\Hquad 87.1\pm 3.5$ & $78.2$ & $80.7$ & $89.7$ & $88.4$ & $89.6$ & $89.7$ (IF) \\
+    speech & 400 & 3,625+61 & $1.65\%$ & $(\#15)\Hquad 46.0\pm 0.2$ & $53.4$ & $50.2$ & $50.7$ & $50.8$ & $51.0$ & $56.0$ (COF)\\
+    thyroid & 6 & 3,679+93 & $2.5\%$ & $(\#5)\Hquad 95.9\pm 0.0$ & $49.6$ & $87.9$ & $98.3$ & $96.3$ & $95.9$ & $98.3$ (IF)\\
+    vertebral & 6 & 210+30 & $12.5\%$ &$(\#4)\Hquad 48.6\pm 2.6$ & $36.7$ & $38.0$ & $36.7$ & $37.0$ & $33.8$ & $53.2$ (DAGMM)\\
+    vowels & 12 & 1,406+50 & $3.4\%$ & $(\#2)\Hquad 94.7\pm 0.7$ & $52.5$ & $61.6$ & $73.9$ & $65.3$ & $97.3$ & $97.3$ (kNN)\\
+    WBC & 30 & 357+21 & $5.6\%$ & $(\#10)\Hquad 93.6\pm 0.1$ & $55.5$ & $99.0$ & $99.0$ & $98.2$ & $90.6$ & $99.5$ (CBLOF) \\ 
+    Wine & 13 & 119+10 & $7.7\%$ & $(\#5)\Hquad 81.5\pm 0.9$ & $59.5$ & $73.1$ & $80.4$ & $84.4$ & $45.0$ & $91.4$ (HBOS) \\ 
+    %\hline
+    \end{tabular}}
+    \caption{AUROC score for tabular data, averaged over $20$ runs. The dimension of the dataset is denoted by $\bm{d}$. In the \textbf{Anomaly Detection protocol (AD)} we use all the data (normal class and anomalies) for training, in an unsupervised fashion. The ``\#no.+an.'' column indicates part of normal (no.) and anomalous (an.) data used during training for each protocol. SOTA denominates the best score ever reported on the dataset, obtained by crawling relevant literature, or ADBench~\cite{han_adbench_nodate} results (table D4 page 37). We report the rank as (\#rank) among 14 other methods.\\
+    }
+    \label{tab:tabularrocad}
+    % arrhythmia: ANOMALY DETECTION FOR TABULAR DATA WITH INTERNAL CONTRASTIVE LEARNING (no name => chose ICL)~\cite{shenkar2022anomaly}
+    %\footnote{Misleading average: half of the runs yield same AUROC as kNN, and the other half around 99\% AUROC.}
+\end{table*}
+
+\begin{table*}%[]
+    \centering
+    %\hspace{-0.35cm}
+    \small
+    \resizebox{\textwidth}{!}{\begin{tabular}{c|ccccc|ccc}
+    \hline
+      MNIST & \makecell{OCSDF} & OCSDF & OCSDF & OCSDF & OCSDF & \makecell{OC\\ SVM} & \makecell{Deep\\ SVDD} & IF \\
+      Certificates & $\epsilon=0$ & $\epsilon=8/255$ & $\epsilon=16/255$ & $\epsilon=36/255$ & $\epsilon=72/255$ & $\epsilon=0$ & $\epsilon=0$ & $\epsilon=0$\\
+    \hline
+    %\hline
+    mAUROC &  $\bf 95.5\pm 0.4$ & $93.2\pm 2.1$ & $89.9\pm 3.5$ & $78.4\pm 6.4$ & $57.5\pm 7.5$ & $91.3\pm 0.0$ & $\bf 94.8\pm 0.9$ & $92.3\pm 0.5$\\
+    \hline
+    digit 0 & $\bf 99.7\pm 0.1$ & $99.6\pm 0.2$ & $99.5\pm 0.2$ & $99.0\pm 0.6$ & $96.2\pm 3.0$ & $98.6\pm 0.0$ & $98.0\pm 0.7$ & $98.0\pm 0.3$\\
+    digit 1 & $\bf 99.8\pm 0.0$ & $99.7\pm 0.0$ & $99.6\pm 0.1$ & $99.2\pm 0.3$ & $96.2\pm 1.6$ & $99.5\pm 0.0$ & $\bf 99.7\pm 0.1$ & $97.3\pm 0.4$\\
+    digit 2 & $\bf 90.6\pm 2.0$ & $85.3\pm 1.9$ & $78.2\pm 2.3$ & $53.1\pm 5.2$ & $14.1\pm 4.6$ & $82.5\pm 0.1$ & $\bf 91.7\pm 0.1$ & $88.6\pm 0.5$\\
+    digit 3 & $\bf 93.4\pm 1.2$ & $90.0\pm 1.7$ & $85.0\pm 2.3$ & $66.2\pm 4.6$ & $26.9\pm 5.0$ & $88.1\pm 0.0$ & $91.9\pm 1.5$ & $89.9\pm 0.4$\\
+    digit 4 & $\bf 96.5\pm 0.9$ & $95.3\pm 1.2$ & $93.9\pm 1.7$ & $89.4\pm 3.6$ & $76.2\pm 9.8$ & $94.9\pm 0.0$ & $\bf 94.9\pm 0.8$ & $92.7\pm 0.6$\\
+    digit 5 & $\bf 93.9\pm 2.2$ & $89.0\pm 3.2$ & $81.6\pm 4.7$ & $54.0\pm 8.7$ & $15.6\pm 6.9$ & $77.1\pm 0.0$ & $88.5\pm 0.9$ & $85.5\pm 0.8$\\
+    digit 6 & $\bf 98.7\pm 0.6$ & $98.1\pm 0.7$ & $97.2\pm 0.9$ & $93.1\pm 2.6$ & $74.9\pm 10.4$ & $96.5\pm 0.0$ & $\bf 98.3\pm 0.5$ & $95.6\pm 0.3$\\
+    digit 7 & $\bf 97.1\pm 0.6$ & $96.5\pm 0.5$ & $95.6\pm 0.6$ & $92.2\pm 0.8$ & $81.2\pm 1.7$ & $93.7\pm 0.0$ & $94.6\pm 0.9$ & $92.0\pm 0.4$\\
+    digit 8 & $89.4\pm 2.6$ & $83.3\pm 5.1$ & $74.7\pm 9.0$ & $50.3\pm 15.9$ & $24.4\pm 14.0$ & $88.9\pm 0.0$ & $\bf 93.9\pm 1.6$ & $89.9\pm 0.4$\\
+    digit 9 & $\bf 96.4\pm 0.3$ & $95.3\pm 0.9$ & $93.8\pm 1.3$ & $87.8\pm 3.1$ & $68.9\pm 7.6$ & $93.1\pm 0.0$ & $\bf 96.5\pm 0.3$ & $93.5\pm 0.3$\\
+    %\hline
+    \end{tabular}}
+    \begin{tabular}{c|ccccc|ccc}
+    \hline
+      CIFAR10 & \makecell{OCSDF} & OCSDF & OCSDF & OCSDF & OCSDF & \makecell{OC\\ SVM} & \makecell{Deep\\ SVDD} & IF \\
+      Certificates & $\epsilon=0$ & $\epsilon=8/255$ & $\epsilon=16/255$ & $\epsilon=36/255$ & $\epsilon=72/255$ & $\epsilon=0$ & $\epsilon=0$ & $\epsilon=0$\\
+    \hline
+    %\hline
+    mAUROC & $57.4\pm 2.1$ & $53.1\pm 2.1$ & $48.8\pm 2.1$ & $38.4\pm 1.9$ & $22.5\pm 1.4$ & $64.8\pm 8.0$ & $64.8\pm 6.8$ & $55.4\pm 8.0$\\
+    \hline
+    Airplane & $\bf 68.2\pm 4.5$ & $64.3\pm 3.9$ & $60.1\pm 3.2$ & $49.4\pm 1.1$ & $31.2\pm 3.6$ & $61.6\pm 0.9$ & $61.7\pm 4.1$ & $60.1\pm 0.7$\\
+    Automobile & $57.3\pm 1.7$ & $52.5\pm 3.0$ & $47.6\pm 4.2$ & $36.1\pm 6.8$ & $19.8\pm 7.8$ & $\bf 63.8\pm 0.6$ & $\bf 65.9\pm 2.1$ & $50.8\pm 0.6$\\
+    Bird & $\bf 51.8\pm 2.7$ & $47.5\pm 1.8$ & $43.2\pm 1.6$ & $33.4\pm 3.4$ & $19.5\pm 5.7$ & $\bf 50.0\pm 0.5$ & $\bf 50.8\pm 0.8$ & $\bf 49.2\pm 0.4$\\
+    Cat & $\bf 58.8\pm 1.2$ & $54.6\pm 0.8$ & $50.3\pm 0.8$ & $40.0\pm 1.5$ & $24.4\pm 2.3$ & $55.9\pm 1.3$ & $\bf 59.1\pm 1.4$ & $55.1\pm 0.4$\\
+    Deer & $49.4\pm 2.4$ & $45.3\pm 2.1$ & $41.4\pm 1.9$ & $32.2\pm 1.5$ & $18.8\pm 1.4$ & $\bf 66.0\pm 0.7$ & $60.9\pm 1.1$ & $49.8\pm 0.4$\\
+    Dog & $56.3\pm 0.6$ & $51.9\pm 1.0$ & $47.5\pm 1.6$ & $36.7\pm 2.9$ & $20.6\pm 4.0$ & $62.4\pm 0.8$ & $\bf 65.7\pm 2.5$ & $58.4\pm 0.5$\\
+    Frog & $52.6\pm 1.8$ & $48.7\pm 1.7$ & $44.9\pm 1.6$ & $35.8\pm 1.4$ & $22.4\pm 1.1$ & $\bf 74.7\pm 0.3$ & $67.7\pm 2.6$ & $42.9\pm 0.6$\\
+    Horse & $49.5\pm 0.9$ & $45.5\pm 1.0$ & $41.5\pm 1.2$ & $32.5\pm 1.5$ & $18.8\pm 1.6$ & $62.6\pm 0.6$ & $\bf 67.3\pm 0.9$ & $55.1\pm 0.7$\\
+    Ship & $68.6\pm 1.8$ & $64.6\pm 1.4$ & $60.4\pm 1.3$ & $49.3\pm 2.4$ & $29.8\pm 4.9$ & $\bf 74.9\pm 0.4$ & $\bf 75.9\pm 1.2$ & $\bf 74.2\pm 0.6$\\
+    Truck & $61.3\pm 3.4$ & $56.5\pm 2.1$ & $51.5\pm 1.1$ & $39.0\pm 3.9$ & $20.0\pm 7.0$ & $\bf 75.9\pm 0.3$ & $73.1\pm 1.2$ & $58.9\pm 0.7$\\
+    %\hline
+    \end{tabular}
+    \caption{AUROC score on the test set of MNIST and CIFAR10 in a \textit{one versus all} fashion, averaged on $10$ runs. We also report the AUROC of DeepSVDD~\cite{ruff2018deep} for completeness, along with the other AUROC scores of Isolation Forest (IF) and One-Class SVM (OC-SVM) reported in~\cite{ruff2018deep}. When the differences between some
+    methods are not statistically significant, we highlight both.  When the confidence intervals overlap, we highlight both. We also show the \textbf{certifiable} AUROC against l-$2$ attacks of norms $\epsilon\in\{8/255,16/255,36/255\}$. Concurrent methods cannot provide certificates for $\epsilon>0$.}
+    \label{tab:mnistroc}
+\end{table*}
+
+
+
+% \begin{table}%[]
+%     \centering
+%     %\hspace{-0.35cm}
+%     \small
+%     \begin{tabular}{c|cc}
+%     \hline
+%       \makecell{Methods\\} & \makecell{CSDFL\\ (ours)} & \makecell{DeepSDF\\ \cite{park2019deepsdf}}\\
+%     \hline
+%     %\hline
+%     Target & \makecell{Generate $Q\bedd P$} & \makecell{Compute $\Sdf(x)$ from $P$}\\
+%     Cost         & \makecell{Backward pass} & \makecell{Nearest Neighbor search} \\
+%     Loss         & HKR $\hkr$ & $\|f(x)-\Sdf(x)\|^2_2$\\
+%     Guarantees   & $f$ is 1-Lipschitz & None\\
+%     \end{tabular}
+%     \caption{Comparison of our approach against DeepSDF.}
+%     \label{tab:comparisondeepsdf}
+% \end{table}
+

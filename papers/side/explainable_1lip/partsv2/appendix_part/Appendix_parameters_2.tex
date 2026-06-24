@@ -1,0 +1,242 @@
+\subsubsection{Datasets}
+
+\textbf{FashionMNIST} has 50,000 images for training and 10,000 for test of size $28 \times 28 \times 1$, with 10 classes.
+
+\textbf{CelebA} contains 162,770 training samples, 19,962 samples for test of size $218\times 178 \times 3$. We have used  a subset of 22 labels: \textit{Attractive}, \textit{Bald}, \textit{Big\_Nose},
+\textit{Black\_Hair}, \textit{Blond\_Hair}, \textit{Blurry}, \textit{Brown\_Hair}, \textit{Eyeglasses}, \textit{Gray\_Hair}, \textit{Heavy\_Makeup}, \textit{Male}, \textit{Mouth\_Slightly\_Open}, \textit{Mustache}, \textit{Receding\_Hairline}, \textit{Rosy\_Cheeks}, \textit{Sideburns}, \textit{Smiling}, \textit{Wearing\_Earrings}, \textit{Wearing\_Hat}, \textit{Wearing\_Lipstick}, \textit{Wearing\_Necktie}, \textit{Young}.
+
+Note that labels in CelebA are very unbalanced (see~Table~\ref{tab:celebA_stats}, with less than $5\%$ samples for \textit{Mustache} or \textit{Wearing\_Hat} for instance). Thus we will use Sensibility and Specificity as metrics.
+\begin{table}[h]
+  \caption{CelebA label distribution: proportion of positive samples in training set (testing set) [bold: very unbalanced labels]}
+  \label{tab:celebA_stats}
+  \centering
+  \begin{tabular}{c@{}c@{}c@{}c@{}c}
+    \toprule
+    \textit{Attractive}& \textit{Bald}& \textit{Big\_Nose}&
+\textit{Black\_Hair}& \textit{Blond\_Hair}\\
+  0.51 (0.50) & \textbf{0.02 (0.02)} & \textbf{0.24 (0.21)} & \textbf{0.24 (0.27)} & \textbf{0.15 (0.13)}  \\
+  \textit{Blurry}  & \textit{Brown\_Hair}& \textit{Eyeglasses}& \textit{Gray\_Hair}& \textit{Heavy\_Makeup} \\
+ \textbf{0.05 (0.05)} & \textbf{0.20 (0.18)} & \textbf{0.06 (0.06)} & \textbf{0.04 (0.03)} & 0.38 (0.40)  \\
+    \textit{Male} & \textit{Mouth\_Slightly\_Open}& \textit{Mustache}& \textit{Receding\_Hairline}& \textit{Rosy\_Cheeks}\\
+ 0.42 (0.39) & 0.48 (0.50) & \textbf{0.04 (0.04)} & \textbf{0.08 (0.08)} & \textbf{0.06 (0.07)}  \\
+    \textit{Sideburns}& \textit{Smiling} & \textit{Wearing\_Earrings}& \textit{Wearing\_Hat}& \textit{Wearing\_Lipstick}\\
+    \textbf{0.06 (0.05)} & 0.48 (0.50) & \textbf{0.19 (0.21)} & \textbf{0.05 (0.04)} & 0.47 (0.52)  \\
+    \textit{Wearing\_Necktie}& \textit{Young} \\
+    \textbf{0.12 (0.14)} &  0.78 (0.76)\\
+    \midrule
+  \end{tabular}
+\end{table}
+
+\textbf{Cat vs Dog} contains 17400 training samples, 5800 test samples of various size. 
+
+\textbf{Imagenet} contains 1M training samples, 100 000 samples for test of various size. 
+
+%*Dataset preprocessing
+\paragraph*{preprocessing:}
+For FashionMNIST Images are normalized between $[0,1]$ with no augmentation. For CelebA dataset, data augmentation is used with random crop, horizontal flip, random brightness, and random contrast. For imagenet and cat vs dog we use the standart preprocessing of resnet (with no normalization in  $[0,1]$)
+
+
+
+
+\subsubsection{Architectures}
+As indicated in the paper, linear layers for \otnn~and unconstrained networks are equivalent (same number of layers and neurons), but unconstrained networks use batchnorm and ReLU layer for activation, whereas \otnn~only use GroupSort2~\cite{pmlr-v97-anil19a,serrurier2021achieving} activation. \otnn~are built using \Deellip library.
+%*Loss
+
+
+    \paragraph*{\onlyonelip~ networks parametrization.} Several soltutions have been proposed to set the Lipschitz constant of affine layers: Weight clipping~\cite{Arjovsky2017} (WGAN), Frobenius normalization~\cite{SalimansK16} and spectral normalization~\cite{Miyato2018SpectralNF}. In order to avoid  vanishing gradients, orthogonalization can be done using Bj{\"o}rck algorithm~\cite{bjorck71Ortho}. DEEL.LIP implements most of these solutions, but we focus on layers called \textit{SpectralDense} and \textit{SpectralConv2D}, with  spectral normalization~\cite{Miyato2018SpectralNF} and  Bj{\"o}rck algorithm~\cite{bjorck71Ortho}.
+    Most activation functions are Lipschitz, including ReLU, sigmoid, but we use GroupSort2 proposed by \cite{pmlr-v97-anil19a}, and defined by the following equation:
+    $$\text{GroupSort2}(x)_{2i,2i+1}=[\min{(x_{2i},x_{2i+1})},\max{(x_{2i},x_{2i+1})}]$$
+
+Network architectures used for CelebA dataset are described in Table~\ref{tab:NN_archi_celebA}.
+\begin{table}[h]
+  \caption{CelebA Neural network architectures: Sconv2D is SpectralConv2D, GS2 is GroupSort2, L2Pool is L2NormPooling, SDense is SpectralDense, BN is BatchNorm, AvgPool is AveragePooling}
+  \label{tab:NN_archi_celebA}
+  \centering
+  \begin{tabular}{llll}
+    \toprule
+    Dataset & \otnn & Unconstrained NN &                   \\
+    \cmidrule(r){2-4}
+         & Layer     &  Layer     & Output size  \\
+    \midrule
+    CelebA & Input   &  Input   & $218\times 178\times 3$     \\
+            & SConv2D, GS2    & Conv2D, BN, ReLU   &    $218\times 178\times 16$ $ $   \\
+            & SConv2D, GS2  & Conv2D, BN, ReLU   & $218\times 178\times 16$     \\
+            & L2Pool  & AvgPool   & $109\times 89\times 16$     \\
+            & SConv2D, GS2  & Conv2D, BN, ReLU   & $109\times 89\times 32$      \\
+            & SConv2D, GS2  &  Conv2D, BN, ReLU  & $109\times 89\times 32$     \\
+            & L2Pool  &  AvgPool  & $54\times 44\times 32$     \\
+            & SConv2D, GS2  & Conv2D, BN, ReLU   & $54\times 44\times 64$      \\
+            & SConv2D, GS2  & Conv2D, BN, ReLU   & $54\times 44\times 64$      \\
+            & SConv2D, GS2  & Conv2D, BN, ReLU   & $54\times 44\times 64$      \\
+            & L2Pool  & AvgPool   & $27\times 22\times 64$      \\
+            & SConv2D, GS2  & Conv2D, BN, ReLU   & $27\times 22\times 128$      \\
+            & SConv2D, GS2  & Conv2D, BN, ReLU   & $27\times 22\times 128$      \\
+            & SConv2D, GS2  & Conv2D, BN, ReLU   & $27\times 22\times 128$      \\
+            & L2Pool  & AvgPool   & $13\times 11\times 128$      \\
+            & SConv2D, GS2  & Conv2D, BN, ReLU   & $13\times 11\times 128$      \\
+            & SConv2D, GS2  & Conv2D, BN, ReLU   & $13\times 11\times 128$     \\
+            & SConv2D, GS2  & Conv2D, BN, ReLU   & $13\times 11\times 128$      \\
+            & L2Pool  & AvgPool   & $6\times 5\times 128$      \\
+            & Flatten, SDense, GS2  & Flatten, Dense, BN, ReLU & $256$     \\
+            & SDense, GS2  & Dense,BN, ReLU    & $256$     \\
+            & SDense  & Dense   & $22$    \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+
+
+
+
+Network architectures used for FashionMNIST dataset are described in Table~\ref{tab:NN_archi_Fashion}. The same \otnn~architecture is used for MNIST expermentation presented in Fig.~\ref{fig:big_picture}.
+
+The 1-Lipschitz version of resnet50 is described in Table~\ref{tab:resnetLIP}. As the unconstrained version, It has around 25M parameters. For the large version, we simply multiply the number channels in hidden layers by $1.5$. The unconstrained version is the standart resnet50 architecture. In the case of imagenet we use the pretrained version provided by tensorflow.
+\begin{table}[h]
+  \caption{FashionMNIST Neural network architectures: Sconv2D is SpectralConv2D, GS2 is GroupSort2, SDense is SpectralDense, BN is BatchNorm, AvgPool is AveragePooling, SGAvgPool is ScaledGlobalAveragePooling (DEEL.LIP), GAvgPool is GlobalAveragePooling}
+  \label{tab:NN_archi_Fashion}
+  \centering
+  \begin{tabular}{llll}
+    \toprule
+    Dataset & \otnn & Unconstrained NN &                   \\
+    \cmidrule(r){2-4}
+         & Layer     &  Layer     & Output size  \\
+    \midrule
+    FashionMNIST & Input   & Input   & $28\times 28\times 1 $     \\  
+    & SConv2D, GS2    & Conv2D, BN, ReLU   &    $28\times 28\times 96$   \\
+    & SConv2D, GS2  & Conv2D, BN, ReLU   & $28\times 28\times 96$     \\
+    & SConv2D, GS2  & Conv2D, BN, ReLU   & $28\times 28\times 96$     \\
+    & SConv2D (stride=2), GS2  & Conv2D (stride=2), BN, ReLU   & $14\times 14\times 96$     \\
+    & SConv2D, GS2    & Conv2D, BN, ReLU   &    $14\times 14\times 192$   \\
+    & SConv2D, GS2    & Conv2D, BN, ReLU   &    $14\times 14\times 192$   \\
+    & SConv2D, GS2    & Conv2D, BN, ReLU   &    $14\times 14\times 192$   \\
+    & SConv2D (stride=2), GS2  &  Conv2D (stride=2), BN, ReLU &  $7\times 7\times 192$   \\
+    & SConv2D, GS2  & Conv2D, BN, ReLU   & $7\times 7\times 384$      \\
+    & SConv2D, GS2  & Conv2D, BN, ReLU   & $7\times 7\times 384$      \\
+    & SConv2D, GS2  & Conv2D, BN, ReLU   & $7\times 7\times 384$      \\
+    & SGAvgPool  & GAvgPool   & $384$      \\
+    & SDense  & Dense   & $10$    \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+
+
+\begin{table}[h]
+\caption{1-lip resnet architecture for Imagenet and cat vs dog: Sconv2D is SpectralConv2D, GS2 is GroupSort2, SDense is SpectralDense, BC is Batchcentering (centeing without normalization), SL2npool is ScaledL2NormPooling2D, SGAvgl2Pool is ScaledGlobalL2NormPooling2D, GAvgPool is GlobalAveragePooling}
+\label{tab:resnetLIP}
+\centering
+\begin{tabular}{ll}
+Layer                                    & output                   \\ \hline
+Input                                    & $224\times 224\times 3$  \\\hline
+SConv2D $7\time7$-64 (stride=2), BC, GS2 & $112\times 112\times 64$ \\ \hline
+InvertibleDownSampling                   & $56\times 56\times 256$  \\ \hline
+$\begin{bmatrix}
+\text{SConv2D } 1\times 1 & 64 & \text{BC, GS2} \\
+\text{SConv2D } 3\times 3 & 64 & \text{BC, GS2} \\
+\text{SConv2D } 1\times 1 & 256 & \text{BC} \\
+\text{add-lip} & &\text{BC, GS2} 
+\end{bmatrix}$ $\times 3$                     &   $56\times 56\times 256$                 \\ \hline
+ SL2npool       &                 $28\times 28\times 256$         \\ \hline
+$\begin{bmatrix}
+\text{SConv2D } 1\times 1 & 128 & \text{BC, GS2} \\
+\text{SConv2D } 3\times 3 & 128 & \text{BC, GS2} \\
+\text{SConv2D } 1\times 1 & 512 & \text{BC} \\
+\text{add-lip} & &\text{BC, GS2} 
+\end{bmatrix}$ $\times 4$                                      &     $28\times 28\times 512$                    \\ \hline
+ SL2npool                          &   $14\times 14\times 512$             \\ \hline
+ $\begin{bmatrix}
+\text{SConv2D } 1\times 1 & 256 & \text{BC, GS2} \\
+\text{SConv2D } 3\times 3 & 256 & \text{BC, GS2} \\
+\text{SConv2D } 1\times 1 & 1024 & \text{BC} \\
+\text{add-lip} & &\text{BC, GS2} 
+\end{bmatrix}$ $\times 6$                                        &     $14\times 14\times 1024$     \\ \hline
+ SL2npool                          &   $7\times 7\times 1024    $         \\ \hline
+$\begin{bmatrix}
+\text{SConv2D } 1\times 1 & 256 & \text{BC, GS2} \\
+\text{SConv2D } 3\times 3 & 256 & \text{BC, GS2} \\
+\text{SConv2D } 1\times 1 & 1024 & \text{BC} \\
+\text{add-lip} & &\text{BC, GS2} 
+\end{bmatrix}$ $\times 3$                                         &     $7\times 7\times 2048    $          \\ \hline
+    SGAvgl2Pool               &    $2048$   \\ \hline
+        SDense                              & $\begin{matrix}
+1 & \text{cat vs dog}\\
+1000 & \text{imagenet}
+\end{matrix}$ 
+\end{tabular}
+\end{table}
+
+
+
+\subsubsection{Losses and optimizer}
+An extension of $\mathcal{L}^{hKR}$ to the  multiclass case with $q$ classes. has also been proposed in \cite{serrurier2021achieving}  The idea is to learn $q$ \onlyonelip~functions $f_1, \ldots, f_q$, each component $f_i$ being a  \textit{one-versus-all} binary classifier. The loss proposed was the following 
+\begin{equation}
+\label{eq:hkr_multi}
+\mathcal{L}^{hKR}_{\lambda,m}(f_{1,\ldots,q}) = \sum_{k=1}^q \left[\underset{\textbf{x}  \sim \neg P_k}{\mathbb{E}} \left[f_k(\textbf{x})\right] -\underset{\textbf{x} \sim P_k}{\mathbb{E}}\left[f_k(\textbf{x})\right] \right]
+ +\lambda\underset{\textbf{x},\y\sim \underset{k=1}{\bigcup^q}P_k
+ }{\mathbb{E}}(H\left(f_1(\x),\ldots, f_q(\x) ,\y,m\right)
+\end{equation}
+with :
+\iftrue
+$$
+H\left(f_1(\x),\ldots, f_q(\x),\y,m \right) =(m- f_y(\x))_+  + \sum_{k\neq y} (m +f_k(\x))_+
+$$
+\fi
+\iffalse
+$$
+H\left(f_1(\x),\ldots, f_q(\x),\y,m \right) =\sum_{k=1}^q (m -(2*\mathbb{1}_{y=k}-1)*f_k(\x))_+
+$$
+\fi
+This formulation has three main drawbacks: (i) for large number of classes several outputs may have few or no positive sample within a batch leading to slow convergence, (ii)  weight of $f_y(\x)$ (the function of the true class) with respect to the other decreases when the number of classes increases, (iii) the expectancy has to be evaluated through the batch, making the loss dependant of the size of the batch. 
+
+%To overcome these drawbacks, we propose a sample-wise loss weighted by a softmax :
+%\begin{equation}
+%\label{eq:hkr_multiv2}
+%\begin{split}
+%\mathcal{L}^{hKR}_{\lambda,\alpha}(f_{1,\ldots,q},x,y)  &= \left[ \sum_{k\neq y} \left[ f_k(\x)*\frac{e^{\alpha*f_k(\x)}}{\sum_{j\neq y} e^{\alpha*f_j(\x)}}  \right] -f_y(\textbf{x}) \right] \\
+%& +\lambda \left[ (m- f_y(\x))_+  + \sum_{k\neq y} \left[\frac{e^{\alpha*f_k(\x)}}{\sum_{j\neq y} e^{\alpha*f_j(\x)}}*(m +f_k(\x))_+\right]\right]
+% \end{split}
+%\end{equation}
+%\fi
+
+\iftrue
+To overcome these drawbacks, we propose first to replace the Hinge term $H$ with a softmax weighted version. The softmax on all but true class is defined by:
+
+$$
+\sigma(f_k(\x),y,\alpha) = \frac{e^{\alpha*f_k(\x)}}{\sum_{j\neq y} e^{\alpha*f_j(\x)}}
+$$
+We can define a weighted version of $H$ function:
+
+$$H_{\sigma}\left(f_1(\x),\ldots, f_q(\x),\y ,m,\alpha\right) = (m- f_y(\x))_+  + \sum_{k\neq y} \sigma(f_k(\x),y,\alpha)*(m +f_k(\x))_+
+$$
+\fi
+%\begin{equation}
+%soft(f_k(\x)) = \frac{e^{f_k(\x)}}{\sum_{j\neq y} e^{f_j(\x)}}
+%\end{equation}
+
+In this function, the value of $f_\y(\x)$ for the true class maintains consistent weight relative to the values of other functions, regardless of the number of classes. $\alpha$ is a temperature parameter. Initially, the softmax behaves like an average as all the values of $f_k$ are close. However, during the learning process, as the values of $|f_k|$ increase, the softmax transitions to function like a maximum. Similarly, if a low value is chosen for $\alpha$ 
+%is chosen as a low value
+, the softmax behaves as an average, resulting in a one vs all hKR loss. 
+By choosing a higher value for $\alpha$, the softmax unbalances the weights. Thus 
+%As the value chosen for $\alpha$ increases (and the softmax unbalances the weights), 
+the loss persists as a one vs all hKR but incorporates a re-weighting of the opposing classes for each targeted class. 
+
+\iftrue
+We also propose a sample-wise and weighted version of the KR part (left term in Eq~\ref{eq:hkr_multi}). to get the proposed loss: 
+\begin{equation}
+\label{eq:hkr_multiv2}
+\begin{split}
+\mathcal{L}^{hKR}_{\lambda,m, \alpha}(f_{1,\ldots,q},x,y)  &= \left[ \sum_{k\neq y} \left[ f_k(\x)*\sigma(f_k(\x),y,\alpha)  \right] -f_y(\textbf{x}) \right] \\
+& +\lambda*H_{\sigma}\left(f_1(\x),\ldots, f_q(\x),\y, m,\alpha\right) 
+ \end{split}
+\end{equation}
+\fi
+It's important to note that this definition only applys to the balanced multiclass case (as in FashionMnist and ImageNet). In the unbalanced scenario, the weight must be rescaled according to the a priori distribution of the classes.
+
+
+
+
+For CelebA, with hyperparameters $\lambda$ is set to 20, and $m=1$. For FashionMNIST, we use  Eq.~\ref{eq:hkr_multiv2},   $\lambda$ is set to $5$,  $\alpha=10$ and $m=0.5$. For cat vs dog $\lambda$ is set to $10$ and $m=18$. For imagenet $\lambda$ is set to $500$,  $\alpha=200$ and $m=0.05$.
+
+
+%*Optimizer
+We train all networks with ADAM optimizer~\cite{Diederik14Adam}. We use a batch size of 128, 200 epochs , and a fixed learning rate $1\mathrm{e}{-2}$ for CelebA. For FashionMNIST we perform 200 epochs with a batch size of 128. We fix the learing rate to $5\mathrm{e}{-4}$ for the 50 first epochs, $5\mathrm{e}{-5}$ for the epochs 50-75, $1\mathrm{e}{-6}$ for the last epochs. For cat vs dog we perform 200 epochs with a batch size of 256. We fix the learing rate to $1\mathrm{e}{-2}$ for the 100 first epochs, $1\mathrm{e}{-3}$ for the epochs 100-150, $1\mathrm{e}{-4}$ for the epochs 150-180 and $1\mathrm{e}{-9}$ for the last epochs. For imagenet we perform 40 epochs with a batch size of 512. We fix the learing rate to $5\mathrm{e}{-4}$ for the 30 first epochs, $5\mathrm{e}{-5}$ for the epochs 30-35, $1\mathrm{e}{-5}$ for the epochs 35-38 and $1\mathrm{e}{-9}$ for the last epochs.

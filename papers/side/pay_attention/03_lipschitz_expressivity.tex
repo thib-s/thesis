@@ -1,0 +1,90 @@
+In this section, we show that \LipCl are as powerful as any other classifier, like their unconstrained counterpart. In particular, when classes are separable they can achieve 100\% accuracy. % Even in the non separable case the optimal Bayes classifier can nonetheless be imitated. We also recall the main property of \mbox{1-Lipschitz} neural networks: their ability to produce robustness radius certificates against adversarial examples.  
+
+\subsection{Boundary decision fitting}
+
+    \begin{restatable}{proposition}{lippowerbinary}{\normalfont\textbf{Lipschitz Binary classification.}}\label{thm:lippowerbinary}
+        For any binary classifier $c:\Xsub\rightarrow\Labels$ with closed pre-images ($c^{-1}(\{y\})$ is a closed set) there exists a 1-Lipschitz function $f:\Reals^n\rightarrow\Reals$ such that $\sign{(f(x))}=c(x)$ on $\Xsub$ and such that $\|\nabla_x f\|=1$ almost everywhere (w.r.t Lebesgue measure). 
+    \end{restatable} %\todo{definition de la SDF en appendix avec citation ? \louis{Possible mais pas facile car l'exemple 3 en dépend.}}
+    % (Proof, sketch) The function SDF($c$) introduced below in Definition~\ref{def:sdfsketch} verifies the aforementioned properties. Full proof in Appendix.  
+    
+    % \begin{definition}[Signed Distance Function]\label{def:sdfsketch}
+    %     Let $\partial$ the frontier of maximum margin: the set of points equidistant to $c^{-1}(\{-1\})$ and $c^{-1}(\{+1\})$. We define the \textbf{Signed distance function (SDF)} as $\text{SDF}(c)(x)=c(x)d(x,\partial)$ on $\Xsub$, with $d$ the euclidean distance between a point and a set: $d(x,\partial)=\inf_{y\in\partial}d(x,y)$.
+    % \end{definition}
+      
+    The level-sets of a $\text{Lip}_1(\Xsub,\Reals^K)$ functions (and especially the decision boundary) can be arbitrarily complex: restraining classifiers to $\text{Lip}_1(\Xsub,\Reals)$ does not affect the classification power. % Similar results can be obtained for multiclass classification (see Appendix). The \textbf{Error} of a classifier $c$ is defined as $E(c)=\Expect_{(x,y)\sim\Prob_{XY}}[\indicator\{c(x)\neq y\}]$.  % The \textbf{Risk} of a classifier is defined as $\Risk(c)=E(c)-E(b)$ where $b$ denotes the optimal Bayes classifier.  
+    \begin{definition}[\textbf{$\epsilon$-separated distributions}]
+    Distributions $P$ and $Q$ are $\epsilon$-separated if the distance between $\supp P$ and $\supp Q$ exceeds $\epsilon>0$.
+    \end{definition}
+    \begin{restatable}{corollary}{zeroerror}{\normalfont\textbf{Separable classes implies zero error}.}\label{thm:zeroerror}
+        If $P$ and $Q$ are $\epsilon$-separated, then there exists a network $f\in\LipCl$ such that \textbf{error} $E(\sign\circ f)\coloneqq\Expect_{(x,y)\sim\Prob_{XY}}[\indicator\{\sign(f(x))\neq y\}]=0$.  
+    \end{restatable} % \footnote{Practitioners sometimes prefer to monitor accuracy $1-E$.}
+    
+      The class of \LipCl networks does not suffer from bias for classification tasks. Some empirical studies show that indeed most datasets classes are separable~\cite{yang2020closer} such as CIFAR10 or MNIST. Furthermore, even if the classes are not separable, functions of \LipCl can nonetheless approximate the optimal Bayes classifier. Lipschitz constraint is not a constraint on the shape of the boundary (Figure~\ref{fig:signeddistancefunction}), but on the slope of the landscape of $f$. 
+     
+    % \begin{figure}[h]
+    % \begin{minipage}{0.45\linewidth}
+    % \begin{example}[Complex Decision Boundary]\label{fig:signeddistancefunction}
+    %     We chose the boundary $\partial$ as the fourth iteration of Von Koch Snowflake. We chose $P$ as the interior ring, while the center and the exterior corresponds to $Q$. We train a $128\veryshortarrow 128\veryshortarrow 128\veryshortarrow 128\veryshortarrow 128$ \LipCl network with MSE to fit the SDF (Definition~\ref{def:nlctwoclasses} in Appendix) ground truth (160 000 pixels), until MAE is inferior to 1. It proves empirically that this classification task, associated to a very sharp (almost fractal) decision boundary, can be solved by a \LipCl network.   
+    % \end{example}  % remove ?
+    % \end{minipage}
+    % \begin{minipage}{0.55\linewidth}
+    % \centering
+    %     \includegraphics[width=0.7\linewidth]{images/toy/vonkoch_cropped.png}
+    % \end{minipage}
+    % \end{figure}
+    
+    \begin{figure}
+     \centering
+     \begin{subfigure}[b]{0.48\linewidth}
+         \centering
+         \includegraphics[width=0.9\linewidth]{images/toy/vonkoch_cropped.png}
+         \caption{\textbf{Complex Decision Boundary $\partial$}. We chose $\partial$ as the fourth iteration of Von Koch Snowflake. We chose $P$ as the interior ring, while the center and the exterior correspond to $Q$. We train a \LipCl network with MSE to fit the SDF (Definition~\ref{def:nlctwoclasses} in Appendix) ground truth (160 000 pixels), until MAE is inferior to 1. It proves empirically that \LipCl networks can handle very sharp (almost fractal) decision boundary.}
+         \label{fig:signeddistancefunction}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.48\linewidth}
+         \centering
+         \includegraphics[width=1.\linewidth]{images/toy/toy_lip_overfit_splitted.png}
+         \caption{\textbf{Importance of $\tau$ in BCE}. We train a \LipCl network with BCE and different values for $\tau$. We chose a toy example where $P$ and $Q$ are Gaussian mixtures with two modes of weights $0.9$ and $0.1$. We highlight the different shapes of the minimizer $\sigma\circ f$ as function of $\tau$. \textbf{High values of $\tau$ leads to better fitting, whereas for lower $\tau$ the small weights Gaussian of the mixture are treated as noise and ignored}.}
+         \label{ex:nosameminimum}
+     \end{subfigure}
+     \caption{}
+    \end{figure}
+  
+
+\subsection{Understanding why \LipCl are often perceived as not expressive}\label{sec:lipclminexists}
+
+    \LipCl networks cannot reach zero loss with BCE: this may explain why they are perceived as not expressive enough. Yet the minimizer of BCE exists and is well defined.
+    
+    \begin{restatable}{proposition}{minimizerattained}{\normalfont\textbf{BCE minimization for \mbox{1-Lipschitz} functions}.}\label{thm:minimizerattained}
+        Let $\Xsub\subset\Reals^n$ be a compact and $\tau>0$. Then the infimum in Equation~\ref{eq:optim1lip} is a minimum, denoted $f^{\tau}\in\text{Lip}_1(\Xsub,\Reals)$:
+        \begin{equation}\label{eq:optim1lip}
+            f^{\tau}\in\arg\inf_{f\in\text{Lip}_1(\Xsub,\Reals)}\Expect_{(x,y)\sim\Prob_{XY}}[\Loss^{bce}_{\tau}(f(x),y)].
+        \end{equation}
+         Moreover, the \LipCl networks will not suffer of vanishing gradient of the loss (see Appendix~\ref{app:gradientpreserving}).
+    \end{restatable}
+    
+    Machine learning practitioners are mostly interested in maximizing accuracy.%the maximization of the accuracy.
+    However, the minimizer of BCE is not necessarily a minimizer of the error (see Figure~\ref{ex:nosameminimum}). Yet, BCE is notoriously a differentiable proxy of the error $E(\sign\circ f)$, and as $\tau\rightarrow\infty$ we get asymptotically closer to maximum empirical accuracy. Bigger value for $\tau$ might ultimately lead to overfitting, playing the same role as the Lipschitz constant $L$ (see Figure~\ref{ex:nosameminimum}).  
+    
+    % \begin{figure}[h]
+    % \begin{minipage}{0.55\linewidth}
+    % \begin{example}\label{ex:nosameminimum}%[Importance of $L$ in BCE]
+    %     We train a Lipschitz network with BCE and different values for $\tau$. We chose a toy example where $P$ and $Q$ are a Gaussian mixture with two modes of weights $0.9$ and $0.1$. We highlight the different shapes of the minimizer $\sigma\circ f$ as function of $\tau$. \textbf{High values of $\tau$ leads to better fitting, whereas for small $\tau$ the small weights Gaussian of the mixture are treated as noise and ignored}.   
+    % \end{example}  % remove ?
+    % \end{minipage}
+    % \begin{minipage}{0.45\linewidth}
+    % \centering
+    %     \includegraphics[width=0.9\linewidth]{images/toy/toy_lip_overfit_splitted.png}
+    % \end{minipage}
+    % \end{figure}
+      
+     \textbf{The implicit parameter $\tau=1$ of the loss is partially responsible of the poor accuracy of \LipCl networks in literature}, and not by any means the hypothesis space \LipCl itself. This can be observed in practice : when temperature $\tau$  (resp. margin $m$) of cross-entropy (resp. hinge loss) is correctly adjusted a small \LipCl CNN can reach a competitive \textbf{88.2\% validation accuracy on the CIFAR-10 dataset} (results synthetized and discussed in Figure~\ref{fig:pareto_hkr}) \textit{without} residual connections, batch normalization or dropout. Conversely, \LipInf networks are roughly equivalent to learning a \LipCl network with $\tau\rightarrow\infty$: without regularization or data augmentation, such a network can always reach 100\% train accuracy without generalization guarantees. %This phenomenon is illustrated in larger scale on CIFAR10, in Figure~\ref{fig:consistency}. \LipInf networks are equivalent to learning a \LipCl network with $\tau\rightarrow\infty$: without regularization or data augmentation, such a network can always reach 100\% train accuracy without generalization guarantees.  
+    % \begin{figure}
+    %     \centering
+    %     \include{images/pareto/pareto_table}
+    %     \caption{Caption}
+    %     \label{fig:my_label}
+    % \end{figure}
+      
+    %\footnote{}

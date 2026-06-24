@@ -1,0 +1,264 @@
+% CVPR 2024 Paper Template; see https://github.com/cvpr-org/author-kit
+
+\documentclass{article}
+
+% Use the following line for the initial blind version submitted for review:
+% \usepackage{icml2025}
+
+% If accepted, instead use the following line for the camera-ready submission:
+\usepackage[accepted]{icml2025}
+
+% Import additional packages in the preamble file, before hyperref
+\input{preamble}
+
+\icmltitlerunning{An Adaptive Orthogonal Convolution Scheme for Efficient and Flexible CNN Architectures}
+
+\begin{document}
+%%%%%%%%% TITLE - PLEASE UPDATE
+
+\twocolumn[
+\icmltitle{An Adaptive Orthogonal Convolution Scheme for Efficient and Flexible CNN Architectures}
+% \title{The Art of Orthogonal Convolutions: An Adaptive Scheme to Unlock Modern Features}
+%\title{The Art of Orthogonal Convolutions: An (A)daptive (O)orthogonalisation (C)onvolution Scheme at scale for efficient orthogo to Unlock Modern Features}
+% \title{The Art of Orthogonal Convolutions}%: An Adaptive Scheme for Efficient Implementation}
+% \title{Scaling Up Orthogonal Convolutions: Modern Convolutional Techniques for Robust and Efficient Learning}
+% \title{Fast Orthogonal Convolutions: New perspectives on orthogonal convolution to unlock large scale training}
+% \title{Block convolution: efficient implementation and applications \\ or Flash Lipschitz \\ or the revenge of BCOP\\ or Flash Orthogonal Convolutions (FOC avec un bel accent francais;-)}
+    % The Art of Orthogonal Convolution: an adaptative method for fast ortho conv
+    % RoBCOP : the revenge of BCOP
+    % BioCOP, light, natural and cheap ortho conv 
+    % 
+
+%%%%%%%%% AUTHORS - PLEASE UPDATE
+% \author{First Author\\
+% Institution1\\
+% Institution1 address\\
+% {\tt\small firstauthor@i1.org}
+% % For a paper whose authors are all at the same institution,
+% % omit the following lines up until the closing ``}''.
+% % Additional authors and addresses can be added with ``\and'',
+% % just like the second author.
+% % To save space, use either the email address or home page, not both
+% \and
+% Second Author\\
+% Institution2\\
+% First line of institution2 address\\
+% {\tt\small secondauthor@i2.org}
+% }
+\icmlsetsymbol{equal}{*}
+
+\begin{icmlauthorlist}
+\icmlauthor{Thibaut Boissin}{irt,irit}
+\icmlauthor{Franck Mamalet}{irt}
+\icmlauthor{Thomas Fel}{kempner}
+\icmlauthor{Agustin Martin Picard}{irt}
+\icmlauthor{Thomas Massena}{sncf,irit}
+\icmlauthor{Mathieu Serrurier}{irit}
+\end{icmlauthorlist}
+
+\icmlaffiliation{irt}{Institut de Recherche Technologique Saint-Exupery, France}
+%\icmlaffiliation{anit}{Artificial and Natural Intelligence Toulouse Institute, France}
+\icmlaffiliation{irit}{IRIT, France}
+\icmlaffiliation{sncf}{Innovation \& Research Division, SNCF, France}
+\icmlaffiliation{kempner}{Kempner Institute, Harvard University, USA}
+
+\icmlcorrespondingauthor{Thibaut Boissin}{thibaut.boissin@irt-saintexupery.com}
+\icmlcorrespondingauthor{Franck Mamalet}{franck.mamalet@irt-saintexupery.com}
+
+
+
+% You may provide any keywords that you
+% find helpful for describing your paper; these are used to populate
+% the "keywords" metadata in the PDF but will not be shown in the document
+\icmlkeywords{Machine Learning,Orthogonal convolutions,certifiable adversarial robustness,Lipschitz neural networks}
+
+\vskip 0.3in
+]
+
+\printAffiliationsAndNotice{}  % leave blank if no need to mention equal contribution
+% \printAffiliationsAndNotice{\icmlEqualContribution} % otherwise use the standard text.
+
+
+% \twocolumn[
+% \icmltitle{Block convolution: efficient implementation and applications \\ or
+% Flash Lipschitz \\ or the revenge of BCOP\\ or Flash Orthogonal Convolutions (FOC avec un bel accent francais;-)}
+
+% It is OKAY to include author information, even for blind
+% submissions: the style file will automatically remove it for you
+% unless you've provided the [accepted] option to the icml2024
+% package.
+
+% List of affiliations: The first argument should be a (short)
+% identifier you will use later to specify author affiliations
+% Academic affiliations should list Department, University, City, Region, Country
+% Industry affiliations should list Company, City, Region, Country
+
+% You can specify symbols, otherwise they are numbered in order.
+% Ideally, you should not use this facility. Affiliations will be numbered
+% in order of appearance and this is the preferred way.
+% \icmlsetsymbol{equal}{*}
+
+% \begin{icmlauthorlist}
+% \icmlauthor{Firstname1 Lastname1}{equal,yyy}
+% \icmlauthor{Firstname2 Lastname2}{equal,yyy,comp}
+% \icmlauthor{Firstname3 Lastname3}{comp}
+% \icmlauthor{Firstname4 Lastname4}{sch}
+% \icmlauthor{Firstname5 Lastname5}{yyy}
+% \icmlauthor{Firstname6 Lastname6}{sch,yyy,comp}
+% \icmlauthor{Firstname7 Lastname7}{comp}
+% %\icmlauthor{}{sch}
+% \icmlauthor{Firstname8 Lastname8}{sch}
+% \icmlauthor{Firstname8 Lastname8}{yyy,comp}
+% %\icmlauthor{}{sch}
+% %\icmlauthor{}{sch}
+% \end{icmlauthorlist}
+
+% \icmlaffiliation{yyy}{Department of XXX, University of YYY, Location, Country}
+% \icmlaffiliation{comp}{Company Name, Location, Country}
+% \icmlaffiliation{sch}{School of ZZZ, Institute of WWW, Location, Country}
+
+% \icmlcorrespondingauthor{Firstname1 Lastname1}{first1.last1@xxx.edu}
+% \icmlcorrespondingauthor{Firstname2 Lastname2}{first2.last2@www.uk}
+
+% % You may provide any keywords that you
+% % find helpful for describing your paper; these are used to populate
+% % the "keywords" metadata in the PDF but will not be shown in the document
+% \icmlkeywords{Machine Learning, ICML}
+
+% \vskip 0.3in
+% ]
+
+% this must go after the closing bracket ] following \twocolumn[ ...
+
+% This command actually creates the footnote in the first column
+% listing the affiliations and the copyright notice.
+% The command takes one argument, which is text to display at the start of the footnote.
+% The \icmlEqualContribution command is standard text for equal contribution.
+% Remove it (just {}) if you do not need this facility.
+
+%\printAffiliationsAndNotice{}  % leave blank if no need to mention equal contribution
+% \printAffiliationsAndNotice{\icmlEqualContribution} % otherwise use the standard text.
+
+% \maketitle
+
+\begin{abstract}
+    %% FIRST DRAFT, FEEL FREE TO MODIFY
+    %Orthogonal convolutional layers are gaining traction in machine learning due to their ability to improve robustness, enhance training stability, and empower advanced normalizing flows. Despite these benefits, scaling orthogonal convolutions remains very challenging. Existing methods are hindered by computational overhead and limited support for crucial features like strides, dilations, groups, and transpositions.
+
+    %In this paper, we introduce an \textbf{efficient} and \textbf{scalable} method for constructing orthogonal convolutional layers that overcomes these limitations. Our approach seamlessly supports operations like strides, dilation, group convolutions, and transposed convolutions, unifying orthogonal layer construction across diverse components. This unlocks new opportunities for orthogonal architectures that were previously out of reach. We finally provide examples that show our ability to produce expressive models that become increasingly efficient as they scale. 
+    %To foster further innovation in this area, we have released an open-source library implementing all of this functionality, available at [link]. 
+
+
+% \fel{tell me what you think}
+% Orthogonal convolutional layers function as the workhorse of multiple areas in machine learning, such as adversarial robustness, normalizing flows, invertible neural networks, and Lipschitz-constrained models. Their ability to preserve norms and ensure stable gradient propagation makes them valuable for a large range of problem. Despite their widespread utility, scaling orthogonal convolutions to practical, large-scale applications remains a significant challenge due to computational overhead and limited support for essential operations like strides, dilations, group convolutions, and transposed convolutions.
+
+% In this paper, we introduce an \textbf{efficient} and \textbf{scalable} method for constructing orthogonal convolutional layers that overcomes these obstacles. Our approach inherently supports strides, dilations, group convolutions, and transposed convolutions, providing a unified framework for incorporating orthogonality across diverse convolutional operations. This advancement unlocks new possibilities for orthogonal architectures previously considered impractical. We demonstrate through extensive experiments that our method produces expressive models that become increasingly efficient at scale. To accelerate innovation in this area, we have released an open-source library implementing our approach, available at [link].
+
+% \fel{tell me what you think}
+Orthogonal convolutional layers are valuable components in multiple areas of machine learning, such as adversarial robustness, normalizing flows, GANs, and Lipschitz-constrained models. Their ability to preserve norms and ensure stable gradient propagation makes them valuable for a large range of problems. Despite their promise, the deployment of orthogonal convolution in large-scale applications is a significant challenge due to computational overhead and limited support for modern features like strides, dilations, group convolutions, and transposed convolutions.
+In this paper, we introduce \textbf{AOC} (Adaptive Orthogonal Convolution), a scalable method that extends the work of \cite{li_preventing_2019}, effectively overcoming existing limitations in the construction of orthogonal convolutions. This advancement unlocks the construction of architectures that were previously considered impractical. We demonstrate through our experiments that our method produces expressive models that become increasingly efficient as they scale.
+To foster further advancement, we provide an open-source python package implementing this method, called \fulllibname.%available~\libname.% ~and installable via \texttt{pip install orthogonium}.
+%To accelerate innovation in this area, we have released an open-source library implementing our approach, available \libname.
+
+
+    % Orthogonal layers in neural networks are known to improve robustness, limit the exploding and vanishing gradient problem, and have applications in normalizing flows, Wasserstein distance estimation, and RNN stabilization. However the construction of orthogonal convolutions is a still a challenge: exisitng methods suffers limitations that prevent their efficient application on large scale problems. We propose a fast and scalable method to build orthogonal convolution layers that support modern convolution options, such as stride, transposition, groups, and dilation (and all compositions). This unlock the construction of modern CNN architecture like Unets. We finally shows that this implementation is expressive and become more efficient with scale.
+    % The block convolution between two tensors $A \mathbconv B$ is a convolution using matrix multiplication rather than scalar multiplication. Amongst other properties, block convolution enjoys the fact that $A * ( B * x )) = (A \mathbconv B ) * x$. In other words, a composition of convolutions can be fused by applying the block convolutions between the two kernels. However, the practical implementation in deep learning frameworks remains under-explored, resulting in inefficient implementation that does not make full use of GPU/TPU architectures. This paper proposes an efficient and scalable method to compute this operation. We apply this to improve existing methods that construct orthogonal convolutions, namely BCOP \cite{li_preventing_2019} that explicitly use block convolutions, we also show that skew orthogonal convolutions \cite{singla_skew_2021} can be rewritten using this framework, unlocking their applications at scale.
+\end{abstract}
+
+% \vspace{-3mm}
+
+\section{Introduction and Related Works}
+
+    \input{flash_bcop/parts/01_intro_related_works}
+    
+\section{An Adaptive scheme to build Orthogonal Convolution (AOC)}\label{sec:AOC}
+
+    We will first recall the definition and properties of the \Bconv{} in \cref{sec:fusing_kernel}. 
+    This tool is used in \cref{sec:construction} to construct orthogonal kernels explicitly, with the support of modern convolution features. 
+    %This tool allows the explicit construction of orthogonal kernels, which also support modern features depicted in \cref{sec:construction}.
+    Finally, \cref{sec:implem} provides implementation details that allow the method to scale. 
+    
+\subsection{Core tool: \Bconv}\label{sec:fusing_kernel}
+
+    \input{flash_bcop/parts/02_block_conv}
+    
+\subsection{Construction of Strided, Transposed, Grouped, Dilated, Orthogonal Convolutions with AOC}\label{sec:construction}\input{flash_bcop/parts/bigfigs/bigfig_method}
+
+    \input{flash_bcop/parts/03_method}
+
+\subsection{Efficient implementation of AOC}
+
+    \todo{Possibilité de virer cette parties si on manque vraiment de place pour la partie XP}
+
+    \input{flash_bcop/parts/04_implem}
+% \vspace{-2mm}
+\section{Evaluation and applications}
+
+    \todo{Bien introduire le lien entre orthogonal et Lipschitz, et indiquer les avantages par rapport a la régul. COnstraint -> tight lip -> certificates de robustesse}
+
+    \input{flash_bcop/parts/05_eval}\label{sec:eval}
+
+% \vspace{-2mm}
+
+\section{Conclusion and Broader Impact}
+
+    \input{flash_bcop/parts/06_conclusions}\label{sec:conclusions}
+% \iffalse
+
+\section*{Impact Statement}
+
+This paper presents work whose goal is to advance the field of Machine Learning. There are many potential societal consequences of our work, none which we feel must be specifically highlighted here.
+
+\section*{Acknowledgement}
+This work was carried out within the , \href{https://www.deel.ai/}{DEEL project} which is part of IRT Saint Exupéry and the ANITI AI cluster. The authors acknowledge the financial support from DEEL's Industrial and Academic Members and the France 2030 program – Grant agreements n°ANR-10-AIRT-01 and n°ANR-23-IACL-0002.
+%This work has benefited both the DEEL project, \footnote{\url{https://www.deel.ai/}} with funding from the Agence Nationale de la Recherche, and from AI-Cluster ANITI, funded by the France 2030 program under the Grant agreement n°ANR-23-IACL-0002.
+% \fi
+% Part of this work was performed using HPC resources from CALMIP (Grant 2024-P22034).
+    
+% \newpage
+% \bibliography{flash_bcop/full}
+% \bibliographystyle{icml2024}
+% \small
+% \bibliographystyle{ieeenat_fullname}
+
+%\newpage
+\bibliography{full.bib}
+\bibliographystyle{icml2025}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% APPENDIX
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \newpage
+% \input{flash_bcop/parts/legacy}
+\newpage
+
+\todo{Add section to describe orthogonlaization methods, we can also add comparison of those}
+
+\appendix
+% \onecolumn
+
+\newpage
+
+\input{flash_bcop/parts/appendix}
+
+% \input{flash_bcop/parts/legacy}
+
+\end{document}
+
+
+% This document was modified from the file originally made available by
+% Pat Langley and Andrea Danyluk for ICML-2K. This version was created
+% by Iain Murray in 2018, and modified by Alexandre Bouchard in
+% 2019 and 2021 and by Csaba Szepesvari, Gang Niu and Sivan Sabato in 2022.
+% Modified again in 2023 and 2024 by Sivan Sabato and Jonathan Scarlett.
+% Previous contributors include Dan Roy, Lise Getoor and Tobias
+% Scheffer, which was slightly modified from the 2010 version by
+% Thorsten Joachims & Johannes Fuernkranz, slightly modified from the
+% 2009 version by Kiri Wagstaff and Sam Roweis's 2008 version, which is
+% slightly modified from Prasad Tadepalli's 2007 version which is a
+% lightly changed version of the previous year's version by Andrew
+% Moore, which was in turn edited from those of Kristian Kersting and
+% Codrina Lauth. Alex Smola contributed to the algorithmic style files.

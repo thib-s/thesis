@@ -1,0 +1,67 @@
+\subsubsection{FashionMNIST performances and ablation study}
+
+Table~\ref{tab:fashion_results} presents different performance resuts on FashionMNIST. First line is the reference unconstrained network. Second line shows the performances of the new version of \lossreg. Table~\ref{tab:fashion_results} also shows that the new version of the $\mathcal{L}^{hKR}_{\lambda,m,\alpha}$ in the multiclass case  (Eq. \ref{eq:hkr_multiv2})  outperforms the \losshkr defined in~\cite{serrurier2021achieving} (Eq. \ref{eq:hkr_multi}). Obviously, the accuracy enhancement  is obtained at the expense of the robustness. The main interest of this new loss is to provide a wider range in the accuracy/robustness trade-off. 
+
+\begin{table}[h]
+  \caption{FashionMNIST accuracy comparison with the different version of multiclass \losshkr. For the fixed margin, we use the one that performs best by parameter tuning (i.e. $m=0.5$) }
+  \label{tab:fashion_results}
+  \centering
+  \begin{tabular}{lc}
+    \toprule
+ Model &      Accuracy \\
+Unconstrained &  88.5\\
+  \otnn~ \losshkr multiclass version \cite{serrurier2021achieving} ($\lambda = 10$, $m = 0.5)$& 72.2\\
+(Ours) \otnn~$\mathcal{L}^{hKR}_{\lambda,m, \alpha}$  ($\lambda = 10$, $m = 0.5$, $\alpha =10$) (Eq.~\ref{eq:hkr_multiv2})& \textbf{88.6}\\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsubsection{CelebA performances}
+Table~\ref{tab:celebA_results} presents the Sensibility and Specificity for each label reached by Unconstrained network and \otnn. 
+
+As a reminder, given True Positive (TP), True Negative (TN), False Positive (FP), False Negative (FN) samples, Sensitivity (true positive rate or Recall) is defined by:
+$$
+Sens = \frac{TP}{TP+FN}
+$$
+Specificity  (true negative rate) is defined by:
+$$
+Spec = \frac{TN}{TN+FP}
+$$
+
+\begin{table}[h]
+  \caption{CelebA performance results for unconstrained and \otnn~networks}
+  \label{tab:celebA_results}
+  \centering
+  \begin{tabular}{lcccc}
+    \toprule
+ Model &      \multicolumn{4}{c}{Metrics: Sensibility/Specificity} \\
+ \midrule
+    &   \textit{Attractive}& \textit{Bald}& \textit{Big\_Nose}&
+\textit{Black\_Hair} \\
+ Unconstrained &  \textbf{0.83	/	0.81} &	0.64	/	1.00 &	\textbf{0.65	/	0.87} &	\textbf{0.74	/	0.95} \\
+ %\otnn & 0.89	/	0.63 &	\commentgreen{0.02	/	1.00} &	\commentgreen{0.35	/	0.93}	& 0.78	/	0.84 \\
+ \otnn & 0.80	/	0.75 &	\textbf{0.87	/	0.83} &	0.73	/	0.70 &	0.78	/	0.84\\
+    &   \textit{Blond\_Hair}& \textit{Blurry} & \textit{Brown\_Hair}& \textit{Eyeglasses} \\
+ Unconstrained & 	\textbf{0.86	/	0.97} &	\textbf{0.49	/	0.99} &	\textbf{0.80	/	0.88} &	\textbf{0.96	/	1.00}  \\
+ %\otnn & 0.69	/	0.97 &	\commentgreen{0.01	/	1.00} & 0.50	/	0.92 &	\commentgreen{0.37	/	1.00} \\
+ \otnn & 0.86	/	0.89 &	0.66	/	0.72 &	0.81	/	0.73 &	0.80	/	0.89\\
+    &   \textit{Gray\_Hair}& \textit{Heavy\_Makeup}& \textit{Male} &    \textit{Mouth\_Slightly\_Open}\\
+  Unconstrained  &   0.62	/	0.99 &	\textbf{0.84	/	0.95} &	\textbf{0.98	/	0.98}	 & \textbf{0.93	/	0.94}  \\
+ %\otnn & \commentgreen{0.16	/	1.00} &	0.86	/	0.86 &	0.87	/	0.92 &	0.83	/	0.85	 \\
+ \otnn & \textbf{0.84	/	0.83} &	0.89	/	0.83 &	0.92	/	0.89 &	0.80	/	0.89\\
+    &   \textit{Mustache}& \textit{Receding\_Hairline}& \textit{Rosy\_Cheeks}& \textit{Sideburns} \\
+  Unconstrained  &   0.47	/	0.99 &	0.47	/	0.98 & 	0.46	/	0.99 &	\textbf{0.79	/	0.98}  \\
+ %\otnn & \commentgreen{0.00	/	1.00} &	\commentgreen{0.47	/	0.94} &	\commentgreen{0.33	/	0.97} &	\commentgreen{0.30	/	0.99}  \\
+ \otnn & \textbf{0.86	/	0.76} &	\textbf{0.81	/	0.79} &	\textbf{0.82	/	0.80} &	0.79	/	0.82\\
+    &  \textit{Smiling} &    \textit{Wearing\_Earrings}& \textit{Wearing\_Hat}& \textit{Wearing\_Lipstick} \\
+  Unconstrained  &  \textbf{0.90	/	0.95}&	\textbf{0.84	/	0.90} & \textbf{0.89	/	0.99} &	\textbf{0.90	/	0.96}   \\
+ %\otnn & 0.76	/	0.95 &	\commentgreen{0.39	/	0.94} &	\commentgreen{0.26	/	1.00} &	0.90	/	0.89 \\
+ \otnn & 0.84	/	0.88 &	0.78	/	0.72 &	0.86	/	0.90 &	0.90	/	0.89\\
+     &  \textit{Wearing\_Necktie}& \textit{Young} \\
+Unconstrained    &   0.75	/	0.98 &	\textbf{0.95	/	0.65}  &	 & \\
+% \otnn &  0.57	/	0.97 &	\commentgreen{0.99	/	0.24} &	 &	 \\
+ \otnn & \textbf{0.87	/	0.86} &	0.79	/	0.69 &  &\\
+    \bottomrule
+    \end{tabular}
+\end{table}
+

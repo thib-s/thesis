@@ -1,0 +1,107 @@
+\section{Background and Related Works}
+
+\subsection{Split Conformal Prediction} 
+
+Multiple approaches to Conformal Prediction exist \cite{vovk,gentleintroductionconformalprediction}. We focus on Split Conformal Prediction~\cite{papadopoulos2002inductive}, a variant applied post-hoc using a separate data split. This approach has the advantage of being applicable to any model, even pre-trained on a different dataset. 
+Throughout this work, we focus on classification tasks. We denote $\mathcal{X}$ as the input domain for a classifier $f : \mathcal{X} \rightarrow \Reals^{c}$ which maps inputs to class logits of labels $y \in \labelspace$ with $\text{Card}(\labelspace) = c$ the number of classes.  
+Generally lowercase letters $x,y$ refer to deterministic examples, while uppercase letters $X,Y$ are for random variables.
+Split CP methods construct prediction sets $\predset(x)$ that contain the true label with probability at least $1-\alpha$, where $\alpha\in\left[\frac{1}{n_\mathrm{cal} + 1}, 1\right)$
+is a user-specified risk.\footnote{Though some papers might mention the interval $\left(0, 1\right)$, this is a slight abuse of notation, since split CP methods are only well defined for $\alpha \geq 1/(n_\mathrm{cal} + 1)$.} 
+
+For this purpose, CP defines $s : \mathcal{X} \times \mathcal{Y} \rightarrow \Reals$, a non-conformity score that measures the degree of incorrectness of a prediction $f(x)$ for a ground truth label $y$. On a holdout ``calibration'' data split $\CalDataset \in ( \inputspace \times \labelspace)^{n_\mathrm{cal}}$, the non-conformity score is computed for each instance, denoted as $R_i=s(X_i, Y_i)$ for $i\in\{1,\dots,n_\mathrm{cal}\}$, along with the quantile of the score $\calthreshold=\overrightarrow{R}_{\lceil (n_\mathrm{cal}+1)(1-\alpha)\rceil}$ (where $\overrightarrow{R}$ represents the $R_i$ scores sorted in ascending order). For a given example $x_\mathrm{test}$, the prediction set is then defined as $\predset(x_\mathrm{test})=\{ y \in \mathcal{Y} \ : \ s(x_\mathrm{test},y) \leq \calthreshold \}$. This formulation is quite intuitive: the prediction set $\predset(x_\mathrm{test})$ is defined as all the labels $y$ that would lead to a non-conformity score below $\calthreshold$, and would place among the $1-\alpha$ most conforming pairs compared to the calibration set. This set then satisfies the following \emph{coverage guarantee}.
+%
+\begin{theorem}[\citealt{vovk}]
+\label{thm:vovk}
+    Let $\CalDataset = \{ (X_i,Y_i) \}_{1 \leq i \leq n_\mathrm{cal}}$ and $(X_\mathrm{test},Y_\mathrm{test})$ be exchangeable random variables. For any non-conformity score $s : \inputspace \times \labelspace \rightarrow \Reals$ and any user-specified risk $\alpha\in\left[\frac{1}{n_\mathrm{cal}+1},1\right)$, the prediction set $\predset(X_\mathrm{test}) = \{y \in \labelspace: s(X_\mathrm{test},y) \leq \calthreshold \}$ satisfies:
+    \begin{equation}
+        \mathbb{P} \left(Y_\mathrm{test} \in \predset(X_\mathrm{test}) \right) \geq 1 - \alpha \;,
+    \end{equation}
+where the probability is taken over the random draws of both $\CalDataset$ and $(X_\mathrm{test},Y_\mathrm{test})$.
+\end{theorem}
+
+This result allows turning predictions from any black-box model $f$ into prediction sets with a guaranteed risk level. However, this guarantee is marginal: the error rate of $\alpha$ only bounds an average error over all possible values of $X_\mathrm{test}$.
+
+
+\subsection{Robust Conformal Prediction}
+\label{sec:robustCP-relatedworks}
+
+Extending the CP guarantee of Theorem~\ref{thm:vovk} to cover adversarial conditions was first explored in the seminal work of~\citet{rscp}. In this paper, the following definition of Robust Conformal Prediction is given. For any $x \in \mathcal{X}$, we write $\bouleps(x)=\{x' \in \mathcal{X}: \Vert x'-x \Vert \leq \epsilon\}$.
+
+
+\begin{definition}[Robust Conformal Prediction]
+    Let $\CalDataset = \{ (X_i,Y_i) \}_{1 \leq i \leq n_\mathrm{cal}}$ and $(X_\mathrm{test},Y_\mathrm{test})$ be exchangeable random variables. A prediction set~$\robustpredset$ is said to be robust to $\epsilon$-bounded perturbations if for any random variable $\Tilde{X}_\mathrm{test}$ such that $\Tilde{X}_\mathrm{test} \in \bouleps(X_\mathrm{test})$ almost surely,
+
+    \begin{equation}
+        \mathbb{P} \left[Y_\mathrm{test} \in \robustpredset(\Tilde{X}_\mathrm{test}) \right] \geq 1 - \alpha.
+    \end{equation}
+\label{def:robust_coverage}
+\end{definition}
+
+
+Enforcing Def.~\ref{def:robust_coverage} ensures the coverage guarantee of Theorem~\ref{thm:vovk} in worst-case adversarial conditions for any sample under $\epsilon$-bounded adversarial perturbations. 
+
+The initial intuition behind robust CP methods is the following: by computing provable lower bounds for conformal prediction scores under attack, it is possible to guarantee robust CP coverage as defined in Def.~\ref{def:robust_coverage}. We recall the following concepts, which appear under several wordings in the literature.
+
+\begin{definition}
+    A \emph{conservative score} under $\epsilon$-bounded adversarial perturbations is any function $\underline{s}:\inputspace \times \labelspace \to \R$ such that, for all $(x,y) \in \inputspace \times \labelspace$,
+    %
+    \begin{equation}
+        \underline{s}(x,y) \leq \inf_{\Tilde{x}\in\bouleps(x)}s(\Tilde{x},y) \;.
+    \label{eq:conservativepredscore}
+    \end{equation}
+\end{definition}
+
+\begin{definition}
+    Let $x \in \inputspace$. A \emph{robust prediction set} (or \emph{conservative prediction set}) under $\epsilon$-bounded adversarial perturbations around $x$ is defined as:
+    %
+    \begin{equation}
+    \label{eq:defconservativeset}
+        \unionmetaset(x) = \{y \in \labelspace: \underline{s}(x,y) \leq \calthreshold\} \;,
+    \end{equation}
+    %
+    where $\underline{s}$ is a conservative score under $\epsilon$-bounded adversarial perturbations.
+\label{def:robust_predset}
+\end{definition}
+
+\paragraph{General formulation} Importantly, the robust prediction set of Def.~\ref{def:robust_predset} verifies robust CP coverage as defined in Def.~\ref{def:robust_coverage}, and as demonstrated in \citet{vrcp}.
+Moreover, as a general rule, robust CP methods revolve around the tight estimation of the conservative score of Eq.~\eqref{eq:conservativepredscore} in order to verify robust CP coverage. We now discuss the specifics of these computations.
+
+\subsection{Related Works} 
+\label{sec:relatedWorks}
+
+\paragraph{Monte-Carlo methods} In order to compute robust CP sets, the initial work of~\citet{rscp} leverages a \textit{smoothed score function} from the framework of randomized smoothing \cite{cohen2019certifiedadversarialrobustnessrandomized}. The \emph{RSCP} score is defined as:
+
+\begin{equation}
+    \Tilde{s}(x,y) = \Phi^{-1} \left( \mathbb{E}_{\Delta \in \mathcal{N}(0,\sigma^2.I)}[s(x+\Delta,y)] \right),
+\label{eq:smoothed_score}
+\end{equation}
+
+with $\Phi^{-1}$ the inverse CDF of the standard normal distribution of standard deviation $\sigma$, which satisfies for any $(x,y) \in \inputspace \times \labelspace$:
+
+\begin{equation}
+    % \Tilde{s}(x,y) - \frac{\epsilon}{\sigma} \leq \inf_{\Tilde{x} \in \bouleps(x)}\Tilde{s}(\Tilde{x},y).
+    \underline{s}_{\emph{RSCP}} (x,y) = \Tilde{s}(x,y) - \frac{\epsilon}{\sigma},
+\end{equation}
+%
+therefore providing a conservative score which will be used to enforce robust CP. However, due to the unknown nature of the expectation in Eq.~\eqref{eq:smoothed_score}, it is estimated by a Monte Carlo (MC) procedure for which no correction is applied. 
+
+Later work \cite{rscp_plus} enables provable robustness coined as the \emph{RSCP+} method by introducing both a corrective factor on the expectation estimation and accounting for the error probability of the MC estimation process by adjusting the calibration threshold. Additionally, this paper introduces \emph{PTT}, an extension to their method with the use of an extra $\mathcal{D}_\mathrm{holdout}$ data split to obtain better robust CP metrics.
+Similarly, the \emph{CAS} method relies on CDF-Aware Sets \cite{cas} for certifiably robust CP. These \emph{CAS} sets provide a generally tighter bound for smoothed CP scores than \emph{RSCP}. In an independent work to ours, \citet{bincp} propose a binary-certificate-based method (\emph{BinCP}) for robust CP with improved sample efficiency and tighter binary certificate bounds.
+
+
+\paragraph{Deterministic methods} The authors of \emph{VRCP}~\cite{vrcp}
+leverage formal verification-based solvers~\cite{katz2017reluplexefficientsmtsolver} to provide a deterministic lower bound of Eq.~\eqref{eq:conservativepredscore} valid locally around $x$. Interestingly, they devise two methods to achieve robust CP: \emph{VRCP-I} uses a standard vanilla CP calibration procedure, then computes conservative scores around each test point $x_\mathrm{test}$. These scores are then used to form the robust CP set $\unionmetaset(x_\mathrm{test})$. \emph{VRCP-C} however computes conservative scores around each pair $(x_i,y_i) \in \CalDataset$ and then calibrates the model using these conservative scores to provide a robust CP guarantee which holds at inference and requires no extra computations at test time.
+Unfortunately, computing \textit{exact} bounds for Eq.~\eqref{eq:conservativepredscore} is often untractable for neural networks. Therefore, formal verification methods use \textit{incomplete} solvers to compute loose bounds on small to medium size model architectures.
+
+
+Independently, \citet{prcp} introduced a novel ``quantile of quantiles'' method for robust CP based on calibration-time operations. 
+In order to mitigate the set size inflation phenomenon that is inherent to robust CP, the \emph{PRCP} method provides a relaxed ``average''  coverage guarantee over a predefined noise distribution.
+
+These guarantees are applicable on top of most robust CP methods and can be seen as orthogonal to all previously mentioned works, as argued in~\citet{cas}. Moreover, complementing previous methods, \citet{aolaritei2025conformal} propose an extended framework that also provides robustness against global perturbations.
+% \vspace{-5pt}
+
+\paragraph{Scaling robust CP} Current methods for estimating conservative scores exhibit severe scalability issues. Indeed, verification methods have computational complexities that grow quadratically with the number of neurons and layers of the model. Moreover, randomized smoothing methods require $n_\mathrm{mc}$ times more memory at inference time to run an MC estimation process. Also, some theoretical works indicate that the certifiable radii of smoothing methods suffers greatly from high input dimensionality \cite{wu2024augmentsmoothreconcilingdifferential}. 
+
+Overall, these different limitations represent an obstacle to scaling robust CP to larger inputs, models and generally harder tasks such as the \textsl{ImageNet} dataset for example. In this paper, we present a framework for robust CP with deterministic Lipschitz bounds that has \textit{no such limitations} and avoids time or memory complexity issues at scale.
+
+\paragraph{Paper Outline.} The paper is organized as follows. In Section~\ref{sec:vanillacoverage} we start by complementing theoretical guarantees on CP's robustness by designing a new auditing process for vanilla CP under attack. We prove coverage bounds that are valid simultaneously across all attack levels. In Section~\ref{sec:efficient_robust_sets}, we introduce our \emph{lip-rcp} method and leverage Lipschitz-bounded neural networks to efficiently and accurately approximate local variations of CP scores. This enables efficient robust CP set construction and vanilla CP auditing. Finally, when combined with Lipschitz-by-design networks, we demonstrate the efficiency and superior performances of our approach on several image classification datasets (Section~\ref{sec:results}).

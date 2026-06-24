@@ -1,0 +1,23 @@
+\label{sec:measurability}
+
+In this short section, we discuss minor mathematical details that are yet important to ensure that all probabilities under study are well defined. In short, probabilities should be studied for sets that are \emph{measurable}, which can fail in general when manipulating, e.g., continuously-infinite suprema or infima of measurable functions.
+
+We start by describing two measurability issues in items 1 and 2 below. We then explain that, if the assumptions of the paper hold true, then we work with continuous and thus measurable functions, so that these issues do not arise (see Proposition~\ref{prop:supinf-continuous}).
+
+\begin{enumerate}
+    \item The modified scores $\sse(x,y) := \sup\limits_{\tilde{x}\in\bouleps(x)} s(\tilde{x},y)$ and $\sie(x,y):=\inf\limits_{\tilde{x}\in\bouleps(x)} s(\tilde{x},y)$ might not be measurable functions of $(x,y)$. This condition is required so that the sets $\left\{ Y\in\Bar{C}_{\alpha, \epsilon}(X)\right\}=\left\{\sie(X,Y)\leq q_\alpha \right\}$ and $\left\{ Y\in\underline{C}_{\alpha, \epsilon}(X)\right\}=\left\{\sse(X,Y)\leq q_\alpha \right\}$ are measurable (i.e., well defined events).
+    \item Even so, the function $(x,y)\mapsto\sup\limits_{\tilde{x}\in\bouleps(x)} \sie(\tilde{x},y)$ might not be measurable, which is required for the quantity $\mathbb{P}\left(\forall \tilde{x} \in \bouleps(X), Y\in \Bar{C}_{\alpha,\epsilon}(\tilde{x})\right)$ to be well defined.
+\end{enumerate}
+
+\paragraph{Recalling Assumptions \ref{assum:X-s}}
+\begin{enumerate}[label=A\arabic*]
+    \item $\mathcal{X}$ is a convex and closed subset of $\R^d$
+    \item $s(\cdot, y)$ is continuous for all $y\in\mathcal{Y}$
+\end{enumerate}
+
+\begin{proposition}
+\label{prop:supinf-continuous}
+    Let $\epsilon\geq 0$ and assume that A1 and A2 from Assumption \ref{assum:X-s} hold true. Then the functions $\sie(\cdot, y)$, $\sse(\cdot, y)$, and $x\mapsto\sup\limits_{\tilde{x}\in\bouleps(x)} \sie(\tilde{x},y)$ are continuous for all $y\in\mathcal{Y}$.
+\end{proposition}
+
+The proof follows from uniform continuity arguments that are very similar to those used in the proof of Proposition~\ref{prop:continuityGamma}, and is thus omitted.

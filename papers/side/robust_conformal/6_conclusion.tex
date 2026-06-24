@@ -1,0 +1,16 @@
+\section{Discussion}
+
+\paragraph{Conclusion}
+In this work, we propose a novel method for fast computation of certifiably robust prediction sets, improving over SoTA methods both in terms of speed and conformal set sizes.
+First, through a careful analysis of vanilla CP under attack, we provide novel high-probability bounds on its coverage under attack. 
+Our novel guarantees are valid simultaneously for all attack budgets $\epsilon$ and function $h(\cdot, \epsilon)$, therefore not requiring assumptions on the attacker. 
+Then, we use Lipschitz-bounded networks to estimate robust prediction sets, benefiting from three main advantages: better scalability, better overall robustness and the ability to tightly estimate worst-case variations with little computational overhead. We apply our \emph{lip-rcp} approach not only to compute efficiently bounds for vanilla CP under attack, but also for robust CP. Finally we validate our approaches on multiple classification datasets achieving best-in-class performance with similar computational requirements as vanilla CP.
+
+\paragraph{Limitations and future work}
+The method and results presented in this paper rely on some conditions on the model and perturbations, which would be worth generalizing.
+
+Our approach delivers strong certifiable guarantees under $\ell_2$ perturbations but does not generalize to other norms, such as $\ell_1$ or $\ell_\infty$. Integrating advances from works like \citet{l_1lipschitz} or \citet{zhang2021certifyinglinfinityrobustnessusing} could broaden its applicability and is left for future work.
+Moreover, while our method is applicable to any network whose Lipschitz constant is computable, we limit our study to Lipschitz-by-design architectures---whose Lipschitz constant is tightly controlled---to enable efficient robust conformal prediction. Note that this approach is not fully model-agnostic as other competing conformal methods, but that
+tight Lipschitz estimation would restore model agnosticism and pave the way for efficient robust conformal prediction in classification \textit{and regression} settings.
+
+Finally, it would be interesting to investigate whether our approach generalizes to higher values of $\epsilon$ as, e.g., in the works of \citet{rscp, cas}, while retaining our guarantees and computational efficiency.

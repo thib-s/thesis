@@ -10,7 +10,7 @@ contribution: first author
 during the thesis: yes
 relevance: 5/5
 reasons of relevance: muon orthogonalize the update to accelerate training. We use a technique from the Lipschitz litterature to accelerate orthogonalization.
-folder: papers\core (orthogonality in deep learning)\turbo-Muon
+folder: papers\core\turbo-Muon
 
 
 ### Adaptive Orthogonal Convolutions for Efficient and Flexible CNN Architectures
@@ -21,7 +21,7 @@ contribution: first author
 during the thesis: yes
 relevance: 5/5
 reasons of relevance: convolution is a core component of Lipschitz networks but orthogonality is hard to enforce on it.
-folder: papers\core (orthogonality in deep learning)\Flash Lipschitz (ICML)
+folder: papers\core\Flash_Lipschitz
 
 
 ### Orthogonium: A Unified, Efficient Library of Orthogonal and 1-Lipschitz Building Blocks
@@ -32,7 +32,7 @@ contribution: first author
 during the thesis: yes
 relevance: 5/5
 reasons of relevance: A library that centralize many baselines from the litterature of 1 Lipschitz and orthogonal networks.
-folder: papers\core (orthogonality in deep learning)\Orthogonium library
+folder: papers\core\Orthogonium_library
 
 ### Efficient robust conformal prediction via lipschitz-bounded networks
 
@@ -42,7 +42,7 @@ contribution: minor contribution
 during the thesis: yes
 relevance: 4/5
 reasons of relevance: Shows the interest of Lipschitz networks for conformal prediction.
-folder: papers\side (properties of lipschitz networks)\robust_conformal
+folder: papers\side\robust_conformal
 
 ### On the explainable properties of 1-lipschitz neural networks: An optimal transport perspective
 
@@ -52,7 +52,7 @@ contribution: minor contribution
 during the thesis: no
 relevance: 4/5
 reasons of relevance: Shows the link betwwen Lipschitz networks and explainability.
-folder: papers\side (properties of lipschitz networks)\explainable_1lip
+folder: papers\side\explainable_1lip
 
 ### Dp-sgd without clipping: The lipschitz neural network way
 
@@ -62,7 +62,7 @@ contribution: equal contribution (first author)
 during the thesis: no
 relevance: 4/5
 reasons of relevance: Shows the link betwwen Lipschitz networks and differential privacy.
-folder: papers\side (properties of lipschitz networks)\lipDP
+folder: papers\side\lipDP
 
 
 ### Robust one-class classification with signed distance function using 1-lipschitz neural networks
@@ -73,7 +73,7 @@ contribution: minor contribution
 during the thesis: no
 relevance: 2/5
 reasons of relevance: Shows that Lipschitz networks can be used for one-class classification.
-folder: papers\side (properties of lipschitz networks)\oneclass
+folder: papers\side\oneclass
 
 ### Pay attention to your loss: understanding misconceptions about lipschitz neural networks
 
@@ -84,7 +84,7 @@ contribution: equal contribution (first author)
 during the thesis: no
 relevance: 4/5
 reasons of relevance: Theoretical foundation of the expressiveness and robustness of 1-Lipschitz networks.
-folder: papers\side (properties of lipschitz networks)\pay_attention
+folder: papers\side\pay_attention
 
 ### Achieving robustness in classification using optimal transport with hinge regularization
 
@@ -94,7 +94,7 @@ contribution: minor contribution
 during the thesis: no
 relevance: 4/5
 reasons of relevance: Introduces a new loss based on optimal transport (the HKR loss) designed to train robust 1-Lipschitz neural networks.
-folder: papers\side (properties of lipschitz networks)\achieving_robustness
+folder: papers\side\achieving_robustness
 
 
 ### Beyond Adversarial Robustness: Breaking the Robustness-Alignment Trade-off in Object Recognition
@@ -105,4 +105,4 @@ contribution: minor contribution
 during the thesis: yes
 relevance: 3/5
 reasons of relevance: Analyzes the trade-off between perturbation tolerance and human alignment of adversarial attacks, highlighting the benefits of alignment-based training.
-folder: papers\side (properties of lipschitz networks)\adversarial_robustness_tradeoff
+folder: papers\side\adversarial_robustness_tradeoff

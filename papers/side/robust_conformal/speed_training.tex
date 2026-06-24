@@ -1,0 +1,30 @@
+\label{app:speed_training}
+
+In this section we describe the computational overhead of our implementation on a \emph{CIFAR-10} shaped set of random data. In our experimental setup, we use a standard neural network with two convolutional layers followed by max pooling operations and a linear layer. We study how a drop-in replacement of the vanilla PyTorch layers by our chosen Lipschitz constrained layers affects the overall training time of our network. Importantly, our implementation is batch-size independent since it only relies on the values of the weights. Therefore the overall cost of training Lipschitz constrained networks is mitigated when using large batch sizes. 
+
+\begin{table}[h]
+  \centering
+  \sisetup{
+    detect-weight = true,
+    detect-family = true,
+    table-number-alignment = center
+  }
+  \begin{tabular}{
+    S[table-format=4.0]
+    S[table-format=+3.2]
+  }
+    \toprule
+    {Batch size} & {Train time (\%)} \\
+    \midrule
+    1024 & +20.31 \\
+    2048 & +10.26 \\
+    \bottomrule
+  \end{tabular}
+  \caption{Training time on random data of shape \((32,32,3)\) when dropping in the Lipschitz‐constrained layers. For reference, our ResNeXt model of Figure 3 introduces a 9.6\% runtime overhead on TinyImageNet compared to an identical unconstrained model.}
+  \label{tab:speed_training}
+\end{table}
+
+
+For more information regarding the computational overhead of Lipschitz constrained architectures w.r.t standard unconstrained architectures, we refer the reader to the comprehensive benchmark of \cite{boissin2025adaptiveorthogonalconvolutionscheme}.
+
+\paragraph{Improvements} In our paper we use a relatively standard implementation of Lipschitz parametrized networks with an orthogonality constraint. Many recent works have focused on providing efficient and expressive Lipschitz network implementations \cite{sll,gloro,cpl} that could be applied in the context of our study. 

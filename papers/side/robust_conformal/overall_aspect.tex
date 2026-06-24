@@ -1,0 +1,26 @@
+\paragraph{Overall placement of method} See Table \ref{tab:huge_table} for an overall comparison of certifiably robust methods for conformal prediction.
+
+\paragraph{Hyperparameters of all methods} \label{par:hyperparams} We find that other methods have the following hyperparameters : 
+
+\begin{table}[ht]
+  \centering
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    \textbf{Method} & \textbf{Hyperparameters} \\
+    \midrule
+    \emph{RSCP}           & Smoothing strength \(\sigma\), Monte Carlo samplings \(n_{mc}\). \\
+    \emph{RSCP\(+\)}      & Smoothing strength \(\sigma\), Monte Carlo samplings \(n_{mc}\), confidence of smoothing \(\beta\). \\
+    +  PTT         & Temperature \(T\), bias \(b\), number of holdout points \(n_{\text{holdout}}\). \\
+    +  RCT         & Temperature \(\tau^{\mathrm{soft}}\), regularization factors \(\lambda\) and \(\kappa\). \\
+    \emph{aPRCP}          & Conservativeness hyperparameter \(s\). \\
+    \emph{CAS}            & Smoothing strength \(\sigma\), Monte Carlo samplings \(n_{mc}\). \\
+    \emph{VRCP}           & Choice of formal verification method (counts as one hyperparameter) plus any  score specific parameters. \\
+    \emph{lip-rcp} & Score temperature \(T\) and bias \(b\). \\
+    \bottomrule
+  \end{tabular}
+  \caption{Hyperparameters for each certified‐robustness method}
+  \label{tab:method_hyperparams}
+\end{table}
+
+
+

@@ -1,0 +1,52 @@
+    \begin{table}%[h]
+    \small
+        %\raggedright
+        %\hspace*{-1.3cm}
+        \centering
+        \begin{threeparttable}
+            \begin{tabular}{cccc}
+                %\hline
+                \toprule
+                 Properties & & \LipInf network & \LipCl network\\
+                %\hline
+                %\hline
+                \midrule
+                \multicolumn{2}{c}{Fit any boundary} & \yes{yes}~\cite{hassoun1995fundamentals} & \yes{yes} (Proposition~\ref{thm:lippowerbinary})\\
+                \multicolumn{2}{c}{Robustness certificates} & \no{no} & \yes{yes} (Property~\ref{thm:certificates})\\
+                \multicolumn{2}{c}{Consistent estimator} & \no{no} (App~\ref{app:lipinfnotrobust}) & \yes{yes} (Proposition~\ref{thm:consistenceestimator}, Figures~\ref{ex:nosameminimum},~\ref{fig:consistency})\\
+                \multicolumn{2}{c}{Gradients} & exploding or vanishing & preserved for GNP (App~\ref{app:gradientpreserving})\\
+                \multicolumn{2}{c}{VC dimension bounds} & architecture dependent~\cite{bartlett2019nearly} & when $m>0$ (Proposition~\ref{thm:lipschitzpaclearnable})\\
+                %\hline
+                %\hline
+                \midrule
+                \multirow{3}{*}{BCE $\Loss^{bce}_{\tau}$} & minimizer & ill-defined $L_t\veryshortarrow\infty$ (Proposition \ref{thm:saturatedlimit}) & attained (Proposition~\ref{thm:minimizerattained})\\
+                & remark & vanishing gradient (Ex \ref{ex:gotcha}) & $L$ or $\tau$ must be tuned (Figure~\ref{fig:pareto_hkr})\\
+                % \hline
+                \cmidrule(r){1-4}
+                \multirow{2}{*}{Wasserstein $\Loss^{W}$} & minimizer & ill-defined $L_t\veryshortarrow\infty$ & attained, robust (Property~\ref{thm:mcriswass})\\
+                & remark & diverges during training & weak classifier (Proposition~\ref{thm:weakwass}) \\
+                % \hline
+                \cmidrule(r){1-4}
+                \multirow{2}{*}{Hinge $\Loss^H_{m}$} & minimizer & attained & attained\\
+                & remark & no guarantees on margin & $m$ must be tuned\\
+                % \hline
+                \cmidrule(r){1-4}
+                \multirow{2}{*}{HKR $\Loss^{hkr}_{m,\alpha}$} & minimizer & ill-defined $L_t\veryshortarrow\infty$ & accuracy-robustness tradeoff\\
+                & remark & diverges during training & $\alpha$ and $m$ must be tuned (Figure~\ref{fig:pareto_hkr})\\
+                %\hline
+                \bottomrule
+            \end{tabular}
+        \end{threeparttable}
+        \smallskip
+        \caption{
+        Summary of notable results and the contributions.
+        %Summary of losses, influence of the Lipschitz constraint on the optimum. BCE minimization is ill-posed for \LipInf, but vanishing gradient leads to convergence. For margin $m$ small enough, if the classes are separable, 0\% training error is achievable by Hinge and HKR.
+        }
+    \label{tab:bcesummary}\end{table} 
+
+
+\textbf{\LipCl networks parametrization} benefit from a rich literature (see Appendix~\ref{ap:deellip}) to enforce the Lipschitz constraint in various layers~\cite{gulrajani2017improved, yoshida2017spectral, arjovsky2017wasserstein, salimans2016weight, kim2020lipschitz, miyato2018spectral, helfrich2018orthogonal, erichson2021lipschitz, huang2021training, zhu2022controlling} such as activation functions, affine layers, attention layers or recurrent units. Residual connections are also Lipschitz (see Appendix~\ref{app:gradientpreserving}). \textbf{Gradient Norm Preserving networks} avoid the vanishing gradients~\cite{li2019preventing,bansal2018can} phenomenon to which the \LipCl networks are prone, by using orthogonal matrices in affine layers. This justifies the \textit{``orthogonal neural network''} terminology~\cite{stasiak2006fast,li2019orthogonal,su2021scaling}. ReLU based Lipschitz networks suffer from expressiveness issues~\cite{anil2019sorting}, and activation functions like GroupSort~\cite{anil2019sorting,tanielian2021approximating} (a special case of Householder reflection~\cite{mhammedi2017efficient,singla2021improved}) have been proposed in replacement. % In \cite{gulrajani2017improved}, authors show that the potential $f$ of the Kantorovich-Rubinstein dual transport problem verifies $\|\nabla_x f(x)\|=1$ almost everywhere on the support of the distributions $\Prob_{XY}$. %\footnote{In the sense that the gradient is always equals to 1 except a set of measure where it is not defined}.
+\textbf{Orthogonal kernels} are still an active research area~\cite{gayer2020convolutional,wang2020orthogonal,liu2021convolutional,achour2021existence,li2019preventing,trockman2021orthogonalizing,singla2021skew,yu2021constructing}. They are used in normalizing flows~\cite{hasenclever2017variational}, ensemble methods~\cite{mashhadi2021parallel}, reinforcement learning~\cite{Gogianu2021} or graph neural networks~\cite{pmlr-v139-dasoulas21a}. The optimization over the group of orthogonal matrices (known as Stiefel manifold) has been extensively studied in~\cite{absil2009optimization}, and algorithms suitable for deep learning are detailed in ~\cite{arjovsky2016unitary,hyland2017learning,hyland2017learning,lezcano2019cheap,huang2018orthogonal,ablin2021fast,kerenidis2021classical,choromanski2020stochastic}.   
+%\vspace{-0.5cm}
+  
+\textbf{Generalization bounds} for general Lipschitz classifiers are given in~\cite{von2004distance,gottlieb2014efficient,bartlett2017spectrally}. Links between adversarial robustness, large margins classifiers and optimization bias are studied in~\cite{finlay2018lipschitz,jiang2018predicting,NEURIPS2018_48584348,faghri2021bridging}. The importance of the loss in adversarial robustness is studied in~\cite{pang2019rethinking}. See Appendix~\ref{app:generalizationbounds}.

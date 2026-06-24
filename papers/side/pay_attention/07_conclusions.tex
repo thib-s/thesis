@@ -1,0 +1,70 @@
+    % \begin{table}%[h]
+    % \small
+    %     %\raggedright
+    %     %\hspace*{-1.3cm}
+    %     \centering
+    %     \begin{threeparttable}
+    %         \begin{tabular}{cccc}
+    %             %\hline
+    %             \toprule
+    %              Properties & & \LipInf network & \LipCl network\\
+    %             %\hline
+    %             %\hline
+    %             \midrule
+    %             \multicolumn{2}{c}{Fit any boundary} & \yes{yes}~\cite{hassoun1995fundamentals} & \yes{yes} (Proposition~\ref{thm:lippowerbinary})\\
+    %             \multicolumn{2}{c}{Robustness certificates} & \no{no} & \yes{yes} (Property~\ref{thm:certificates})\\
+    %             \multicolumn{2}{c}{Consistent estimator} & \no{no} (App~\ref{app:lipinfnotrobust}) & \yes{yes} (Proposition~\ref{thm:consistenceestimator}, Figures~\ref{ex:nosameminimum},~\ref{fig:consistency})\\
+    %             \multicolumn{2}{c}{Gradients} & exploding or vanishing & preserved for GNP (App~\ref{app:gradientpreserving})\\
+    %             \multicolumn{2}{c}{VC dimension bounds} & architecture dependent~\cite{bartlett2019nearly} & when $m>0$ (Proposition~\ref{thm:lipschitzpaclearnable})\\
+    %             %\hline
+    %             %\hline
+    %             \midrule
+    %             \multirow{3}{*}{BCE $\Loss^{bce}_{\tau}$} & minimizer & ill-defined $L_t\veryshortarrow\infty$ (Proposition \ref{thm:saturatedlimit}) & attained (Proposition~\ref{thm:minimizerattained})\\
+    %             & remark & vanishing gradient (Ex \ref{ex:gotcha}) & $L$ or $\tau$ must be tuned (Figure~\ref{fig:pareto_hkr})\\
+    %             % \hline
+    %             \cmidrule(r){1-4}
+    %             \multirow{2}{*}{Wasserstein $\Loss^{W}$} & minimizer & ill-defined $L_t\veryshortarrow\infty$ & attained, robust (Property~\ref{thm:mcriswass})\\
+    %             & remark & diverges during training & weak classifier (Proposition~\ref{thm:weakwass}) \\
+    %             % \hline
+    %             \cmidrule(r){1-4}
+    %             \multirow{2}{*}{Hinge $\Loss^H_{m}$} & minimizer & attained & attained\\
+    %             & remark & no guarantees on margin & $m$ must be tuned\\
+    %             % \hline
+    %             \cmidrule(r){1-4}
+    %             \multirow{2}{*}{HKR $\Loss^{hkr}_{m,\alpha}$} & minimizer & ill-defined $L_t\veryshortarrow\infty$ & accuracy-robustness tradeoff\\
+    %             & remark & diverges during training & $\alpha$ and $m$ must be tuned (Figure~\ref{fig:pareto_hkr})\\
+    %             %\hline
+    %             \bottomrule
+    %         \end{tabular}
+    %     \end{threeparttable}
+    %     \smallskip
+    %     \caption{
+    %     Summary of notable results and the contributions.
+    %     %Summary of losses, influence of the Lipschitz constraint on the optimum. BCE minimization is ill-posed for \LipInf, but vanishing gradient leads to convergence. For margin $m$ small enough, if the classes are separable, 0\% training error is achievable by Hinge and HKR.
+    %     }
+    % \label{tab:bcesummary}\end{table}  
+    
+% In this paper, we challenged the common belief that constraining Lipschitz constant degrades the classification performance of neural networks. We proved that \LipCl networks exhibit numerous attractive properties (see Table~\ref{tab:bcesummary} in summary): they provide robustness radius certificates without restrictions on their expressive power. They benefit from generalization guarantees. We showed that the hidden parameters of the loss allow to control generalization gap and certifiable robustness.  
+  
+In this paper, we challenged the common belief that constraining Lipschitz constant degrades the classification performance of neural networks. We proved that \LipCl networks exhibit numerous attractive properties (see Table~\ref{tab:bcesummary} in summary): they provide robustness radius certificates without restrictions on their expressive power. They benefit from generalization guarantees. We showed that the hidden parameters of the loss allow to control the generalization gap and certifiable robustness.  
+  
+While the question of the \LipCl architecture is often in the spotlight, the loss is overlooked. We pointed out that Cross-Entropy is not necessarily the best choice, margin-based losses, such as hinge or its variant HKR, have appealing properties (table \ref{tab:bcesummary}). % Classification with \LipCl and adequate loss function amounts to solve an optimal transport problem. 
+
+\vspace{-2mm}
+\section{Perspectives}
+
+This paper aims to be at the intersection between theoretical ML and (empirical) deep learning. Lipschitz constrained networks allow to directly put in perspective mathematical proofs and we are confident that this theory can be verified empirically on very large-scale vision datasets (such as Imagenet~\cite{deng09imagenet}).
+
+%Our research line is to point out its tremendous importance (see sections 3.2, 4.2 and 4.3). In personal communications across different teams and labs, it became apparent that some teams assigned the poor results of their LipNet1 networks to an intrinsic limit of the architecture, without questioning their loss, and abandoned the tool before ever reaching production or publication stage. We feel that there is a gap in literature that must be filled.
+
+This paper also provides a toolbox of results and experiments to serve as a basis for future works. We aim to open new research directions, including outside the field of robust learning. \LipInf networks could benefit from \LipCl literature: the absence of control over the Lipschitz constant of \LipInf %(leading to a poor generalization and a lack of robustness)
+is mitigated in practice by elements such as mixup or weight decay. Such elements would be better understood  by looking at how they affect the (uncontrolled) Lipschitz constant of \LipInf.
+% For instance, the uncontrolled growth of the lipschitz constant on \LipInf networks can be mitigated in practice by tools such as weight decay.
+% We also believe it provides insights about AllNet networks training: their Lipschitz constant grows uncontrollably during training (see fig \ref{fig:divergence}), which is equivalent with using cross entropy with high temperature.  
+% Hence our work allow to explore the question of generalization independently 
+
+The efficient training over \LipCl is still an active research area. Moreover, \LipInf networks benefits from architectural elements such as skip connections and batch normalization (see appendix \ref{app:gradientpreserving}). As \LipCl networks get more mature, empirical results will improve, matching theory even more (explaining the emphasis on the theoretical proofs instead of the design of \LipCl depicted in appendix \ref{ap:deellip}).  
+  
+% In conventional networks the questions of the architecture, of the generalization and of the optimization are usually entangled. The explosion of Lipschitz constant is avoided at the cost of weight decay or batch normalization. However these tricks usually have unexpected consequences on the nature of the optimum and on the optimization process. Our work is a first step toward a better separation of these components and their role. 
+
+Many practices in deep learning entangle the questions of architecture, of generalization and of optimization. However, these elements usually have unexpected consequences on the nature of the optimum and the optimization process. Our work is a first step toward a better separation of these components and their role.
