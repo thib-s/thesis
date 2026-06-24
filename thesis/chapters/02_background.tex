@@ -1,5 +1,74 @@
-\chapter{Background on Lipschitz Neural Networks and Orthogonality}
+\chapter{Background on Lipschitz Neural Networks}
 \label{ch:background}
 
 \section{Lipschitz Continuity in Deep Learning}
-\section{Orthogonality Constrains}
+
+    \subsection{Lipschitz Neural Networks are expressive for classification}
+
+    \subsection{Robustness}
+
+    paper "achieving robustness"
+
+    \subsection{Explainability}
+
+    paper "explainable 1 lip" + paper "beyond adversarial robustness"
+
+    \subsection{Differential privacy}
+
+    paper "dp-sgd without clipping"
+
+\section{Building Lipschitz Neural Networks}
+
+    \subsection{On the evaluation of Lipschitz constant}
+
+    \subsection{Global strategy}
+
+    \subsection{Product bound: both a blessing and a curse?}
+
+
+\chapter{From Lipschitzness to Orthogonality Constraints}
+\label{ch:background}
+
+\section{Why enforcing orthogonality on weights?}
+
+    Orthogonal layers have become fundamental components in various deep learning architectures due to their unique mathematical properties, which offer benefits across multiple applications. 
+    For instance, robustness against adversarial attacks can be achieved by managing a model's Lipschitz constant~\cite{szegedy_intriguing_2013} -- with 1-Lipschitz networks being a prime candidate: such networks allowing the computation of robustness certificates. 
+    Initially, researchers experimented with regularization techniques~\cite{cisse2017parseval}; however, constrained networks, especially those employing orthogonal layers, soon became central, as they provided the advantage of tighter certification bounds: The overall Lipschitz constant of a sequence of layers is typically estimated as the product of the individual layer constants; however, this bound is often loose, and computing the exact constant is NP-hard \cite{virmaux2018lipschitz}. \cite{anil_sorting_2019} 
+    shows that combining MaxMin activation with orthogonal layers makes the aforementioned bound tight.
+    Beyond robustness, orthogonal layers also play a key role in enhancing performance in normalizing flows. Normalizing flows are generative models that transform simple distributions into complex ones via invertible mappings \cite{dinh2016density, rezende2015variational}.  Orthogonal convolutions enable these transformations with a computable Jacobian determinant, thus improving training efficiency \cite{kingma2018glow} and forming the basis for invertible residual networks \cite{behrmann2019invertible}.
+    Additionally, orthogonal layers stabilize training deep and recurrent neural networks (RNNs) by preserving gradient norms through time, essential in capturing long-term dependencies in time-series, such as language and speech tasks \cite{kiani_projunn_2022,qi_deep_isometric_2020, bansal2018gainorthogonalityregularizationstraining}. Lastly, in Wasserstein GANs (WGANs) \cite{arjovsky2017wasserstein} orthogonality in both the discriminator and generator~\cite{muller2019orthogonal} supports stability and expressivity without requiring weight clipping or gradient penalties~\cite{gulrajani2017improved}, making it essential for large-scale GAN training~\cite{brock2018large, miyato2018spectral}.
+
+
+    
+    \paragraph{Provable Robustness with 1-Lipschitz Networks.}
+    Ensuring robustness against adversarial attacks is a critical challenge. Early work in this field \cite{szegedy_intriguing_2013} identified a link between a network's adversarial robustness and its Lipschitz constant, which led to the development of networks with a Lipschitz constant of one (1-Lipschitz networks). Initially, regularization techniques were used \cite{cisse2017parseval}, but interest in constrained networks quickly grew. Orthogonal layers, in particular, have an inherent Lipschitz constant of one, as they preserve the input norm through each transformation. This property is instrumental in achieving provable robustness by allowing for certified bounds on the network's output perturbations in response to adversarial inputs \cite{anil_sorting_2019}. By controlling the network's sensitivity to input changes, orthogonal layers play a crucial role in building models resilient to adversarial manipulations.
+    Besides robustness, Lipschitz-constrained networks have diverse applications: they are closely linked to WGANs and optimal transport \cite{arjovsky2017wasserstein, bethune2024deep}, enable scalable differential privacy \cite{bethunedp}, allow conformal prediction in adversarial setting \cite{massena2025efficient}, and prevent singularities in diffusion models \cite{yang2023lipschitz}. Additionally, they guarantee the existence and uniqueness of solutions in classification \cite{bethune_pay_2022} and flow-matching networks \cite{perko2013differential, coddington1956theory}.
+    
+    \paragraph{Enhancing Performance in Normalizing Flows.}
+    Normalizing flows are a class of generative models that transform simple probability distributions into complex ones through a series of invertible and differentiable mappings. Although they have different objectives, this domain intersects with the field of provable adversarial robustness. For instance, \cite{dinh2016density, rezende2015variational} employs a channel masking scheme, which was later used to emulate striding in Lipschitz layers designed for adversarial robustness. Separately, Lipschitz layers can be applied to build invertible residual networks \cite{behrmann2019invertible}. In both fields, orthogonal convolutions are essential, as they facilitate the construction of invertible transformations with tractable Jacobian determinants. The use of orthogonal layers ensures that the Jacobian determinant is constant or easily computable, simplifying likelihood estimation during training \cite{kingma2018glow}. This property enables efficient and stable training of normalizing flow models, leading to improved performance in density estimation and generative tasks.
+    
+    \paragraph{Stabilizing Training in Deep and Recurrent Neural Networks.}
+    Training recurrent neural networks (RNNs) involves propagating gradients through time, which can lead to vanishing or exploding gradients due to the multiplicative nature of sequential weight applications. Orthogonal weight matrices in RNNs help preserve the gradient norm across time steps, thus preventing degradation of the learning signal \cite{kiani_projunn_2022}. By constraining recurrent weights to be orthogonal, the network maintains a consistent flow of information, enabling it to capture long-term dependencies more effectively. This stabilization is essential for tasks requiring understanding long-range dependencies in time series, such as language modeling and speech recognition. These approaches also facilitate the training of very deep networks \cite{qi_deep_isometric_2020} with improved generalization properties \cite{bansal2018gainorthogonalityregularizationstraining}.
+    
+    \paragraph{Improving Stability in Wasserstein Generative Adversarial Networks.}
+    Generative Adversarial Networks (GANs) are powerful models for generating realistic data, but they often suffer from training instability. Wasserstein GANs (WGANs) \cite{arjovsky2017wasserstein} address this issue by optimizing the Wasserstein distance between the real and generated data distributions. A key requirement for WGANs is that the discriminator (or critic) function must be Lipschitz continuous. Orthogonal layers naturally satisfy this Lipschitz condition, eliminating the need for techniques like weight clipping or gradient penalties \cite{gulrajani2017improved}, which can adversely affect training dynamics. By incorporating orthogonal convolutions into the discriminator, WGANs achieve more stable training \cite{miyato2018spectral, muller2019orthogonal} and produce higher-quality generative results. Orthogonality has been integral to the successful scaling of GAN training \cite{brock2018large}. %\textbf{https://github.com/ezqlwyb/GAN}
+
+    \paragraph{Extending the applicability of Proximal Neural Networks.}
+    Proximal Neural Networks (PNNs) offer a principled approach to designing and training deep architectures by drawing inspiration from optimization theory—specifically, proximal algorithms and $\alpha$-averaged operators \cite{hasannasab2020parseval, combettes2020lipschitz}. A central insight in this framework is the emergence and enforcement of orthogonality in learned operators, which can improve network stability. \cite{hertrich2021convolutional} proposes an extension to convolutional operators but notes that, for limited kernel sizes, optimizing on the manifold is challenging and instead relies on penalization, similar to \cite{wang_orthogonal_2020}. Using our method, AOC, and its transpose could overcome this limitation.
+
+
+\section{Convolutions and orthogonality}
+
+    Despite these benefits, extending orthogonality to convolutional layers remains challenging: one one side 2D matrices and convolutions are both linear operators, making orthogonality well defined. On the other side, the linear operator is a large, structured, matrix with Toeplitz (or doubly circulant) structure. The orthogonalization of large Toeplitz matrices-structures central to convolution- is challenging to do without compromising its convolutional properties and is sometimes non-feasible~\cite {achour2023existencestabilityscalabilityorthogonal}. Efficient orthogonalization of these structured matrices has theoretical importance, affecting generalization~\cite{bethune_pay_2022} and indicating when orthogonal convolution is feasible~\cite{achour2023existencestabilityscalabilityorthogonal}.
+
+    Early approaches \cite{wang_orthogonal_2020, qi_deep_isometric_2020} explored regularization, yet practical constraints led to the following solutions:
+
+    \subsection{Explicit Construction Methods.} Building on \cite{xiao_dynamical_2018}, approaches like BCOP \cite{li_preventing_2019}, SC-Fac \cite{su_scaling-up_2021}, and ECO \cite{yu_constructing_2021} construct orthogonal convolutions directly in the spatial domain. These methods maintain orthogonality but often lack flexibility in kernel size control and do not support operations like striding and transposed convolutions.
+
+    \subsection{Frequency Domain Approaches.} Methods such as Cayley Convolution \cite{trockman_orthogonalizing_2021}, LOT \cite{xu_lot_2023}, and ProjUNN-T \cite{kiani_projunn_2022} enforce orthogonality by parameterizing kernels in Fourier space,
+    albeit at the cost of increased computational complexity and constraints on spatial or grouped convolutions.
+
+    \subsection{Composite Layer Techniques.} Skew Orthogonal Convolutions \cite{singla_skew_2021} combine multiple convolutional layers to approximate orthogonality, resulting in an orthogonal block that uses convolutions. 
+
+
+    \subsection{Mitigating vanishing gradients.} In some cases, strict orthogonality is relaxed. Leading to layers that are 1-Lipschitz while mitigating vanishing gradients. This avoids the computational demands of full orthogonalization~\cite{prach_almost-orthogonal_2022, meunier_dynamical_2022, araujo_unified_2023}.
